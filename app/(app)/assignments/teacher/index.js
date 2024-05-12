@@ -1,0 +1,193 @@
+// Imports
+import axios from 'axios';
+import moment from 'moment';
+import {router} from 'expo-router';
+import {useState, useEffect} from 'react';
+import {ActivityIndicator, Card, Icon} from 'react-native-paper';
+import {Text, TouchableOpacity, View, ScrollView, Image} from 'react-native';
+
+
+
+
+
+// Main functions
+const App = () => {
+
+
+  // Is loading
+  const [isLoading, setIsLoading] = useState(false);
+
+
+  // Classes
+  const [classes, setClasses] = useState([]);
+
+
+  // Assignments
+  const [assignments, setAssignments] = useState([]);
+
+
+  // Selected class
+  const [selectedClass, setSelectedClass] = useState('');
+
+
+  // Use effect
+  useEffect(() => {
+      setIsLoading(true);
+      const fetcher = async () => {
+          try {
+
+              // Fetching classes
+              const classesLink = `${process.env.EXPO_PUBLIC_API_URL}/classes/names`;
+              const classesRes = await axios.get(classesLink);
+              setClasses(classesRes?.data);
+              setSelectedClass(classesRes?.data[0]?.class_name);
+
+
+              // Fetching assignments
+              const assignmentsLink = `${process.env.EXPO_PUBLIC_API_URL}/assignments`;
+              const assignmentsRes = await axios.get(assignmentsLink);
+              setAssignments(assignmentsRes.data);
+
+              setIsLoading(false);
+          }catch(err){
+              console.log('Error fetching data: ', err);   
+          }
+      };
+      fetcher();
+  }, []);
+
+
+  return (
+      <View style={{height:'100%'}}>
+        <View style={{width:'100%', height:120, display:'flex', flexDirection:'row', alignItems:'flex-end', justifyContent:'space-between', paddingHorizontal:10, paddingBottom:30, backgroundColor:'#0094DA', borderBottomRightRadius:40, borderBottomLeftRadius:40}}>
+            <View style={{display:'flex', flexDirection:'row', alignItems:'center', gap:20}}>
+                <TouchableOpacity
+                    onPress={() => router.push('/')}
+                >
+                    <Icon source='chevron-left' size={40} color='#fff'/>
+                </TouchableOpacity>
+                <Text style={{textAlign:'center', fontSize:18, color:'#fff', fontWeight:'900'}}>Assignments</Text>
+            </View>
+
+
+            <TouchableOpacity
+                onPress={() => router.push('/assignments/teacher/create')}
+                style={{paddingRight:10}}
+            >
+                <Icon source='plus-circle-outline' size={40} color='#fff'/>
+            </TouchableOpacity>
+        </View>
+
+        {/* View assignments */}
+        <View style={{flex:1, display:'flex', flexDirection:'column'}}>
+            {isLoading ? (
+                <View style={{height:'100%', width:'100%', alignItems:'center', justifyContent:'center'}}>
+                    <ActivityIndicator size={30} color='#0094DA'/>
+                </View>
+            ) : (
+                <>
+
+
+                    {/* Classes */}
+                    <View style={{height:50}}>
+                        <ScrollView horizontal={true} style={{width:'100%', backgroundColor:'#F8F8F8'}}>
+                            {classes?.map(c => (
+                                <TouchableOpacity
+                                    onPress={() => setSelectedClass(c?.class_name)}
+                                    key={c?._id}
+                                    style={{height:'100%',  width:70, display:'flex', alignItems:'center', justifyContent:'center', borderBottomColor:selectedClass === c?.class_name ? '#0094DA' : '#f8F8F8', borderBottomWidth:2}}
+                                >
+                                    <Text style={{fontSize:14, fontWeight:'500'}}>
+                                        {c?.class_name}
+                                    </Text>
+                                </TouchableOpacity>
+                            ))}
+                        </ScrollView>
+                    </View>
+
+
+                    {/* Assignments */}
+                    <ScrollView contentContainerStyle={{display:'flex', flexDirection:'column', alignItems:'center', gap:20, paddingVertical:20, paddingTop:50}} style={{width:'100%'}}>
+                        {assignments?.map(a => (
+                            <Card style={{width:'80%', height:250, borderRadius:10, backgroundColor:'#fff'}} key={a._id}>
+                                <View style={{height:'100%', display:'flex', flexDirection:'column', justifyContent:'space-between'}}>
+
+                                    {/* Top */}
+                                    <View style={{height:'30%', display:'flex', flexDirection:'row', justifyContent:'space-between', padding:10}}>
+                                        <View style={{display:'flex', flexDirection:'row', gap:10}}>
+                                            <Image
+                                                source={{uri:a.creator_image}}
+                                                style={{height:60, width:60, borderWidth:2, borderColor:'#3C5EAB', borderRadius:10}}
+                                            />
+                                            <View style={{display:'flex', flexDirection:'column', justifyContent:'space-between'}}>
+                                                <Text style={{fontWeight:'900', fontSize:16}}>{a.assignment}</Text>
+                                                <Text style={{color:'gray', fontSize:12}}>Updated on {moment(a.updatedAt).format('D-M-YYYY')}</Text>
+                                                <Text style={{color:'#3C5EAB', fontSize:14}}>{a.subject}</Text>
+                                            </View>
+                                        </View>
+                                        <View style={{height:30, width:60, display:'flex', flexDirection:'row', alignItems:'center', justifyContent:'center', gap:4, paddingHorizontal:5, backgroundColor:'#F5F5F5', borderRadius:50}}>
+                                            <View style={{width:8, height:8, borderRadius:10, backgroundColor:'#93C314'}}/>
+                                            <Text style={{fontSize:12, color:'gray'}}>Active</Text>
+                                        </View>
+                                    </View>
+
+
+                                    {/* Middle */}
+                                    <View style={{height:'50%', display:'flex', flexDirection:'column', justifyContent:'center', gap:4, padding:10}}>
+                                        <View style={{display:'flex', flexDirection:'row', alignItems:'center', gap:2}}>
+                                            <Text style={{fontSize:13}}>ASSIGNED ON: </Text>
+                                            <Text style={{fontSize:13, color:'gray'}}>{moment(a.assignment_date).format('D-M-YYYY')}</Text>
+                                        </View>
+                                        <View style={{display:'flex', flexDirection:'row', alignItems:'center', gap:2}}>
+                                            <Text style={{fontSize:13}}>TO BE SUBMITTED ON: </Text>
+                                            <Text style={{fontSize:13, color:'gray'}}>{moment(a.to_be_submitted_on).format('D-M-YYYY')}</Text>
+                                        </View>
+                                        <View style={{display:'flex', flexDirection:'row', alignItems:'center', gap:2}}>
+                                            <Text style={{fontSize:13}}>CREATOR: </Text>
+                                            <Text style={{fontSize:13, color:'gray'}}>{a.creator}</Text>
+                                        </View>
+                                    </View>
+
+
+                                    {/* Bottom */}
+                                    <View style={{height:'20%', width:'100%', display:'flex', flexDirection:'row', backgroundColor:'#DAE0EF', borderBottomLeftRadius:10, borderBottomRightRadius:10}}>
+                                        <TouchableOpacity
+                                            style={{flex:1, height:'100%', display:'flex', flexDirection:'row', alignItems:'center', justifyContent:'center', gap:6, borderBottomLeftRadius:10, borderRightColor:'#fff', borderRightWidth:1.5}}
+                                        >
+                                            <Icon source='eye' color='#3C5EAB' size={20}/>
+                                            <Text style={{color:'#3C5EAB'}}>View</Text>
+                                        </TouchableOpacity>
+                                        <TouchableOpacity
+                                            style={{flex:1, height:'100%', display:'flex', flexDirection:'row', alignItems:'center', justifyContent:'center', gap:6, borderRightColor:'#fff', borderRightWidth:1.5}}
+                                        >
+                                            <Icon source='square-edit-outline' color='#3C5EAB' size={20}/>
+                                            <Text style={{color:'#3C5EAB'}}>Edit</Text>
+                                        </TouchableOpacity>
+                                        <TouchableOpacity
+                                            style={{flex:1, height:'100%', display:'flex', flexDirection:'row', alignItems:'center', justifyContent:'center', gap:6, borderBottomRightRadius:10}}
+                                        >
+                                            <Icon source='delete' color='#3C5EAB' size={20}/>
+                                            <Text style={{color:'#3C5EAB'}}>Delete</Text>
+                                        </TouchableOpacity>
+                                    </View>
+
+                                </View>
+                            </Card>
+                        ))}
+                    </ScrollView>
+
+
+                </>
+            )}
+        </View>
+
+    </View>
+  );
+};
+
+
+
+
+
+// Export
+export default App;

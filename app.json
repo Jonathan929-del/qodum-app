@@ -1,7 +1,8 @@
 {
   "expo": {
-    "name": "client",
-    "slug": "client",
+    "name": "Qodum",
+    "slug": "qodum",
+    "scheme": "qodum",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -18,10 +19,31 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.jonathanadel.qodum"
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "25bf2422-587e-4fe6-ae96-9ce827ef1858"
+      }
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "enabled":true,
+      "url": "https://u.expo.dev/25bf2422-587e-4fe6-ae96-9ce827ef1858"
+    },
+    "plugins":[
+      [
+        "expo-updates",
+        {
+          "username":"jonathanadel"
+        }
+      ]
+    ]
   }
 }

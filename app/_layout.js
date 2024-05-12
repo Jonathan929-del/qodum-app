@@ -1,0 +1,47 @@
+// Imports
+import {useEffect} from 'react';
+import {Slot} from 'expo-router';
+import theme from '../theme/theme';
+import * as Updates from 'expo-updates';
+import {StatusBar} from 'expo-status-bar';
+import {AuthProvider} from '../context/Auth';
+import {PaperProvider} from 'react-native-paper';
+
+
+
+
+
+// Main function
+export default function HomeLayout() {
+
+
+    // Update function
+    const onFetchUpdateAsync = async  () => {
+        try {
+            const updates = await Updates.checkForUpdateAsync();
+            if(updates.isAvailable){
+                await Updates.fetchUpdateAsync();
+                await Updates.reloadAsync();
+            }
+        }catch (error){
+            alert(`Error fetching last expo update: ${error}`);
+        }
+    };
+
+
+    // Use effect
+    useEffect(() => {
+        onFetchUpdateAsync();
+    }, []);
+
+
+    return (
+        <PaperProvider theme={theme}>
+            <AuthProvider>
+                <StatusBar style='auto' />
+                <Slot/>
+            </AuthProvider>
+        </PaperProvider>
+
+    );
+};
