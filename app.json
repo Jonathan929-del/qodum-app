@@ -43,6 +43,12 @@
         {
           "username":"jonathanadel"
         }
+      ],
+      [
+        "expo-document-picker",
+        {
+          "iCloudContainerEnvironment": "Production"
+        }
       ]
     ]
   }
