@@ -34,7 +34,7 @@ const Communication = () => {
                         <TouchableOpacity style={{height:'100%', width:'100%', alignItems:'center', justifyContent:'center'}}>
                             <Image
                                 style={{width:'70%', height:'70%'}}
-                                source={require('../../assets/Home/Messages.png')}
+                                source={require('../../../assets/Home/Messages.png')}
                             />
                         </TouchableOpacity>
                     </Card>
@@ -48,7 +48,7 @@ const Communication = () => {
                         <TouchableOpacity style={{height:'100%', width:'100%', alignItems:'center', justifyContent:'center'}}>
                             <Image
                                 style={{width:'70%', height:'70%'}}
-                                source={require('../../assets/Home/PointOfContact.png')}
+                                source={require('../../../assets/Home/PointOfContact.png')}
                             />
                         </TouchableOpacity>
                     </Card>
@@ -62,7 +62,7 @@ const Communication = () => {
                         <TouchableOpacity style={{height:'100%', width:'100%', alignItems:'center', justifyContent:'center'}}>
                             <Image
                                 style={{width:'70%', height:'70%'}}
-                                source={require('../../assets/Home/FeedbackAndComplaints.png')}
+                                source={require('../../../assets/Home/FeedbackAndComplaints.png')}
                             />
                         </TouchableOpacity>
                     </Card>
@@ -76,7 +76,7 @@ const Communication = () => {
                         <TouchableOpacity style={{height:'100%', width:'100%', alignItems:'center', justifyContent:'center'}}>
                             <Image
                                 style={{width:'70%', height:'70%'}}
-                                source={require('../../assets/Home/MeetTheManagement.png')}
+                                source={require('../../../assets/Home/MeetTheManagement.png')}
                             />
                         </TouchableOpacity>
                     </Card>

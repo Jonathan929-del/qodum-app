@@ -2,7 +2,7 @@
 import {useContext} from 'react';
 import {router} from 'expo-router';
 import {Card} from 'react-native-paper';
-import {AuthContext} from '../../context/Auth';
+import {AuthContext} from '../../../context/Auth';
 import {LinearGradient} from 'expo-linear-gradient';
 import {Image, Text, TouchableOpacity, View} from 'react-native';
 
@@ -45,7 +45,7 @@ const Academics = () => {
                         >
                             <Image
                                 style={{width:'70%', height:'70%'}}
-                                source={require('../../assets/Home/Assignments.png')}
+                                source={require('../../../assets/Home/Assignments.png')}
                             />
                         </TouchableOpacity>
                     </Card>
@@ -59,7 +59,7 @@ const Academics = () => {
                         <TouchableOpacity style={{height:'100%', width:'100%', alignItems:'center', justifyContent:'center'}}>
                             <Image
                                 style={{width:'70%', height:'70%'}}
-                                source={require('../../assets/Home/Syllabus.png')}
+                                source={require('../../../assets/Home/Syllabus.png')}
                             />
                         </TouchableOpacity>
                     </Card>
@@ -73,7 +73,7 @@ const Academics = () => {
                         <TouchableOpacity style={{height:'100%', width:'100%', alignItems:'center', justifyContent:'center'}}>
                             <Image
                                 style={{width:'70%', height:'70%'}}
-                                source={require('../../assets/Home/LessonPlan.png')}
+                                source={require('../../../assets/Home/LessonPlan.png')}
                             />
                         </TouchableOpacity>
                     </Card>
@@ -87,7 +87,7 @@ const Academics = () => {
                         <TouchableOpacity style={{height:'100%', width:'100%', alignItems:'center', justifyContent:'center'}}>
                             <Image
                                 style={{width:'70%', height:'70%'}}
-                                source={require('../../assets/Home/ediary.png')}
+                                source={require('../../../assets/Home/ediary.png')}
                             />
                         </TouchableOpacity>
                     </Card>
@@ -101,7 +101,7 @@ const Academics = () => {
                         <TouchableOpacity style={{height:'100%', width:'100%', alignItems:'center', justifyContent:'center'}}>
                             <Image
                                 style={{width:'70%', height:'70%'}}
-                                source={require('../../assets/Home/TimeTable.png')}
+                                source={require('../../../assets/Home/TimeTable.png')}
                             />
                         </TouchableOpacity>
                     </Card>
@@ -115,7 +115,7 @@ const Academics = () => {
                         <TouchableOpacity style={{height:'100%', width:'100%', alignItems:'center', justifyContent:'center'}}>
                             <Image
                                 style={{width:'70%', height:'70%'}}
-                                source={require('../../assets/Home/Attendance.png')}
+                                source={require('../../../assets/Home/Attendance.png')}
                             />
                         </TouchableOpacity>
                     </Card>
@@ -129,7 +129,7 @@ const Academics = () => {
                         <TouchableOpacity style={{height:'100%', width:'100%', alignItems:'center', justifyContent:'center'}}>
                             <Image
                                 style={{width:'70%', height:'70%'}}
-                                source={require('../../assets/Home/Results.png')}
+                                source={require('../../../assets/Home/Results.png')}
                             />
                         </TouchableOpacity>
                     </Card>
@@ -142,7 +142,7 @@ const Academics = () => {
                         <TouchableOpacity style={{height:'100%', width:'100%', alignItems:'center', justifyContent:'center'}}>
                             <Image
                                 style={{width:'70%', height:'70%'}}
-                                source={require('../../assets/Home/OnlineClasses.png')}
+                                source={require('../../../assets/Home/OnlineClasses.png')}
                             />
                         </TouchableOpacity>
                     </Card>

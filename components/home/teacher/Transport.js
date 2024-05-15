@@ -34,7 +34,7 @@ const Transport = () => {
                         <TouchableOpacity style={{height:'100%', width:'100%', alignItems:'center', justifyContent:'center'}}>
                             <Image
                                 style={{width:'70%', height:'70%'}}
-                                source={require('../../assets/Home/Route.png')}
+                                source={require('../../../assets/Home/Route.png')}
                             />
                         </TouchableOpacity>
                     </Card>
@@ -48,7 +48,7 @@ const Transport = () => {
                         <TouchableOpacity style={{height:'100%', width:'100%', alignItems:'center', justifyContent:'center'}}>
                             <Image
                                 style={{width:'70%', height:'70%'}}
-                                source={require('../../assets/Home/TrackVehicle.png')}
+                                source={require('../../../assets/Home/TrackVehicle.png')}
                             />
                         </TouchableOpacity>
                     </Card>
@@ -62,7 +62,7 @@ const Transport = () => {
                         <TouchableOpacity style={{height:'100%', width:'100%', alignItems:'center', justifyContent:'center'}}>
                             <Image
                                 style={{width:'70%', height:'70%'}}
-                                source={require('../../assets/Home/ContactNo.png')}
+                                source={require('../../../assets/Home/ContactNo.png')}
                             />
                         </TouchableOpacity>
                     </Card>
@@ -76,7 +76,7 @@ const Transport = () => {
                         <TouchableOpacity style={{height:'100%', width:'100%', alignItems:'center', justifyContent:'center'}}>
                             <Image
                                 style={{width:'70%', height:'70%'}}
-                                source={require('../../assets/Home/EmergencyContact.png')}
+                                source={require('../../../assets/Home/EmergencyContact.png')}
                             />
                         </TouchableOpacity>
                     </Card>

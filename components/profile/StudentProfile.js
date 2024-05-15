@@ -5,7 +5,7 @@ import {Icon} from 'react-native-paper';
 import {StatusBar} from 'expo-status-bar';
 import {useContext, useState} from 'react';
 import {AuthContext} from '../../context/Auth';
-import {Image, ScrollView, Text, TouchableOpacity, View} from 'react-native';
+import {Image, Text, TouchableOpacity, View} from 'react-native';
 
 
 
@@ -24,7 +24,7 @@ const StudentProfile = () => {
 
 
   return (
-    <ScrollView contentContainerStyle={{height:'100%'}}>
+    <View>
     
       {/* Info pop up */}
       {isInfoOpened && (
@@ -67,7 +67,7 @@ const StudentProfile = () => {
         </View>
 
 
-        <View style={{width:'100%', display:'flex', flexDirection:'column', gap:10, borderTopRightRadius:40, borderTopLeftRadius:40, backgroundColor:'#fff'}}>
+        <View style={{width:'100%', display:'flex', flexDirection:'column', gap:10, borderTopRightRadius:40, borderTopLeftRadius:40, backgroundColor:'#fff', marginTop:-50}}>
           <View style={{display:'flex', flexDirection:'row', alignItems:'flex-start', justifyContent:'space-between', marginHorizontal:30, marginVertical:20, paddingBottom:10, borderBottomWidth:1, borderBottomColor:'#ccc'}}>
             <View style={{display:'flex', flexDirection:'column', height:'100%', gap:6, justifyContent:'flex-start'}}>
 
@@ -226,7 +226,7 @@ const StudentProfile = () => {
           </View>
         </View>
       </View>
-    </ScrollView>
+    </View>
   );
 };
 

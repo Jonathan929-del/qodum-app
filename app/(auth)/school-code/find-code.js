@@ -1,9 +1,9 @@
 // Imports
 import axios from 'axios';
 import {router} from 'expo-router';
-import {Icon} from 'react-native-paper';
+import {ActivityIndicator, Icon} from 'react-native-paper';
 import {useEffect, useState} from 'react';
-import {Text, TouchableOpacity, View, TextInput} from 'react-native';
+import {Text, TouchableOpacity, View, TextInput, ScrollView, Image} from 'react-native';
 
 
 
@@ -11,7 +11,6 @@ import {Text, TouchableOpacity, View, TextInput} from 'react-native';
 
 // Main functions
 export default function App() {
-
 
   // Text input
   const [input, setInput] = useState('');
@@ -47,20 +46,22 @@ export default function App() {
           setIsLoading(false);
           return;
         };
+        if(res.data === 'No school name provided'){
+          setSchools([]);
+          setIsEmpty(false);
+          setIsLoading(false);
+          return;
+        };
+        if(res.data === 'No school name provided'){
+          setSchools([]);
+          setIsEmpty(true);
+          setIsLoading(false);
+        }
 
 
         // Setting schools
         if(res.data.length > 0){
           setSchools(res.data);
-          setIsEmpty(false);
-          setIsLoading(false);
-          return;
-        };
-
-
-        // Empty input
-        if(res.data === 'No school name provided'){
-          setSchools([]);
           setIsEmpty(false);
           setIsLoading(false);
           return;
@@ -73,10 +74,9 @@ export default function App() {
     fetcher();
   }, [input]);
 
-
   return (
     <View style={{height:'100%'}}>
-      <View style={{width:'100%', height:'15%', display:'flex', flexDirection:'row', alignItems:'center', justifyContent:'space-between', paddingTop:10, paddingHorizontal:10, backgroundColor:'#0094DA', borderBottomRightRadius:40, borderBottomLeftRadius:40}}>
+      <View style={{width:'100%', height:130, display:'flex', flexDirection:'row', alignItems:'center', justifyContent:'space-between', paddingTop:10, paddingHorizontal:10, backgroundColor:'#0094DA', borderBottomRightRadius:40, borderBottomLeftRadius:40}}>
         <TouchableOpacity
           onPress={() => router.push('/school-code')}
           style={{width:'10%'}}
@@ -99,6 +99,50 @@ export default function App() {
             style={{height:'100%', width:'85%', borderRadius:10}}
           />
         </View>
+
+        {schools.length > 0 && (
+          <ScrollView style={{width:'80%', display:'flex', flexDirection:'column', gap:15, marginVertical:30, borderRadius:10, borderWidth:1, borderColor:'#ccc'}}>
+
+            {/* Header */}
+            <Text style={{width:'100%', textAlign:'center', paddingVertical:8, fontSize:16, backgroundColor:'#D9DFEF', color:'#4F58CF', borderTopLeftRadius:10, borderTopRightRadius:10}}>
+              Search Results
+            </Text>
+
+
+            {/* Data */}
+            <View style={{display:'flex', flexDirection:'column', gap:10, paddingHorizontal:10, paddingVertical:10}}>
+
+              {schools?.map(s => (
+                <View key={s._id} style={{display:'flex', flexDirection:'row', paddingLeft:10, gap:20, borderBottomColor:'#ccc', borderBottomWidth:schools.indexOf(s) + 1 === schools.length ? 0 : 1, paddingBottom:6}}>
+                  <Image
+                    width={50}
+                    height={50}
+                    source={{uri:s?.logo}}
+                  />
+                  <View style={{display:'flex', flexDirection:'column', alignItems:'flex-start', justifyContent:'center', gap:4}}>
+                    <Text style={{fontSize:16, fontWeight:'600', letterSpacing:2}}>{s.school_name}</Text>
+                    <Text style={{letterSpacing:4, color:'#0094DA'}}>{s.school_no}</Text>
+                  </View>
+                </View>
+              ))}
+
+            </View>
+
+
+          </ScrollView>
+        )}
+
+        {isEmpty && (
+          <View style={{marginTop:30}}>
+            <Text>No schools or colleges found.</Text>
+          </View>
+        )}
+
+        {isLoading && (
+          <View style={{marginTop:30}}>
+            <ActivityIndicator size={30}/>
+          </View>
+        )}
 
       </View>
     </View>

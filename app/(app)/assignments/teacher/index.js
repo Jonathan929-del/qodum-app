@@ -1,10 +1,10 @@
 // Imports
 import axios from 'axios';
 import moment from 'moment';
-import {router} from 'expo-router';
 import {useState, useEffect} from 'react';
-import {ActivityIndicator, Card, Icon} from 'react-native-paper';
-import {Text, TouchableOpacity, View, ScrollView, Image} from 'react-native';
+import {router, useLocalSearchParams} from 'expo-router';
+import {ActivityIndicator, Card, Icon, Snackbar} from 'react-native-paper';
+import {Text, TouchableOpacity, View, ScrollView, Image, Alert} from 'react-native';
 
 
 
@@ -13,48 +13,109 @@ import {Text, TouchableOpacity, View, ScrollView, Image} from 'react-native';
 // Main functions
 const App = () => {
 
-
-  // Is loading
-  const [isLoading, setIsLoading] = useState(false);
-
-
-  // Classes
-  const [classes, setClasses] = useState([]);
+    // Snack bar actions
+    const [visible, setVisible] = useState(false);
+    const [snackbarMessage, setSnackbarMessage] = useState('');
+    const onDismissSnackBar = () => setVisible(false);
 
 
-  // Assignments
-  const [assignments, setAssignments] = useState([]);
+    // Is edit redirect
+    const {edited} = useLocalSearchParams();
 
 
-  // Selected class
-  const [selectedClass, setSelectedClass] = useState('');
+    // Is loading
+    const [isLoading, setIsLoading] = useState(false);
 
 
-  // Use effect
-  useEffect(() => {
-      setIsLoading(true);
-      const fetcher = async () => {
-          try {
-
-              // Fetching classes
-              const classesLink = `${process.env.EXPO_PUBLIC_API_URL}/classes/names`;
-              const classesRes = await axios.get(classesLink);
-              setClasses(classesRes?.data);
-              setSelectedClass(classesRes?.data[0]?.class_name);
+    // Loading delete
+    const [loadingDelete, setLoadingDelete] = useState();
 
 
-              // Fetching assignments
-              const assignmentsLink = `${process.env.EXPO_PUBLIC_API_URL}/assignments`;
-              const assignmentsRes = await axios.get(assignmentsLink);
-              setAssignments(assignmentsRes.data);
+    // Classes
+    const [classes, setClasses] = useState([]);
 
-              setIsLoading(false);
-          }catch(err){
-              console.log('Error fetching data: ', err);   
-          }
-      };
-      fetcher();
-  }, []);
+
+    // Assignments
+    const [assignments, setAssignments] = useState([]);
+
+
+    // Selected class
+    const [selectedClass, setSelectedClass] = useState('');
+
+
+    // Show delete alert
+    const showDeleteAlert = id =>
+        Alert.alert(
+            'Are you sure?',
+            'Are you sure you want to delete this record?',
+            [
+                {
+                    text: 'No',
+                    // onPress: () => Alert.alert('Cancel Pressed'),
+                    style:'destructive',
+                },
+                {
+                    text: 'Yes',
+                    onPress: () => deleteAssignment(id),
+                    style:'default',
+                },
+            ],
+            {
+                cancelable: true,
+                onDismiss: () =>
+                Alert.alert(
+                    'This alert was dismissed by tapping outside of the alert dialog.',
+                ),
+            },
+    );
+
+
+    // Delete assignment
+    const deleteAssignment = async id => {
+        try {
+            setLoadingDelete(id);
+            const link = `${process.env.EXPO_PUBLIC_API_URL}/assignments/delete/${id}`;
+            await axios.delete(link);
+            setSnackbarMessage('Assignment Deleted Successfully!');
+            setVisible(true);
+            setTimeout(() => {
+                router.push('/assignments/teacher');
+            }, 1000);
+        }catch(err){
+            console.log(err);
+        }
+    };
+
+
+    // Use effect
+    useEffect(() => {
+        if(edited) {
+            setSnackbarMessage('Assignment Edited Successfully!');
+            setVisible(true);
+        };
+        setIsLoading(true);
+        const fetcher = async () => {
+            try {
+
+                // Fetching classes
+                const classesLink = `${process.env.EXPO_PUBLIC_API_URL}/classes/names`;
+                const classesRes = await axios.get(classesLink);
+                setClasses(classesRes?.data);
+                setSelectedClass(classesRes?.data[0]?.class_name);
+
+
+                // Fetching assignments
+                const assignmentsLink = `${process.env.EXPO_PUBLIC_API_URL}/assignments`;
+                const assignmentsRes = await axios.get(assignmentsLink);
+                setAssignments(assignmentsRes.data);
+
+                setIsLoading(false);
+            }catch(err){
+                console.log('Error fetching data: ', err);   
+            }
+        };
+        fetcher();
+    }, []);
 
 
   return (
@@ -108,7 +169,7 @@ const App = () => {
 
                     {/* Assignments */}
                     <ScrollView contentContainerStyle={{display:'flex', flexDirection:'column', alignItems:'center', gap:20, paddingVertical:20, paddingTop:50}} style={{width:'100%'}}>
-                        {assignments?.map(a => (
+                        {assignments.length > 0 ? assignments?.map(a => (
                             <Card style={{width:'80%', height:250, borderRadius:10, backgroundColor:'#fff'}} key={a._id}>
                                 <View style={{height:'100%', display:'flex', flexDirection:'column', justifyContent:'space-between'}}>
 
@@ -158,29 +219,49 @@ const App = () => {
                                             <Text style={{color:'#3C5EAB'}}>View</Text>
                                         </TouchableOpacity>
                                         <TouchableOpacity
+                                            onPress={() => router.push({pathname:'/assignments/teacher/edit', params:a})}
                                             style={{flex:1, height:'100%', display:'flex', flexDirection:'row', alignItems:'center', justifyContent:'center', gap:6, borderRightColor:'#fff', borderRightWidth:1.5}}
                                         >
                                             <Icon source='square-edit-outline' color='#3C5EAB' size={20}/>
                                             <Text style={{color:'#3C5EAB'}}>Edit</Text>
                                         </TouchableOpacity>
                                         <TouchableOpacity
+                                            onPress={() => showDeleteAlert(a._id)}
                                             style={{flex:1, height:'100%', display:'flex', flexDirection:'row', alignItems:'center', justifyContent:'center', gap:6, borderBottomRightRadius:10}}
                                         >
-                                            <Icon source='delete' color='#3C5EAB' size={20}/>
-                                            <Text style={{color:'#3C5EAB'}}>Delete</Text>
+                                            {loadingDelete === a._id ? (
+                                                <ActivityIndicator size={20}/>
+                                            ) : (
+                                                <>
+                                                    <Icon source='delete' color='#3C5EAB' size={20}/>
+                                                    <Text style={{color:'#3C5EAB'}}>Delete</Text>
+                                                </>
+                                            )}
                                         </TouchableOpacity>
                                     </View>
 
                                 </View>
                             </Card>
-                        ))}
+                        )) : <Text style={{fontSize:16}}>No assignments</Text>}
                     </ScrollView>
-
-
                 </>
             )}
         </View>
 
+
+        {/* Snackbar */}
+        <Snackbar
+            style={{backgroundColor:'green'}}
+            visible={visible}
+            onDismiss={onDismissSnackBar}
+            action={{
+                label: <Icon source='close' color='#fff' size={20}/>,
+                onPress:() => setVisible(false)
+            }}
+        >
+            {snackbarMessage}
+        </Snackbar>
+        
     </View>
   );
 };

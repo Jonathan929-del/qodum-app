@@ -1,7 +1,7 @@
 // Imports
 import {useContext} from 'react';
 import {Icon} from 'react-native-paper';
-import {AuthContext} from '../../context/Auth';
+import {AuthContext} from '../../../context/Auth';
 import {Image, Text, TouchableOpacity, View} from 'react-native';
 
 

@@ -9,13 +9,13 @@ import {Image, Text, TouchableOpacity, View} from 'react-native';
 
 
 // Main function
-const EdisappToday = () => {
+const Communication = () => {
     return (
         <View style={{width:'100%', display:'flex', flexDirection:'column', gap:8, paddingHorizontal:20}}>
 
             {/* Title */}
             <View style={{display:'flex', flexDirection:'row', alignItems:'center', gap:10}}>
-                <Text style={{fontSize:14, fontWeight:'700', color:'gray'}}>EDISAPP TODAY</Text>
+                <Text style={{fontSize:14, fontWeight:'700', color:'gray'}}>COMMUNICATION</Text>
                 <LinearGradient
                     colors={['#000', '#fff']}
                     start={{x:0, y:0}}
@@ -26,75 +26,61 @@ const EdisappToday = () => {
 
 
             {/* Boxes */}
-            <View style={{width:'100%', display:'flex', flexDirection:'row', alignItems:'center', flexWrap:'wrap', gap:15}}>
+            <View style={{width:'100%', display:'flex', flexDirection:'row', alignItems:'center', justifyContent:'space-between', flexWrap:'wrap', gap:15}}>
 
-                {/* Education News */}
+                {/* Messages */}
                 <View style={{width:'21%', height:120, alignItems:'center', gap:5}}>
                     <Card style={{width:'100%', height:80, borderRadius:20}}>
                         <TouchableOpacity style={{height:'100%', width:'100%', alignItems:'center', justifyContent:'center'}}>
                             <Image
                                 style={{width:'70%', height:'70%'}}
-                                source={require('../../assets/Home/EducationNews.png')}
+                                source={require('../../../assets/Home/Messages.png')}
                             />
                         </TouchableOpacity>
                     </Card>
-                    <Text style={{color:'gray', fontSize:11, textAlign:'center'}}>Education News</Text>
+                    <Text style={{color:'gray', fontSize:11}}>Message</Text>
                 </View>
 
 
-                {/* Quote */}
+                {/* Point Of Contact */}
                 <View style={{width:'21%', height:120, alignItems:'center', gap:5}}>
                     <Card style={{width:'100%', height:80, borderRadius:20}}>
                         <TouchableOpacity style={{height:'100%', width:'100%', alignItems:'center', justifyContent:'center'}}>
                             <Image
                                 style={{width:'70%', height:'70%'}}
-                                source={require('../../assets/Home/Quote.png')}
+                                source={require('../../../assets/Home/PointOfContact.png')}
                             />
                         </TouchableOpacity>
                     </Card>
-                    <Text style={{color:'gray', fontSize:11}}>Quote</Text>
+                    <Text style={{color:'gray', fontSize:11, textAlign:'center'}}>Point of Contact</Text>
                 </View>
 
 
-                {/* Thought */}
+                {/* Feedback And Complaints */}
                 <View style={{width:'21%', height:120, alignItems:'center', gap:5}}>
                     <Card style={{width:'100%', height:80, borderRadius:20}}>
                         <TouchableOpacity style={{height:'100%', width:'100%', alignItems:'center', justifyContent:'center'}}>
                             <Image
                                 style={{width:'70%', height:'70%'}}
-                                source={require('../../assets/Home/Thought.png')}
+                                source={require('../../../assets/Home/FeedbackAndComplaints.png')}
                             />
                         </TouchableOpacity>
                     </Card>
-                    <Text style={{color:'gray', fontSize:11}}>Thought</Text>
+                    <Text style={{color:'gray', fontSize:11, textAlign:'center'}}>Feedback & Complaints</Text>
                 </View>
 
 
-                {/* City */}
+                {/* Meet the Management */}
                 <View style={{width:'21%', height:120, alignItems:'center', gap:5}}>
                     <Card style={{width:'100%', height:80, borderRadius:20}}>
                         <TouchableOpacity style={{height:'100%', width:'100%', alignItems:'center', justifyContent:'center'}}>
                             <Image
                                 style={{width:'70%', height:'70%'}}
-                                source={require('../../assets/Home/City.png')}
+                                source={require('../../../assets/Home/MeetTheManagement.png')}
                             />
                         </TouchableOpacity>
                     </Card>
-                    <Text style={{color:'gray', fontSize:11}}>City</Text>
-                </View>
-
-
-                {/* Word */}
-                <View style={{width:'21%', height:120, alignItems:'center', gap:5}}>
-                    <Card style={{width:'100%', height:80, borderRadius:20}}>
-                        <TouchableOpacity style={{height:'100%', width:'100%', alignItems:'center', justifyContent:'center'}}>
-                            <Image
-                                style={{width:'70%', height:'70%'}}
-                                source={require('../../assets/Home/Word.png')}
-                            />
-                        </TouchableOpacity>
-                    </Card>
-                    <Text style={{color:'gray', fontSize:11}}>Word</Text>
+                    <Text style={{color:'gray', fontSize:11, textAlign:'center'}}>Meet the Management</Text>
                 </View>
 
             </View>
@@ -107,4 +93,4 @@ const EdisappToday = () => {
 
 
 // Export
-export default EdisappToday;
+export default Communication;

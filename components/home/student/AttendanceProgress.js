@@ -48,7 +48,7 @@ const AttendanceProgress = () => {
                     <TouchableOpacity style={{height:'100%', width:'100%', alignItems:'center', justifyContent:'center'}}>
                         <Image
                             style={{width:'70%', height:'70%'}}
-                            source={require('../../assets/Home/Fee.png')}
+                            source={require('../../../assets/Home/Fee.png')}
                         />
                     </TouchableOpacity>
                 </Card>
