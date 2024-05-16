@@ -213,6 +213,7 @@ const App = () => {
                                     {/* Bottom */}
                                     <View style={{height:'20%', width:'100%', display:'flex', flexDirection:'row', backgroundColor:'#DAE0EF', borderBottomLeftRadius:10, borderBottomRightRadius:10}}>
                                         <TouchableOpacity
+                                            onPress={() => router.push({pathname:'/assignments/teacher/view', params:a})}
                                             style={{flex:1, height:'100%', display:'flex', flexDirection:'row', alignItems:'center', justifyContent:'center', gap:6, borderBottomLeftRadius:10, borderRightColor:'#fff', borderRightWidth:1.5}}
                                         >
                                             <Icon source='eye' color='#3C5EAB' size={20}/>
