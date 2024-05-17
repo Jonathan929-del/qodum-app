@@ -2,8 +2,9 @@
 import moment from 'moment';
 import {useState} from 'react';
 import * as FileSystem from 'expo-file-system';
-import {Card, Icon, Snackbar} from 'react-native-paper';
+import * as MediaLibrary from 'expo-media-library';
 import {router, useLocalSearchParams} from 'expo-router';
+import {ActivityIndicator, Card, Icon, Snackbar} from 'react-native-paper';
 import {Text, TouchableOpacity, View, ScrollView, Linking} from 'react-native';
 
 
@@ -23,26 +24,32 @@ const App = () => {
     const a = useLocalSearchParams();
 
 
+    // Is download loading
+    const [isDownloadLoading, setIsDownloadLoading] = useState(false);
+
+
     // Download handler
     const downloadHandler = async () => {
+        setIsDownloadLoading(true);
         try {
 
-
-
-
-            const pdfUrl = 'https://qodum.s3.amazonaws.com/assignments/go-freelance.pdf';
-            await FileSystem.makeDirectoryAsync(FileSystem.documentDirectory + 'downloads', { intermediates: true });
-
-            // Download the PDF file to the device's file system
-            const fileUri = FileSystem.documentDirectory + 'downloads/example.pdf';
-            const res = await FileSystem.downloadAsync(pdfUrl, fileUri);
-            console.log(res);
-
-
+            const fileUri = FileSystem.documentDirectory + a.attachment.split('/')[4];
+            const fileInfo = await FileSystem.downloadAsync(a.attachment, fileUri);
+            if(fileInfo.status === 200){
+                await MediaLibrary.saveToLibraryAsync(fileInfo.uri);
+                setVisible(true);
+                setSnackbarMessage('Document Downloaded!');
+                setIsDownloadLoading(false);
+            }else{
+                setVisible(true);
+                setSnackbarMessage('Error Downloading The Document');
+                setIsDownloadLoading(false);
+            }
 
         } catch (error) {
-            console.error('Error fetching PDF:', error);
-            Alert.alert('Error', 'Failed to download PDF. Please try again later.');
+            setVisible(true);
+            setSnackbarMessage('Error Downloading Document');
+            setIsDownloadLoading(false);
         }
     };
 
@@ -122,8 +129,14 @@ const App = () => {
                                 onPress={downloadHandler}
                                 style={{flex:1, height:'100%', display:'flex', flexDirection:'row', alignItems:'center', justifyContent:'center', gap:4, borderRightColor:'#fff', borderRightWidth:1.5}}
                             >
-                                <Icon source='download' color='#3C5EAB' size={20}/>
-                                <Text style={{color:'#3C5EAB'}}>Download</Text>
+                                {isDownloadLoading ? (
+                                    <ActivityIndicator />
+                                ) : (
+                                    <>
+                                        <Icon source='download' color='#3C5EAB' size={20}/>
+                                        <Text style={{color:'#3C5EAB'}}>Download</Text>
+                                    </>
+                                )}
                             </TouchableOpacity>
                             <TouchableOpacity
                                 style={{flex:1, height:'100%', display:'flex', flexDirection:'row', alignItems:'center', justifyContent:'center', gap:6, borderBottomRightRadius:10}}
@@ -141,7 +154,7 @@ const App = () => {
 
             {/* Snackbar */}
             <Snackbar
-                style={{backgroundColor:'green'}}
+                style={{backgroundColor:snackbarMessage === 'Document Downloaded!' ? 'green' : 'red'}}
                 visible={visible}
                 onDismiss={onDismissSnackBar}
                 action={{

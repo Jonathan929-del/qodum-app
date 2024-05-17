@@ -49,6 +49,14 @@
         {
           "iCloudContainerEnvironment": "Production"
         }
+      ],
+      [
+        "expo-media-library",
+        {
+          "photosPermission": "Allow Qodum to access your photos.",
+          "savePhotosPermission": "Allow Qodum to save photos.",
+          "isAccessMediaLocationEnabled": true
+        }
       ]
     ]
   }
