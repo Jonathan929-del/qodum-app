@@ -181,7 +181,7 @@ const App = () => {
                                                 style={{height:60, width:60, borderWidth:2, borderColor:'#3C5EAB', borderRadius:10}}
                                             />
                                             <View style={{display:'flex', flexDirection:'column', justifyContent:'space-between'}}>
-                                                <Text style={{fontWeight:'900', fontSize:16}}>{a.assignment}</Text>
+                                                <Text style={{fontWeight:'900', fontSize:16}}>{a.title}</Text>
                                                 <Text style={{color:'gray', fontSize:12}}>Updated on {moment(a.updatedAt).format('D-M-YYYY')}</Text>
                                                 <Text style={{color:'#3C5EAB', fontSize:14}}>{a.subject}</Text>
                                             </View>

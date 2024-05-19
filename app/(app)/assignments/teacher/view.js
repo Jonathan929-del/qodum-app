@@ -6,6 +6,7 @@ import * as MediaLibrary from 'expo-media-library';
 import {router, useLocalSearchParams} from 'expo-router';
 import {ActivityIndicator, Card, Icon, Snackbar} from 'react-native-paper';
 import {Text, TouchableOpacity, View, ScrollView, Linking} from 'react-native';
+import MoreInfo from '../../../../components/assignments/teacher/view/MoreInfo';
 
 
 
@@ -20,6 +21,14 @@ const App = () => {
     const onDismissSnackBar = () => setVisible(false);
 
 
+    // Media library permissions
+    const [permissionResponse, requestPermission] = MediaLibrary.usePermissions();
+
+
+    // Is more information opened
+    const [isInfoOpened, setIsInfoOpened] = useState(false);
+
+
     // Assignment
     const a = useLocalSearchParams();
 
@@ -30,6 +39,10 @@ const App = () => {
 
     // Download handler
     const downloadHandler = async () => {
+
+        if (permissionResponse.status !== 'granted') {
+            await requestPermission();
+        }
         setIsDownloadLoading(true);
         try {
 
@@ -139,6 +152,7 @@ const App = () => {
                                 )}
                             </TouchableOpacity>
                             <TouchableOpacity
+                                onPress={() => setIsInfoOpened(true)}
                                 style={{flex:1, height:'100%', display:'flex', flexDirection:'row', alignItems:'center', justifyContent:'center', gap:6, borderBottomRightRadius:10}}
                             >
                                 <Icon source='information' color='#3C5EAB' size={20}/>
@@ -150,6 +164,14 @@ const App = () => {
                 </Card>
 
             </ScrollView>
+
+
+            {isInfoOpened && (
+                <MoreInfo
+                    isInfoOpened={isInfoOpened}
+                    setIsInfoOpened={setIsInfoOpened}
+                />
+            )}
 
 
             {/* Snackbar */}
