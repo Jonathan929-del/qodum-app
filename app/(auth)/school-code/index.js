@@ -24,7 +24,7 @@ export default function App() {
 
 
   // Text input
-  const [otp, setOtp] = useState(['', '', '', '', '']);
+  const [otp, setOtp] = useState(['', '', '', '', '', '']);
 
 
   // Is error
@@ -113,7 +113,7 @@ export default function App() {
             textColor='#0094DA'
             style={{width:'100%', borderRadius:4, borderColor:'#0094DA'}}
             onPress={() => {
-              otp.filter(o => o !== '').length < 5
+              otp.filter(o => o !== '').length < 6
                 ?
                   setIsError(true)
                 :

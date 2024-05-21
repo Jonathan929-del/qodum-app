@@ -103,8 +103,8 @@ const App = () => {
                 </View>
 
                 {/* Assignment */}
-                <Card style={{width:'80%', height:200, maxHeight:250, borderRadius:10, backgroundColor:'#fff'}}>
-                    <View style={{height:'100%', display:'flex', flexDirection:'column', justifyContent:'space-between', gap:10}}>
+                <Card style={{width:'80%', borderRadius:10, backgroundColor:'#fff'}}>
+                    <View style={{display:'flex', flexDirection:'column', justifyContent:'space-between', gap:10}}>
 
                         {/* Top */}
                         <View style={{display:'flex', flexDirection:'row', justifyContent:'space-between', padding:10}}>
@@ -113,8 +113,8 @@ const App = () => {
                         </View>
 
 
-                        {/* Assignmetn */}
-                        <Text style={{fontSize:13, color:'gray', paddingLeft:10}}>{a.assignment}</Text>
+                        {/* Description */}
+                        <Text style={{fontSize:13, color:'gray', paddingLeft:10}}>{a.description}</Text>
 
                         {/* Middle */}
                         <View style={{display:'flex', flexDirection:'column', justifyContent:'center', gap:4, padding:10}}>

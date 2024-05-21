@@ -35,12 +35,21 @@ const App = () => {
     const [classes, setClasses] = useState([]);
 
 
-    // Assignments
-    const [assignments, setAssignments] = useState([]);
+    // All assignments
+    const [allAssignments, setAllAssignments] = useState([]);
+
+
+    // Filtered assignments
+    const [filteredAssignments, setFilteredAssignments] = useState([]);
 
 
     // Selected class
     const [selectedClass, setSelectedClass] = useState('');
+
+
+    // Class students count
+    const [classStudentsCount, setClassStudentsCount] = useState();
+    // console.log(classStudentsCount);
 
 
     // Show delete alert
@@ -104,10 +113,18 @@ const App = () => {
                 setSelectedClass(classesRes?.data[0]?.class_name);
 
 
+                // Fetching class student count
+                const classesStudentCountLink = `${process.env.EXPO_PUBLIC_API_URL}/classes/class/student-count`;
+                const classesStudentCountRes = await axios.get(classesStudentCountLink, {class_name:"I"});
+                console.log(classesStudentCountRes.data);
+                // setClassStudentsCount(classesStudentCountRes.data);
+
+
                 // Fetching assignments
                 const assignmentsLink = `${process.env.EXPO_PUBLIC_API_URL}/assignments`;
                 const assignmentsRes = await axios.get(assignmentsLink);
-                setAssignments(assignmentsRes.data);
+                setAllAssignments(assignmentsRes.data);
+                setFilteredAssignments(assignmentsRes.data);
 
                 setIsLoading(false);
             }catch(err){
@@ -154,7 +171,10 @@ const App = () => {
                         <ScrollView horizontal={true} style={{width:'100%', backgroundColor:'#F8F8F8'}}>
                             {classes?.map(c => (
                                 <TouchableOpacity
-                                    onPress={() => setSelectedClass(c?.class_name)}
+                                    onPress={() => {
+                                        setSelectedClass(c?.class_name);
+                                        setFilteredAssignments(allAssignments.filter(a => a.class_name))
+                                    }}
                                     key={c?._id}
                                     style={{height:'100%',  width:70, display:'flex', alignItems:'center', justifyContent:'center', borderBottomColor:selectedClass === c?.class_name ? '#0094DA' : '#f8F8F8', borderBottomWidth:2}}
                                 >
@@ -169,7 +189,7 @@ const App = () => {
 
                     {/* Assignments */}
                     <ScrollView contentContainerStyle={{display:'flex', flexDirection:'column', alignItems:'center', gap:20, paddingVertical:20, paddingTop:50}} style={{width:'100%'}}>
-                        {assignments.length > 0 ? assignments?.map(a => (
+                        {filteredAssignments.length > 0 ? filteredAssignments?.map(a => (
                             <Card style={{width:'80%', height:250, borderRadius:10, backgroundColor:'#fff'}} key={a._id}>
                                 <View style={{height:'100%', display:'flex', flexDirection:'column', justifyContent:'space-between'}}>
 
@@ -186,9 +206,15 @@ const App = () => {
                                                 <Text style={{color:'#3C5EAB', fontSize:14}}>{a.subject}</Text>
                                             </View>
                                         </View>
-                                        <View style={{height:30, width:60, display:'flex', flexDirection:'row', alignItems:'center', justifyContent:'center', gap:4, paddingHorizontal:5, backgroundColor:'#F5F5F5', borderRadius:50}}>
-                                            <View style={{width:8, height:8, borderRadius:10, backgroundColor:'#93C314'}}/>
-                                            <Text style={{fontSize:12, color:'gray'}}>Active</Text>
+                                        <View style={{display:'flex', flexDirection:'column', gap:8, alignItems:'flex-end'}}>
+                                            <View style={{height:30, width:60, display:'flex', flexDirection:'row', alignItems:'center', justifyContent:'center', gap:4, paddingHorizontal:5, backgroundColor:'#F5F5F5', borderRadius:50}}>
+                                                <View style={{width:8, height:8, borderRadius:10, backgroundColor:'#93C314'}}/>
+                                                <Text style={{fontSize:12, color:'gray'}}>Active</Text>
+                                            </View>
+                                            <View style={{display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center'}}>
+                                                <Text style={{fontSize:11, color:'gray'}}>{a.submitted_assignments.filter((s => n => !s.has(n.student.name.toLowerCase()) && s.add(n.student.name.toLowerCase()))(new Set())).length} / 50</Text>
+                                                <Text style={{fontSize:11, color:'gray'}}>Submitted</Text>
+                                            </View>
                                         </View>
                                     </View>
 

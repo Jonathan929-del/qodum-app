@@ -31,7 +31,7 @@ const CreateAssignment = () => {
             subject:'',
             title:'',
             attachment:'',
-            assignment:''
+            description:''
         },
         loading:false,
         loadingData:false
@@ -42,7 +42,7 @@ const CreateAssignment = () => {
     const {control, handleSubmit, reset} = useForm({
         defaultValues:{
             title:assignment.title,
-            assignment:assignment.assignment
+            description:assignment.description
         }
     });
 
@@ -132,12 +132,12 @@ const CreateAssignment = () => {
         try {
 
             // Empty validations
-            if(!selectedSubject || !data.title || !selectedFile || !data.assignment){
+            if(!selectedSubject || !data.title || !selectedFile || !data.description){
                 setStates({...states, errors:{
                     subject:!selectedSubject ? '*Please select a subject' : '',
                     title:!data.title ? '*Please enter a title' : '',
                     attachment:!selectedFile ? '*Please select a file' : '',
-                    assignment:!data.assignment ? '*Please enter an assignment' : '',
+                    description:!data.description ? '*Please enter description' : '',
                 }});
                 return;
             }
@@ -157,7 +157,7 @@ const CreateAssignment = () => {
                 assignment_date:new Date(assignmentDate),
                 to_be_submitted_on:new Date(toBeSubmittedOnDate),
                 attachment:pdfUploadResponse || assignment.attachment,
-                assignment:data.assignment,
+                description:data.description,
                 is_allow_student_for_multiple_submission:isAllowStudentForMultipleSubmission,
                 is_active:isActive
             };
@@ -172,7 +172,7 @@ const CreateAssignment = () => {
             setIsActive(false);
             reset({
                 title:'',
-                assignment:''
+                description:''
             });
             setStates({...states, loading:false});
             router.push({pathname:'/assignments/teacher', params:{edited:true}});
@@ -282,15 +282,15 @@ const CreateAssignment = () => {
                             </View>
 
 
-                            {/* Assignment */}
+                            {/* Description */}
                             <View style={{gap:6}}>
-                                <Text>Assignment</Text>
+                                <Text>Description</Text>
                                 <Controller
                                     control={control}
                                     render={({field:{onChange, onBlur, value}}) => (
                                         <PaperTextInput
-                                            placeholder='Enter Assignment'
-                                            onBlur={() => setStates({states, errors:{...states.errors, assignment:value === ''  ? '*Please enter an assignment' : ''}})}
+                                            placeholder='Enter Description'
+                                            onBlur={() => setStates({states, errors:{...states.errors, description:value === ''  ? '*Please enter description' : ''}})}
                                             placeholderTextColor='gray'
                                             style={{backgroundColor:'#F5F5F8'}}
                                             left={<PaperTextInput.Icon icon='table-large' size={30} color='gray'/>}
@@ -298,9 +298,9 @@ const CreateAssignment = () => {
                                             onChangeText={onChange}
                                         />
                                     )}
-                                    name='assignment'
+                                    name='description'
                                 />
-                                {states.errors.assignment !== '' && <Text style={{color:'red', marginTop:-6}}>{states.errors.assignment}</Text>}
+                                {states.errors.description !== '' && <Text style={{color:'red', marginTop:-6}}>{states.errors.description}</Text>}
                             </View>
 
 

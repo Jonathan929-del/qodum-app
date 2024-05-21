@@ -142,7 +142,7 @@ const App = () => {
         
         
                                 {/* Assignment */}
-                                <Text style={{fontSize:13, color:'gray', paddingLeft:10}}>{assignment.assignment}</Text>
+                                <Text style={{fontSize:13, color:'gray', paddingLeft:10}}>{assignment.description}</Text>
         
                                 {/* Middle */}
                                 <View style={{display:'flex', flexDirection:'column', justifyContent:'center', gap:4, padding:10}}>

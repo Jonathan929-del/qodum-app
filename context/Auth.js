@@ -105,6 +105,7 @@ const AuthProvider = props => {
     const [state, dispatch] = useReducer(AuthReducer, initialState);
     const login = async userData => {
         try {
+            await AsyncStorage.removeItem('token');
             await AsyncStorage.setItem('token', userData.token);
             dispatch({
                 type:'LOGIN',
@@ -137,6 +138,7 @@ const AuthProvider = props => {
     };
     const schoolLogin = async schoolData => {
         try {
+            await AsyncStorage.removeItem('schoolData');
             await AsyncStorage.setItem('schoolData', JSON.stringify(schoolData));
             dispatch({
                 type:'SCHOOL_LOGIN',

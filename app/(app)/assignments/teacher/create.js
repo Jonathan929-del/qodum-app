@@ -38,7 +38,7 @@ const CreateAssignment = () => {
             class_name:'',
             title:'',
             attachment:'',
-            assignment:''
+            description:''
         },
         loading:false,
         loadingData:false
@@ -134,13 +134,13 @@ const CreateAssignment = () => {
         try {
 
             // Empty validations
-            if(!selectedSubject || !selectedClass || !data.title || !selectedFile || !data.assignment){
+            if(!selectedSubject || !selectedClass || !data.title || !selectedFile || !data.description){
                 setStates({...states, errors:{
                     subject:!selectedSubject ? '*Please select a subject' : '',
                     class_name:!selectedClass ? '*Please select a class' : '',
                     title:!data.title ? '*Please enter a title' : '',
                     attachment:!selectedFile ? '*Please select a file' : '',
-                    assignment:!data.assignment ? '*Please enter an assignment' : '',
+                    description:!data.description ? '*Please enter description' : '',
                 }});
                 return;
             }
@@ -150,7 +150,7 @@ const CreateAssignment = () => {
 
             // Api call
             const link = `${process.env.EXPO_PUBLIC_API_URL}/assignments/create`;
-            const res = await axios.post(link, {creator:user.name, creator_image:user.image, subject:selectedSubject.label, class_name:selectedClass.label, title:data.title, assignment_date:assignmentDate, to_be_submitted_on:assignmentDate, attachment:pdfUploadResponse, assignment:data.assignment, is_allow_student_for_multiple_submission:isAllowStudentForMultipleSubmission, is_active:isActive});
+            const res = await axios.post(link, {creator:user.name, creator_image:user.image, subject:selectedSubject.label, class_name:selectedClass.label, title:data.title, assignment_date:assignmentDate, to_be_submitted_on:assignmentDate, attachment:pdfUploadResponse, description:data.description, is_allow_student_for_multiple_submission:isAllowStudentForMultipleSubmission, is_active:isActive});
 
 
             // Reseting
@@ -163,7 +163,7 @@ const CreateAssignment = () => {
             setIsActive(false);
             reset({
                 title:'',
-                assignment:''
+                description:''
             });
             setStates({...states, loading:false});
         }catch(err){
@@ -316,9 +316,9 @@ const CreateAssignment = () => {
                             </View>
 
 
-                            {/* Assignment Date */}
+                            {/* Assignment Due Date */}
                             <View style={{gap:6}}>
-                                <Text>Assignment Date</Text>
+                                <Text>Assignment Due Date</Text>
                                 <TouchableOpacity
                                     onPress={() => setOpenedField('assignment_date')}
                                     style={{display:'flex', flexDirection:'row', alignItems:'center', backgroundColor:'#F5F5F8', height:60, paddingHorizontal:20, borderTopLeftRadius:5, borderTopRightRadius:5, borderBottomWidth:openedField === 'assignment_date' ? 2 : 1, borderBottomColor:openedField === 'assignment_date' ? '#0094DA' : 'gray'}}
@@ -340,6 +340,30 @@ const CreateAssignment = () => {
                             </View>
 
 
+                            {/* Desription */}
+                            <View style={{gap:6}}>
+                                <Text>Description</Text>
+                                <Controller
+                                    control={control}
+                                    render={({field:{onChange, onBlur, value}}) => (
+                                        <PaperTextInput
+                                            placeholder='Enter Description'
+                                            onBlur={() => setStates({states, errors:{...states.errors, description:value === ''  ? '*Please enter description' : ''}})}
+                                            placeholderTextColor='gray'
+                                            style={{backgroundColor:'#F5F5F8'}}
+                                            left={<PaperTextInput.Icon icon='message-bulleted' size={30} color='gray'/>}
+                                            value={value}
+                                            onChangeText={onChange}
+                                            multiline
+                                            numberOfLines={5}
+                                        />
+                                    )}
+                                    name='description'
+                                />
+                                {states.errors.description !== '' && <Text style={{color:'red', marginTop:-6}}>{states.errors.description}</Text>}
+                            </View>
+
+
                             {/* Attachment */}
                             <View style={{gap:6}}>
                                 <Text>Attachment</Text>
@@ -351,28 +375,6 @@ const CreateAssignment = () => {
                                     <Text style={{marginLeft:10}}>{selectedFile ? selectedFile?.assets[0]?.name : 'Upload'}</Text>
                                 </TouchableOpacity>
                                 {states.errors.attachment === '' ? <Text style={{color:'#0094DA', marginTop:-6}}>Supported file is .pdf. Maximum size is 5MB</Text> : <Text style={{color:'red', marginTop:-6}}>{states.errors.attachment}</Text>}
-                            </View>
-
-
-                            {/* Assignment */}
-                            <View style={{gap:6}}>
-                                <Text>Assignment</Text>
-                                <Controller
-                                    control={control}
-                                    render={({field:{onChange, onBlur, value}}) => (
-                                        <PaperTextInput
-                                            placeholder='Enter Assignment'
-                                            onBlur={() => setStates({states, errors:{...states.errors, assignment:value === ''  ? '*Please enter an assignment' : ''}})}
-                                            placeholderTextColor='gray'
-                                            style={{backgroundColor:'#F5F5F8'}}
-                                            left={<PaperTextInput.Icon icon='table-large' size={30} color='gray'/>}
-                                            value={value}
-                                            onChangeText={onChange}
-                                        />
-                                    )}
-                                    name='assignment'
-                                />
-                                {states.errors.assignment !== '' && <Text style={{color:'red', marginTop:-6}}>{states.errors.assignment}</Text>}
                             </View>
 
 
@@ -404,6 +406,7 @@ const CreateAssignment = () => {
                     )}
                 </View>
             </ScrollView>
+
 
 
             {/* Snackbar */}

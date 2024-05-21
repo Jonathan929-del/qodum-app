@@ -96,7 +96,7 @@ const login = () => {
                             control={control}
                             render={({field:{onChange, onBlur, value}}) => (
                             <PaperTextInput
-                                label='Admission Number'
+                                label={type === 'teacher' ? 'Employee ID' : 'Admission Number'}
                                 onBlur={onBlur}
                                 style={{backgroundColor:'#F5F5F8', underlineColor:'red'}}
                                 left={<PaperTextInput.Icon icon='account' size={30} color='gray'/>}

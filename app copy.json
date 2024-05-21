@@ -1,0 +1,72 @@
+{
+  "expo": {
+    "name": "Qodum",
+    "slug": "qodum",
+    "scheme": "qodum",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/AppIcon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/logo.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "googleServicesFile": "./GoogleService-Info.plist",
+      "infoPlist": {
+        "UIBackgroundModes": [
+          "fetch",
+          "remote-notification"
+        ]
+     }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/logo.png",
+        "backgroundColor": "#ffffff"
+      },
+      "package": "com.jonathanadel.qodum",
+      "googleServicesFile": "./google-services.json"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "25bf2422-587e-4fe6-ae96-9ce827ef1858"
+      }
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "enabled":true,
+      "url": "https://u.expo.dev/25bf2422-587e-4fe6-ae96-9ce827ef1858"
+    },
+    "plugins":[
+      [
+        "expo-updates",
+        {
+          "username":"jonathanadel"
+        }
+      ],
+      [
+        "expo-document-picker",
+        {
+          "iCloudContainerEnvironment": "Production"
+        }
+      ],
+      [
+        "expo-media-library",
+        {
+          "photosPermission": "Allow Qodum to access your photos.",
+          "savePhotosPermission": "Allow Qodum to save photos.",
+          "isAccessMediaLocationEnabled": true
+        }
+      ],
+      "@react-native-firebase/app"
+    ]
+  }
+}
