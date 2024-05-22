@@ -103,8 +103,8 @@ const App = () => {
                 </View>
 
                 {/* Assignment */}
-                <Card style={{width:'80%', borderRadius:10, backgroundColor:'#fff'}}>
-                    <View style={{display:'flex', flexDirection:'column', justifyContent:'space-between', gap:10}}>
+                <Card style={{width:'80%', height:200, maxHeight:250, borderRadius:10, backgroundColor:'#fff'}}>
+                    <View style={{height:'100%', display:'flex', flexDirection:'column', justifyContent:'space-between', gap:10}}>
 
                         {/* Top */}
                         <View style={{display:'flex', flexDirection:'row', justifyContent:'space-between', padding:10}}>
@@ -113,7 +113,7 @@ const App = () => {
                         </View>
 
 
-                        {/* Description */}
+                        {/* Assignmetn */}
                         <Text style={{fontSize:13, color:'gray', paddingLeft:10}}>{a.description}</Text>
 
                         {/* Middle */}
@@ -132,7 +132,7 @@ const App = () => {
                         {/* Bottom */}
                         <View style={{width:'100%', display:'flex', flexDirection:'row', backgroundColor:'#DAE0EF', borderBottomLeftRadius:10, borderBottomRightRadius:10}}>
                             <TouchableOpacity
-                                onPress={() => Linking.openURL(a.attachment)}
+                                onPress={() => router.push({pathname:'/assignments/teacher/pdf-preview', params:{pdfUri:a.attachment, assignment:JSON.stringify(a)}})}
                                 style={{flex:1, height:'100%', display:'flex', flexDirection:'row', alignItems:'center', justifyContent:'center', gap:6, paddingVertical:10, borderBottomLeftRadius:10, borderRightColor:'#fff', borderRightWidth:1.5}}
                             >
                                 <Icon source='eye' color='#3C5EAB' size={20}/>

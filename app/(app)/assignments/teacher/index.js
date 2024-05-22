@@ -49,7 +49,6 @@ const App = () => {
 
     // Class students count
     const [classStudentsCount, setClassStudentsCount] = useState();
-    // console.log(classStudentsCount);
 
 
     // Show delete alert
@@ -115,16 +114,16 @@ const App = () => {
 
                 // Fetching class student count
                 const classesStudentCountLink = `${process.env.EXPO_PUBLIC_API_URL}/classes/class/student-count`;
-                const classesStudentCountRes = await axios.get(classesStudentCountLink, {class_name:"I"});
-                console.log(classesStudentCountRes.data);
-                // setClassStudentsCount(classesStudentCountRes.data);
+                const classesStudentCountRes = await axios.post(classesStudentCountLink, {class_name:classesRes?.data[0]?.class_name});
+                setClassStudentsCount(classesStudentCountRes.data);
 
 
                 // Fetching assignments
                 const assignmentsLink = `${process.env.EXPO_PUBLIC_API_URL}/assignments`;
                 const assignmentsRes = await axios.get(assignmentsLink);
                 setAllAssignments(assignmentsRes.data);
-                setFilteredAssignments(assignmentsRes.data);
+                setFilteredAssignments(assignmentsRes.data.filter(a => a.class_name === classesRes?.data[0]?.class_name));
+
 
                 setIsLoading(false);
             }catch(err){
@@ -171,9 +170,14 @@ const App = () => {
                         <ScrollView horizontal={true} style={{width:'100%', backgroundColor:'#F8F8F8'}}>
                             {classes?.map(c => (
                                 <TouchableOpacity
-                                    onPress={() => {
+                                    onPress={async () => {
                                         setSelectedClass(c?.class_name);
-                                        setFilteredAssignments(allAssignments.filter(a => a.class_name))
+                                        setFilteredAssignments(allAssignments.filter(a => a.class_name === c.class_name));
+
+                                        // Fetching class student count
+                                        const classesStudentCountLink = `${process.env.EXPO_PUBLIC_API_URL}/classes/class/student-count`;
+                                        const classesStudentCountRes = await axios.post(classesStudentCountLink, {class_name:c.class_name});
+                                        setClassStudentsCount(classesStudentCountRes.data);
                                     }}
                                     key={c?._id}
                                     style={{height:'100%',  width:70, display:'flex', alignItems:'center', justifyContent:'center', borderBottomColor:selectedClass === c?.class_name ? '#0094DA' : '#f8F8F8', borderBottomWidth:2}}
@@ -212,7 +216,7 @@ const App = () => {
                                                 <Text style={{fontSize:12, color:'gray'}}>Active</Text>
                                             </View>
                                             <View style={{display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center'}}>
-                                                <Text style={{fontSize:11, color:'gray'}}>{a.submitted_assignments.filter((s => n => !s.has(n.student.name.toLowerCase()) && s.add(n.student.name.toLowerCase()))(new Set())).length} / 50</Text>
+                                                <Text style={{fontSize:11, color:'gray'}}>{`${a.submitted_assignments.filter((s => n => !s.has(n.student.name.toLowerCase()) && s.add(n.student.name.toLowerCase()))(new Set())).length} / ${classStudentsCount}`}</Text>
                                                 <Text style={{fontSize:11, color:'gray'}}>Submitted</Text>
                                             </View>
                                         </View>

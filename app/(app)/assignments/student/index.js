@@ -218,7 +218,7 @@ const App = () => {
                                                     <Text style={{color:'#3C5EAB', fontSize:14}}>{a.subject}</Text>
                                                     {a?.submitted_assignments?.map(s => s.student.name).includes(user.student.name) && (
                                                         <TouchableOpacity
-                                                            onPress={() => Linking.openURL(a.submitted_assignments.filter(s => s.student.name === user.student.name)[0].attachment)}
+                                                            onPress={() => router.push({pathname:'/assignments/student/pdf-preview', params:{pdfUri:a.submitted_assignments.filter(s => s.student.name === user.student.name)[0].attachment, assignment:"{data:''}", page:'index'}})}
                                                             style={{height:30, display:'flex', flexDirection:'row', alignItems:'center', justifyContent:'center', gap:4, paddingHorizontal:5, backgroundColor:'#F5F5F5', borderRadius:50}}
                                                         >
                                                             <Icon source='magnify' size={10}/>

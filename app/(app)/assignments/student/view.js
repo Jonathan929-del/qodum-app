@@ -7,7 +7,7 @@ import {AuthContext} from '../../../../context/Auth';
 import {useContext, useEffect, useState} from 'react';
 import {router, useLocalSearchParams} from 'expo-router';
 import {ActivityIndicator, Card, Icon, Snackbar} from 'react-native-paper';
-import {Text, TouchableOpacity, View, ScrollView, Linking} from 'react-native';
+import {Text, TouchableOpacity, View, ScrollView} from 'react-native';
 import PassedAssignmentDate from '../../../../components/assignments/student/PassedAssignmentDate';
 
 
@@ -131,7 +131,7 @@ const App = () => {
                                     </View>
                                     {assignment?.submitted_assignments?.map(s => s.student.name).includes(user.student.name) && (
                                         <TouchableOpacity
-                                            onPress={() => Linking.openURL(a.submitted_assignments.filter(s => s.student.name === user.student.name)[0].attachment)}
+                                            onPress={() => router.push({pathname:'/assignments/student/pdf-preview', params:{pdfUri:assignment.submitted_assignments.filter(s => s.student.name === user.student.name)[0].attachment, a:JSON.stringify(assignment), page:'view'}})}
                                             style={{height:30, display:'flex', flexDirection:'row', alignItems:'center', justifyContent:'center', gap:4, paddingHorizontal:5, backgroundColor:'#F5F5F5', borderRadius:50}}
                                         >
                                             <Icon source='magnify' size={10}/>
@@ -160,7 +160,7 @@ const App = () => {
                                 {/* Bottom */}
                                 <View style={{width:'100%', display:'flex', flexDirection:'row', backgroundColor:'#DAE0EF', borderBottomLeftRadius:10, borderBottomRightRadius:10}}>
                                     <TouchableOpacity
-                                        onPress={() => Linking.openURL(assignment.attachment)}
+                                        onPress={() => router.push({pathname:'/assignments/student/pdf-preview', params:{pdfUri:a.attachment, a:JSON.stringify(a), page:'view'}})}
                                         style={{flex:1, height:'100%', display:'flex', flexDirection:'row', alignItems:'center', justifyContent:'center', gap:6, paddingVertical:10, borderBottomLeftRadius:10, borderRightColor:'#fff', borderRightWidth:1.5}}
                                     >
                                         <Icon source='eye' color='#3C5EAB' size={20}/>
@@ -185,7 +185,7 @@ const App = () => {
                                             if(new Date() > new Date(assignment.to_be_submitted_on)){
                                                 setIsSubmitDatePassed(assignment.to_be_submitted_on);
                                             }else{
-                                                router.push({pathname:'/assignments/student/submit', params:a})}
+                                                router.push({pathname:'/assignments/student/submit', params:JSON.stringify(a)})}
                                             }
                                         }
                                         style={{flex:1, height:'100%', display:'flex', flexDirection:'row', alignItems:'center', justifyContent:'center', gap:6, borderBottomRightRadius:10, opacity:assignment?.submitted_assignments?.map(s => s.student.name).includes(user.student.name) && !assignment.is_allow_student_for_multiple_submission ? 0.5 : 1}}
