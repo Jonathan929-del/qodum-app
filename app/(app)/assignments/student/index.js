@@ -113,8 +113,8 @@ const App = () => {
                 setSelectedSubject(subjectsRes.data[0].subject_name)
 
                 // Fetching assignments
-                const assignmentsLink = `${process.env.EXPO_PUBLIC_API_URL}/assignments`;
-                const assignmentsRes = await axios.get(assignmentsLink);
+                const assignmentsLink = `${process.env.EXPO_PUBLIC_API_URL}/assignments/class`;
+                const assignmentsRes = await axios.post(assignmentsLink, {class_name:user.student.class_name});
                 setAllAssignments(assignmentsRes.data);
                 setFilteredAssignments(assignmentsRes.data);
 
