@@ -1,0 +1,68 @@
+// Imports
+import {Icon, Button} from 'react-native-paper';
+import {router, useLocalSearchParams} from 'expo-router';
+import {Linking, Text, TouchableOpacity, View} from 'react-native';
+
+
+
+
+
+// Main function
+const CreateAssignment = () => {
+
+    // Link params
+    const {a, answer} = useLocalSearchParams();
+
+    return (
+        <View style={{height:'100%', alignItems:'center'}}>
+            <View style={{width:'100%', height:120, display:'flex', flexDirection:'row', alignItems:'flex-end', justifyContent:'space-between', paddingHorizontal:10, paddingBottom:30, backgroundColor:'#0094DA', borderBottomRightRadius:40, borderBottomLeftRadius:40}}>
+                <View style={{display:'flex', flexDirection:'row', alignItems:'center', gap:20}}>
+                    <TouchableOpacity
+                        onPress={() => router.push({pathname:'/assignments/teacher/view', params:{a:a}})}
+                    >
+                        <Icon source='chevron-left' size={40} color='#fff'/>
+                    </TouchableOpacity>
+                    <Text style={{textAlign:'center', fontSize:18, color:'#fff', fontWeight:'900'}}>{JSON.parse(answer).student.name}'s Report</Text>
+                </View>
+            </View>
+
+
+            {/* View attachment */}
+            <View style={{width:'90%', flex:1, display:'flex', flexDirection:'column', alignItems:'center', paddingTop:30, gap:30}}>
+                <View style={{width:'90%', display:'flex', flexDirection:'column', gap:8}}>
+                    <Text style={{fontSize:18, fontWeight:'700'}}>Answer:</Text>
+                    <Text style={{fontSize:16, color:'gray', borderWidth:1, borderColor:'#ccc', borderRadius:4, paddingVertical:10, paddingHorizontal:20}}>{JSON.parse(answer).answer}</Text>
+                </View>
+                <View style={{width:'90%', display:'flex', flexDirection:'column', gap:4}}>
+                    <Text style={{fontSize:18, fontWeight:'700'}}>Attachment:</Text>
+
+                    <TouchableOpacity
+                        style={{borderWidth:1, borderColor:'#ccc', borderRadius:4, paddingVertical:10, paddingHorizontal:20}}
+                        onPress={() => Linking.openURL(JSON.parse(answer).attachment)}
+                    >
+                        <Text style={{fontSize:16, color:'#0094DA'}}>{JSON.parse(answer).attachment.split('/')[4]}</Text>
+                    </TouchableOpacity>
+                </View>
+
+                <Button
+                    mode='contained'
+                    onPress={() => router.push({pathname:'/assignments/teacher/add-feedback', params:{assignment:a, answer:answer}})}
+                    style={{borderRadius:4, width:'90%'}}
+                >
+                    <View style={{display:'flex', flexDirection:'row', alignItems:'center', justifyContent:'center', gap:8}}>
+                        <Text style={{color:'#fff'}}>Add Feedback</Text>
+                        <Icon source='arrow-right' size={20} color='#fff'/>
+                    </View>
+                </Button>
+            </View>
+
+        </View>
+    );
+};
+
+
+
+
+
+// Export
+export default CreateAssignment;

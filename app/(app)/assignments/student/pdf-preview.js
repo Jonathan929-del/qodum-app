@@ -15,7 +15,6 @@ const PdfPreview = () => {
 
     // Pdf uri
     const {page, pdfUri, a} = useLocalSearchParams();
-    console.log(pdfUri);
 
 
     return (

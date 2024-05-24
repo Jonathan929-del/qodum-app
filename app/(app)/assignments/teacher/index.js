@@ -1,7 +1,8 @@
 // Imports
 import axios from 'axios';
 import moment from 'moment';
-import {useState, useEffect} from 'react';
+import {AuthContext} from '../../../../context/Auth';
+import {useState, useEffect, useContext} from 'react';
 import {router, useLocalSearchParams} from 'expo-router';
 import {ActivityIndicator, Card, Icon, Snackbar} from 'react-native-paper';
 import {Text, TouchableOpacity, View, ScrollView, Image, Alert} from 'react-native';
@@ -17,6 +18,10 @@ const App = () => {
     const [visible, setVisible] = useState(false);
     const [snackbarMessage, setSnackbarMessage] = useState('');
     const onDismissSnackBar = () => setVisible(false);
+
+
+    // User
+    const {user} = useContext(AuthContext);
 
 
     // Is edit redirect
@@ -119,8 +124,8 @@ const App = () => {
 
 
                 // Fetching assignments
-                const assignmentsLink = `${process.env.EXPO_PUBLIC_API_URL}/assignments`;
-                const assignmentsRes = await axios.get(assignmentsLink);
+                const assignmentsLink = `${process.env.EXPO_PUBLIC_API_URL}/assignments/teacher`;
+                const assignmentsRes = await axios.post(assignmentsLink, {teacher:user.name});
                 setAllAssignments(assignmentsRes.data);
                 setFilteredAssignments(assignmentsRes.data.filter(a => a.class_name === classesRes?.data[0]?.class_name));
 
@@ -243,7 +248,7 @@ const App = () => {
                                     {/* Bottom */}
                                     <View style={{height:'20%', width:'100%', display:'flex', flexDirection:'row', backgroundColor:'#DAE0EF', borderBottomLeftRadius:10, borderBottomRightRadius:10}}>
                                         <TouchableOpacity
-                                            onPress={() => router.push({pathname:'/assignments/teacher/view', params:a})}
+                                            onPress={() => router.push({pathname:'/assignments/teacher/view', params:{a:JSON.stringify(a)}})}
                                             style={{flex:1, height:'100%', display:'flex', flexDirection:'row', alignItems:'center', justifyContent:'center', gap:6, borderBottomLeftRadius:10, borderRightColor:'#fff', borderRightWidth:1.5}}
                                         >
                                             <Icon source='eye' color='#3C5EAB' size={20}/>

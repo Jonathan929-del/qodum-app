@@ -75,7 +75,6 @@ const App = () => {
 
         } catch (error) {
             setVisible(true);
-            console.log(error.message);
             setSnackbarMessage('Error Downloading Document');
             setIsDownloadLoading('');
         }
@@ -185,7 +184,7 @@ const App = () => {
                                             if(new Date() > new Date(assignment.to_be_submitted_on)){
                                                 setIsSubmitDatePassed(assignment.to_be_submitted_on);
                                             }else{
-                                                router.push({pathname:'/assignments/student/submit', params:JSON.stringify(a)})}
+                                                router.push({pathname:'/assignments/student/submit', params:a})}
                                             }
                                         }
                                         style={{flex:1, height:'100%', display:'flex', flexDirection:'row', alignItems:'center', justifyContent:'center', gap:6, borderBottomRightRadius:10, opacity:assignment?.submitted_assignments?.map(s => s.student.name).includes(user.student.name) && !assignment.is_allow_student_for_multiple_submission ? 0.5 : 1}}
@@ -248,7 +247,7 @@ const App = () => {
                                                     </TouchableOpacity>
                                                     <TouchableOpacity
                                                         onPress={() => downloadHandler(s._id,  s.attachment)}
-                                                        style={{flex:1, height:'100%', display:'flex', flexDirection:'row', alignItems:'center', justifyContent:'center', gap:4}}
+                                                        style={{flex:1, height:'100%', display:'flex', flexDirection:'row', alignItems:'center', justifyContent:'center', gap:4, borderRightColor:'#fff', borderRightWidth:s?.feedback?.feedback ? 1.5 : 0}}
                                                     >
                                                         {isDownloadLoading === s._id ? (
                                                             <ActivityIndicator />
@@ -259,6 +258,15 @@ const App = () => {
                                                             </>
                                                         )}
                                                     </TouchableOpacity>
+                                                    {s?.feedback?.feedback && (
+                                                        <TouchableOpacity
+                                                            onPress={() => router.push({pathname:'/assignments/student/view-feedback', params:{a:JSON.stringify(a), answer:JSON.stringify(s)}})}
+                                                            style={{flex:1, height:'100%', display:'flex', flexDirection:'row', alignItems:'center', justifyContent:'center', gap:4}}
+                                                        >
+                                                            <Icon source='information' color='#3C5EAB' size={20}/>
+                                                            <Text style={{color:'#3C5EAB'}}>Feedback</Text>
+                                                        </TouchableOpacity>
+                                                    )}
                                                 </View>
         
                                             </View>
