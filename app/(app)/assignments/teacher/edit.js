@@ -55,7 +55,7 @@ const CreateAssignment = () => {
     const [subjects, setSubjects] = useState([]);
     const [selectedSubject, setSelectedSubject] = useState({label:assignment.subject, value:assignment.subject.toLowerCase()});
     const [assignmentDate, setAssignmentDate] = useState(new Date(assignment.assignment_date));
-    const [toBeSubmittedOnDate, setToBeSubmittedOnDate] = useState(new Date(assignment.to_be_submitted_on));
+    const [lastDateOfSubmission, setLastDateOfSubmission] = useState(new Date(assignment.last_date_of_submission));
     const [selectedFile, setSelectedFile] = useState({assets:[{name:assignment.attachment.split('/')[4]}]});
     const [isAllowStudentForMultipleSubmission, setIsAllowStudentForMultipleSubmission] = useState(assignment.is_allow_student_for_multiple_submission === 'true');
     const [isActive, setIsActive] = useState(assignment.is_active === 'true');
@@ -155,7 +155,7 @@ const CreateAssignment = () => {
                 subject:selectedSubject.label,
                 title:data.title,
                 assignment_date:new Date(assignmentDate),
-                to_be_submitted_on:new Date(toBeSubmittedOnDate),
+                last_date_of_submission:new Date(lastDateOfSubmission),
                 attachment:pdfUploadResponse || assignment.attachment,
                 description:data.description,
                 is_allow_student_for_multiple_submission:isAllowStudentForMultipleSubmission,
@@ -328,24 +328,24 @@ const CreateAssignment = () => {
                                     )}
                                 </View>
 
-                                {/* To Be Submitted On Date */}
+                                {/* Last Date Of Submission */}
                                 <View style={{gap:6}}>
-                                    <Text>To Be Submitted On</Text>
+                                    <Text>Last Date Of Submission</Text>
                                     <TouchableOpacity
-                                        onPress={() => setOpenedField('to_be_submitted_on_date')}
-                                        style={{display:'flex', flexDirection:'row', alignItems:'center', backgroundColor:'#F5F5F8', height:60, paddingHorizontal:20, borderTopLeftRadius:5, borderTopRightRadius:5, borderBottomWidth:openedField === 'to_be_submitted_on_date' ? 2 : 1, borderBottomColor:openedField === 'to_be_submitted_on_date' ? '#0094DA' : 'gray'}}
+                                        onPress={() => setOpenedField('last_date_of_submission_date')}
+                                        style={{display:'flex', flexDirection:'row', alignItems:'center', backgroundColor:'#F5F5F8', height:60, paddingHorizontal:20, borderTopLeftRadius:5, borderTopRightRadius:5, borderBottomWidth:openedField === 'last_date_of_submission_date' ? 2 : 1, borderBottomColor:openedField === 'last_date_of_submission_date' ? '#0094DA' : 'gray'}}
                                     >
                                         <Icon source='calendar' size={30} color='gray'/>
-                                        <Text style={{marginLeft:10}}>{moment(toBeSubmittedOnDate).format('D-M-YYYY')}</Text>
+                                        <Text style={{marginLeft:10}}>{moment(lastDateOfSubmission).format('D-M-YYYY')}</Text>
                                     </TouchableOpacity>
-                                    {openedField === 'to_be_submitted_on_date' && (
+                                    {openedField === 'last_date_of_submission_date' && (
                                         <DateTimePicker
                                             mode='date'
                                             display='spinner'
-                                            value={toBeSubmittedOnDate}
+                                            value={lastDateOfSubmission}
                                             onChange={(v, date) => {
                                                 setOpenedField('');
-                                                setToBeSubmittedOnDate(date);
+                                                setLastDateOfSubmission(date);
                                             }}
                                         />
                                     )}

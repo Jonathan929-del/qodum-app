@@ -216,9 +216,9 @@ const App = () => {
                                             </View>
                                         </View>
                                         <View style={{display:'flex', flexDirection:'column', gap:8, alignItems:'flex-end'}}>
-                                            <View style={{height:30, width:60, display:'flex', flexDirection:'row', alignItems:'center', justifyContent:'center', gap:4, paddingHorizontal:5, backgroundColor:'#F5F5F5', borderRadius:50}}>
-                                                <View style={{width:8, height:8, borderRadius:10, backgroundColor:'#93C314'}}/>
-                                                <Text style={{fontSize:12, color:'gray'}}>Active</Text>
+                                            <View style={{height:30, width:70, display:'flex', flexDirection:'row', alignItems:'center', justifyContent:'center', gap:4, paddingHorizontal:5, backgroundColor:'#F5F5F5', borderRadius:50}}>
+                                                <View style={{width:8, height:8, borderRadius:10, backgroundColor:a.is_active ? '#93C314' : 'red'}}/>
+                                                <Text style={{fontSize:12, color:'gray'}}>{a.is_active ? 'Active' : 'Inactive'}</Text>
                                             </View>
                                             <View style={{display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center'}}>
                                                 <Text style={{fontSize:11, color:'gray'}}>{`${a.submitted_assignments.filter((s => n => !s.has(n.student.name.toLowerCase()) && s.add(n.student.name.toLowerCase()))(new Set())).length} / ${classStudentsCount}`}</Text>
@@ -235,8 +235,8 @@ const App = () => {
                                             <Text style={{fontSize:13, color:'gray'}}>{moment(a.assignment_date).format('D-M-YYYY')}</Text>
                                         </View>
                                         <View style={{display:'flex', flexDirection:'row', alignItems:'center', gap:2}}>
-                                            <Text style={{fontSize:13}}>TO BE SUBMITTED ON: </Text>
-                                            <Text style={{fontSize:13, color:'gray'}}>{moment(a.to_be_submitted_on).format('D-M-YYYY')}</Text>
+                                            <Text style={{fontSize:13}}>LAST DATE OF SUBMISSION: </Text>
+                                            <Text style={{fontSize:13, color:'gray'}}>{moment(a.last_date_of_submission).format('D-M-YYYY')}</Text>
                                         </View>
                                         <View style={{display:'flex', flexDirection:'row', alignItems:'center', gap:2}}>
                                             <Text style={{fontSize:13}}>CREATOR: </Text>
@@ -246,7 +246,7 @@ const App = () => {
 
 
                                     {/* Bottom */}
-                                    <View style={{height:'20%', width:'100%', display:'flex', flexDirection:'row', backgroundColor:'#DAE0EF', borderBottomLeftRadius:10, borderBottomRightRadius:10}}>
+                                    <View style={{height:'17.5%', width:'100%', display:'flex', flexDirection:'row', backgroundColor:'#DAE0EF', borderBottomLeftRadius:10, borderBottomRightRadius:10}}>
                                         <TouchableOpacity
                                             onPress={() => router.push({pathname:'/assignments/teacher/view', params:{a:JSON.stringify(a)}})}
                                             style={{flex:1, height:'100%', display:'flex', flexDirection:'row', alignItems:'center', justifyContent:'center', gap:6, borderBottomLeftRadius:10, borderRightColor:'#fff', borderRightWidth:1.5}}

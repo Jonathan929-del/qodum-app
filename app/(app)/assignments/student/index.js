@@ -244,7 +244,13 @@ const App = () => {
                                                 style={{height:60, width:60, borderWidth:2, borderColor:'#3C5EAB', borderRadius:10}}
                                             />
                                             <View style={{flex:1, display:'flex', flexDirection:'column', justifyContent:'space-between'}}>
-                                                <Text style={{fontWeight:'900', fontSize:16}}>{a.title}</Text>
+                                                <View style={{display:'flex', flexDirection:'row', alignItems:'center', justifyContent:'space-between'}}>
+                                                    <Text style={{fontWeight:'900', fontSize:16}}>{a.title}</Text>
+                                                    <View style={{height:30, width:70, display:'flex', flexDirection:'row', alignItems:'center', justifyContent:'center', gap:4, paddingHorizontal:5, backgroundColor:'#F5F5F5', borderRadius:50}}>
+                                                        <View style={{width:8, height:8, borderRadius:10, backgroundColor:a.is_active ? '#93C314' : 'red'}}/>
+                                                        <Text style={{fontSize:12, color:'gray'}}>{a.is_active ? 'Active' : 'Inactive'}</Text>
+                                                    </View>
+                                                </View>
                                                 <Text style={{color:'gray', fontSize:12}}>Updated on {moment(a.updatedAt).format('D-M-YYYY')}</Text>
                                                 <View style={{width:'100%', display:'flex', flexDirection:'row', alignItems:'center', justifyContent:'space-between'}}>
                                                     <Text style={{color:'#3C5EAB', fontSize:14}}>{a.subject}</Text>
@@ -271,8 +277,8 @@ const App = () => {
                                             <Text style={{fontSize:13, color:'gray'}}>{moment(a.assignment_date).format('D-M-YYYY')}</Text>
                                         </View>
                                         <View style={{display:'flex', flexDirection:'row', alignItems:'center', gap:2}}>
-                                            <Text style={{fontSize:13}}>TO BE SUBMITTED ON: </Text>
-                                            <Text style={{fontSize:13, color:'gray'}}>{moment(a.to_be_submitted_on).format('D-M-YYYY')}</Text>
+                                            <Text style={{fontSize:13}}>LAST DATE OF SUBMISSION: </Text>
+                                            <Text style={{fontSize:13, color:'gray'}}>{moment(a.last_date_of_submission).format('D-M-YYYY')}</Text>
                                         </View>
                                         <View style={{display:'flex', flexDirection:'row', alignItems:'center', gap:2}}>
                                             <Text style={{fontSize:13}}>UPDATED BY: </Text>
@@ -282,17 +288,19 @@ const App = () => {
 
 
                                     {/* Bottom */}
-                                    <View style={{height:'20%', width:'100%', display:'flex', flexDirection:'row', backgroundColor:'#DAE0EF', borderBottomLeftRadius:10, borderBottomRightRadius:10}}>
+                                    <View style={{height:'17.5%', width:'100%', display:'flex', flexDirection:'row', backgroundColor:'#DAE0EF', borderBottomLeftRadius:10, borderBottomRightRadius:10}}>
                                         <TouchableOpacity
+                                            disabled={!a.is_active}
                                             onPress={() => router.push({pathname:'/assignments/student/view', params:a})}
-                                            style={{flex:1, height:'100%', display:'flex', flexDirection:'row', alignItems:'center', justifyContent:'center', gap:6, borderBottomLeftRadius:10, borderRightColor:'#fff', borderRightWidth:1.5}}
+                                            style={{flex:1, height:'100%', display:'flex', flexDirection:'row', alignItems:'center', justifyContent:'center', gap:6, borderBottomLeftRadius:10, borderRightColor:'#fff', borderRightWidth:1.5, opacity:a.is_active ? 1 : 0.5}}
                                         >
                                             <Icon source='eye' color='#3C5EAB' size={20}/>
                                             <Text style={{color:'#3C5EAB'}}>View</Text>
                                         </TouchableOpacity>
                                         <TouchableOpacity
+                                            disabled={!a.is_active}
                                             onPress={() => downloadHandler(a)}
-                                            style={{flex:1, height:'100%', display:'flex', flexDirection:'row', alignItems:'center', justifyContent:'center', gap:4, borderRightColor:'#fff', borderRightWidth:1.5}}
+                                            style={{flex:1, height:'100%', display:'flex', flexDirection:'row', alignItems:'center', justifyContent:'center', gap:4, borderRightColor:'#fff', borderRightWidth:1.5, opacity:a.is_active ? 1 : 0.5}}
                                         >
                                             {isDownloadLoading === a.title ? (
                                                 <ActivityIndicator />
@@ -304,15 +312,15 @@ const App = () => {
                                             )}
                                         </TouchableOpacity>
                                         <TouchableOpacity
-                                            disabled={a?.submitted_assignments?.map(s => s.student.name).includes(user.student.name) && !a.is_allow_student_for_multiple_submission}
+                                            disabled={(a?.submitted_assignments?.map(s => s.student.name).includes(user.student.name) && !a.is_allow_student_for_multiple_submission) || !a.is_active}
                                             onPress={() => {
-                                                if(new Date() > new Date(a.to_be_submitted_on)){
-                                                    setIsSubmitDatePassed(a.to_be_submitted_on);
+                                                if(new Date() > new Date(a.last_date_of_submission)){
+                                                    setIsSubmitDatePassed(a.last_date_of_submission);
                                                 }else{
                                                     router.push({pathname:'/assignments/student/submit', params:a})}
                                                 }
                                             }
-                                            style={{flex:1, height:'100%', display:'flex', flexDirection:'row', alignItems:'center', justifyContent:'center', gap:6, borderBottomRightRadius:10, opacity:a?.submitted_assignments?.map(s => s.student.name).includes(user.student.name) && !a.is_allow_student_for_multiple_submission ? 0.5 : 1}}
+                                            style={{flex:1, height:'100%', display:'flex', flexDirection:'row', alignItems:'center', justifyContent:'center', gap:6, borderBottomRightRadius:10, opacity:(a?.submitted_assignments?.map(s => s.student.name).includes(user.student.name) && !a.is_allow_student_for_multiple_submission) || !a.is_active ? 0.5 : 1}}
                                         >
                                             {a?.submitted_assignments?.map(s => s.student.name).includes(user.student.name) && !a.is_allow_student_for_multiple_submission ? (
                                                 <>

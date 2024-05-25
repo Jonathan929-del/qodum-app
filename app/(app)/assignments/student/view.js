@@ -110,7 +110,7 @@ const App = () => {
             </View>
 
 
-            <ScrollView style={{width:'100%'}} contentContainerStyle={{height:'100%', alignItems:'center', paddingVertical:30, gap:50}}>
+            <ScrollView style={{width:'100%'}} contentContainerStyle={{alignItems:'center', paddingVertical:30, gap:50}}>
 
                 {isLoading ? (
                     <View style={{paddingTop:50}}>
@@ -119,7 +119,7 @@ const App = () => {
                 ) : (
                     <>
                         {/* Assignment */}
-                        <Card style={{width:'80%', height:250, maxHeight:300, borderRadius:10, backgroundColor:'#fff'}}>
+                        <Card style={{width:'80%', borderRadius:10, backgroundColor:'#fff'}}>
                             <View style={{height:'100%', display:'flex', flexDirection:'column', justifyContent:'space-between', gap:10}}>
         
                                 {/* Top */}
@@ -150,8 +150,8 @@ const App = () => {
                                         <Text style={{fontSize:13, color:'gray'}}>{moment(assignment.assignment_date).format('D-M-YYYY')}</Text>
                                     </View>
                                     <View style={{display:'flex', flexDirection:'row', alignItems:'center', gap:2}}>
-                                        <Text style={{fontSize:13}}>TO BE SUBMITTED ON: </Text>
-                                        <Text style={{fontSize:13, color:'gray'}}>{moment(assignment.to_be_submitted_on).format('D-M-YYYY')}</Text>
+                                        <Text style={{fontSize:13}}>LAST DATE OF SUBMISSION: </Text>
+                                        <Text style={{fontSize:13, color:'gray'}}>{moment(assignment.last_date_of_submission).format('D-M-YYYY')}</Text>
                                     </View>
                                 </View>
         
@@ -181,8 +181,8 @@ const App = () => {
                                     <TouchableOpacity
                                         disabled={assignment?.submitted_assignments?.map(s => s.student.name).includes(user.student.name) && !assignment.is_allow_student_for_multiple_submission}
                                         onPress={() => {
-                                            if(new Date() > new Date(assignment.to_be_submitted_on)){
-                                                setIsSubmitDatePassed(assignment.to_be_submitted_on);
+                                            if(new Date() > new Date(assignment.last_date_of_submission)){
+                                                setIsSubmitDatePassed(assignment.last_date_of_submission);
                                             }else{
                                                 router.push({pathname:'/assignments/student/submit', params:a})}
                                             }

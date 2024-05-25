@@ -1,7 +1,9 @@
 // Imports
+import {useContext} from 'react';
 import {router} from 'expo-router';
 import {Icon} from 'react-native-paper';
 import {usePathname} from 'expo-router';
+import {AuthContext} from '../../context/Auth';
 import {Text, TouchableOpacity, View} from 'react-native';
 
 
@@ -16,34 +18,38 @@ const Tabs = () => {
     const pathname = usePathname();
 
 
+    // User
+    const {user} = useContext(AuthContext);
+
+
     return (
         <View style={{height:'auto', width:'100%', display:'flex', flexDirection:'row', paddingHorizontal:20, paddingVertical:10, backgroundColor:'#fff'}}>
 
             {/* Profile */}
             <TouchableOpacity
-                onPress={() => router.push('/profile')}
+                onPress={() => user.type === 'Teacher' ? router.push('/profile/teacher') : router.push('/profile/student')}
                 style={{flex:1, display:'flex', flexDirection:'column', justifyContent:'center', alignItems:'center', gap:2}}
             >
                 <Icon
-                    color={pathname === '/profile' ? '#0094DA' : '#889CB7'}
+                    color={(pathname === '/profile/teacher' || pathname === '/profile/student') ? '#0094DA' : '#889CB7'}
                     source='account'
                     size={30}
                 />
-                <Text style={{color:pathname === '/profile' ? '#0094DA' : '#889CB7', fontSize:12}}>Profile</Text>
+                <Text style={{color:(pathname === '/profile/teacher' || pathname === '/profile/student') ? '#0094DA' : '#889CB7', fontSize:12}}>Profile</Text>
             </TouchableOpacity>
 
 
             {/* Notification */}
             <TouchableOpacity
-                onPress={() => router.push('/notification')}
+                onPress={() => user.type === 'Teacher' ? router.push('/notifications/teacher') : router.push('/notifications/student')}
                 style={{flex:1, display:'flex', flexDirection:'column', justifyContent:'center', alignItems:'center', gap:2}}
             >
                 <Icon
-                    color={pathname === '/notification' ? '#0094DA' : '#889CB7'}
+                    color={(pathname === '/notifications/teacher' || pathname === '/notifications/student') ? '#0094DA' : '#889CB7'}
                     source='bell'
                     size={30}
                 />
-                <Text style={{color:pathname === '/notification' ? '#0094DA' : '#889CB7', fontSize:12}}>Notification</Text>
+                <Text style={{color:(pathname === '/notifications/teacher' || pathname === '/notifications/student') ? '#0094DA' : '#889CB7', fontSize:12}}>Notification</Text>
             </TouchableOpacity>
 
 

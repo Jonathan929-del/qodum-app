@@ -59,6 +59,7 @@ const CreateAssignment = () => {
     const [classes, setClasses] = useState([]);
     const [selectedClass, setSelectedClass] = useState({label:'', value:''});
     const [assignmentDate, setAssignmentDate] = useState(new Date());
+    const [lastDateOfSubmission, setLastDateOfSubmission] = useState(new Date());
     const [selectedFile, setSelectedFile] = useState();
     const [isAllowStudentForMultipleSubmission, setIsAllowStudentForMultipleSubmission] = useState(false);
     const [isActive, setIsActive] = useState(false);
@@ -150,7 +151,7 @@ const CreateAssignment = () => {
 
             // Api call
             const link = `${process.env.EXPO_PUBLIC_API_URL}/assignments/create`;
-            const res = await axios.post(link, {creator:user.name, creator_image:user.image, subject:selectedSubject.label, class_name:selectedClass.label, title:data.title, assignment_date:assignmentDate, to_be_submitted_on:assignmentDate, attachment:pdfUploadResponse, description:data.description, is_allow_student_for_multiple_submission:isAllowStudentForMultipleSubmission, is_active:isActive});
+            const res = await axios.post(link, {creator:user.name, creator_image:user.image, subject:selectedSubject.label, class_name:selectedClass.label, title:data.title, assignment_date:assignmentDate, last_date_of_submission:assignmentDate, attachment:pdfUploadResponse, description:data.description, is_allow_student_for_multiple_submission:isAllowStudentForMultipleSubmission, is_active:isActive});
 
 
             // Reseting
@@ -316,27 +317,52 @@ const CreateAssignment = () => {
                             </View>
 
 
-                            {/* Assignment Due Date */}
-                            <View style={{gap:6}}>
-                                <Text>Assignment Due Date</Text>
-                                <TouchableOpacity
-                                    onPress={() => setOpenedField('assignment_date')}
-                                    style={{display:'flex', flexDirection:'row', alignItems:'center', backgroundColor:'#F5F5F8', height:60, paddingHorizontal:20, borderTopLeftRadius:5, borderTopRightRadius:5, borderBottomWidth:openedField === 'assignment_date' ? 2 : 1, borderBottomColor:openedField === 'assignment_date' ? '#0094DA' : 'gray'}}
-                                >
-                                    <Icon source='calendar' size={30} color='gray'/>
-                                    <Text style={{marginLeft:10}}>{moment(assignmentDate).format('D-M-YYYY')}</Text>
-                                </TouchableOpacity>
-                                {openedField === 'assignment_date' && (
-                                    <DateTimePicker
-                                        mode='date'
-                                        display='spinner'
-                                        value={assignmentDate}
-                                        onChange={(v, date) => {
-                                            setOpenedField('');
-                                            setAssignmentDate(date);
-                                        }}
-                                    />
-                                )}
+                            <View style={{display:'flex', flexDirection:'row', alignItems:'center', gap:10}}>
+                                {/* Assignment Date */}
+                                <View style={{gap:6}}>
+                                    <Text>Assignment Date</Text>
+                                    <TouchableOpacity
+                                        onPress={() => setOpenedField('assignment_date')}
+                                        style={{display:'flex', flexDirection:'row', alignItems:'center', backgroundColor:'#F5F5F8', height:60, paddingHorizontal:20, borderTopLeftRadius:5, borderTopRightRadius:5, borderBottomWidth:openedField === 'assignment_date' ? 2 : 1, borderBottomColor:openedField === 'assignment_date' ? '#0094DA' : 'gray'}}
+                                    >
+                                        <Icon source='calendar' size={30} color='gray'/>
+                                        <Text style={{marginLeft:10}}>{moment(assignmentDate).format('D-M-YYYY')}</Text>
+                                    </TouchableOpacity>
+                                    {openedField === 'assignment_date' && (
+                                        <DateTimePicker
+                                            mode='date'
+                                            display='spinner'
+                                            value={assignmentDate}
+                                            onChange={(v, date) => {
+                                                setOpenedField('');
+                                                setAssignmentDate(date);
+                                            }}
+                                        />
+                                    )}
+                                </View>
+
+                                {/* Last Date Of Submission */}
+                                <View style={{gap:6}}>
+                                    <Text>Last Date Of Submission</Text>
+                                    <TouchableOpacity
+                                        onPress={() => setOpenedField('last_date_of_submission_date')}
+                                        style={{display:'flex', flexDirection:'row', alignItems:'center', backgroundColor:'#F5F5F8', height:60, paddingHorizontal:20, borderTopLeftRadius:5, borderTopRightRadius:5, borderBottomWidth:openedField === 'last_date_of_submission_date' ? 2 : 1, borderBottomColor:openedField === 'last_date_of_submission_date' ? '#0094DA' : 'gray'}}
+                                    >
+                                        <Icon source='calendar' size={30} color='gray'/>
+                                        <Text style={{marginLeft:10}}>{moment(lastDateOfSubmission).format('D-M-YYYY')}</Text>
+                                    </TouchableOpacity>
+                                    {openedField === 'last_date_of_submission_date' && (
+                                        <DateTimePicker
+                                            mode='date'
+                                            display='spinner'
+                                            value={lastDateOfSubmission}
+                                            onChange={(v, date) => {
+                                                setOpenedField('');
+                                                setLastDateOfSubmission(date);
+                                            }}
+                                        />
+                                    )}
+                                </View>
                             </View>
 
 

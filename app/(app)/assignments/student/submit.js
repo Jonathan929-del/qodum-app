@@ -136,6 +136,7 @@ const CreateAssignment = () => {
             // Api call
             const link = `${process.env.EXPO_PUBLIC_API_URL}/assignments/assignment/submit`;
             const res = await axios.post(link, {assignment_id:assignment._id, student:{adm_no:user.adm_no, name:user?.student?.name, roll_no:user?.student?.roll_no}, answer:data.answer, attachment:pdfUploadResponse});
+            console.log(res.data);
 
 
             // Reseting

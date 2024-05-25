@@ -134,7 +134,7 @@ const App = () => {
             ) : (
                 <>
 
-                    <ScrollView style={{width:'100%'}} contentContainerStyle={{height:'100%', alignItems:'center', paddingVertical:30, gap:30}}>
+                    <ScrollView style={{width:'100%'}} contentContainerStyle={{alignItems:'center', paddingVertical:30, gap:30}}>
 
                         {/* Tabs */}
                         <View style={{width:'80%', display:'flex', flexDirection:'row', borderRadius:100, backgroundColor:'#F5F5F8'}}>
@@ -173,8 +173,8 @@ const App = () => {
                                         <Text style={{fontSize:13, color:'gray'}}>{moment(assignment?.assignment_date).format('D-M-YYYY')}</Text>
                                     </View>
                                     <View style={{display:'flex', flexDirection:'row', alignItems:'center', gap:2}}>
-                                        <Text style={{fontSize:13}}>TO BE SUBMITTED ON: </Text>
-                                        <Text style={{fontSize:13, color:'gray'}}>{moment(assignment?.to_be_submitted_on).format('D-M-YYYY')}</Text>
+                                        <Text style={{fontSize:13}}>LAST DATE OF SUBMISSION: </Text>
+                                        <Text style={{fontSize:13, color:'gray'}}>{moment(assignment?.last_date_of_submission).format('D-M-YYYY')}</Text>
                                     </View>
                                 </View>
 
