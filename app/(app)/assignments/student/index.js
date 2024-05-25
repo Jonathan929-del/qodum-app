@@ -6,8 +6,8 @@ import * as MediaLibrary from 'expo-media-library';
 import {AuthContext} from '../../../../context/Auth';
 import {useState, useEffect, useContext} from 'react';
 import {router, useLocalSearchParams} from 'expo-router';
-import {ActivityIndicator, Card, Icon, Snackbar} from 'react-native-paper';
-import {Text, TouchableOpacity, View, ScrollView, Image, Linking} from 'react-native';
+import {Text, TouchableOpacity, View, ScrollView, Image} from 'react-native';
+import {ActivityIndicator, Card, Icon, Snackbar, Switch} from 'react-native-paper';
 import PassedAssignmentDate from '../../../../components/assignments/student/PassedAssignmentDate';
 
 
@@ -65,6 +65,10 @@ const App = () => {
 
     // Filtered assignments
     const [filteredAssignments, setFilteredAssignments] = useState([]);
+
+
+    // Is new checked
+    const [isNewChecked, setIsNewChecked] = useState(false);
 
 
     // Download handler
@@ -163,6 +167,15 @@ const App = () => {
                 >
                     <Text style={{paddingVertical:10, fontWeight:'800', textAlign:'center', borderRadius:100, color:selectedTab === 'subjects' ? '#fff' : 'gray', backgroundColor:selectedTab === 'subjects' ? '#3C5EAB' : '#F5F5F8'}}>Subjects</Text>
                 </TouchableOpacity>
+                <TouchableOpacity
+                    onPress={() => {
+                        setSelectedTab('date');
+                        setFilteredAssignments(allAssignments.sort((a, b) => new Date(a.assignment_date) - new Date(b.assignment_date)));
+                    }}
+                    style={{flex:1}}
+                >
+                    <Text style={{paddingVertical:10, fontWeight:'800', textAlign:'center', borderRadius:100, color:selectedTab === 'date' ? '#fff' : 'gray', backgroundColor:selectedTab === 'date' ? '#3C5EAB' : '#F5F5F8'}}>Date</Text>
+                </TouchableOpacity>
             </View>
 
 
@@ -185,6 +198,25 @@ const App = () => {
                             </TouchableOpacity>
                         ))}
                     </ScrollView>
+                </View>
+            )}
+
+
+            {/* Sorting method */}
+            {selectedTab === 'date' && (
+                <View style={{display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between'}}>
+                    <Text>Newest</Text>
+                    <Switch
+                        value={isNewChecked}
+                        onValueChange={() => {
+                            setIsNewChecked(!isNewChecked);
+                            if(isNewChecked){
+                                setFilteredAssignments(allAssignments.sort((a, b) => new Date(a.assignment_date) - new Date(b.assignment_date)));
+                            }else{
+                                setFilteredAssignments(allAssignments.sort((a, b) => new Date(b.assignment_date) - new Date(a.assignment_date)));
+                            };
+                        }}
+                    />
                 </View>
             )}
 
