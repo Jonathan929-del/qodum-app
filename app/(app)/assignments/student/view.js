@@ -119,8 +119,8 @@ const App = () => {
                 ) : (
                     <>
                         {/* Assignment */}
-                        <Card style={{width:'80%', borderRadius:10, backgroundColor:'#fff'}}>
-                            <View style={{height:'100%', display:'flex', flexDirection:'column', justifyContent:'space-between', gap:10}}>
+                        <Card style={{height:'auto', width:'80%', borderRadius:10, backgroundColor:'#fff'}}>
+                            <View style={{display:'flex', flexDirection:'column', justifyContent:'space-between', gap:10}}>
         
                                 {/* Top */}
                                 <View style={{display:'flex', flexDirection:'row', justifyContent:'space-between', padding:10}}>
