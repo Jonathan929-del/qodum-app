@@ -38,7 +38,7 @@ const CreateAssignment = () => {
 
                     <TouchableOpacity
                         style={{borderWidth:1, borderColor:'#ccc', borderRadius:4, paddingVertical:10, paddingHorizontal:20}}
-                        onPress={() => Linking.openURL(JSON.parse(answer).attachment)}
+                        onPress={() => router.push({pathname:'/assignments/teacher/pdf-preview', params:{pdfUri:JSON.parse(answer).attachment, assignment:a, answer}})}
                     >
                         <Text style={{fontSize:16, color:'#0094DA'}}>{JSON.parse(answer).attachment.split('/')[4]}</Text>
                     </TouchableOpacity>

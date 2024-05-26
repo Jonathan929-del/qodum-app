@@ -14,7 +14,7 @@ const PdfPreview = () => {
 
 
     // Pdf uri
-    const {pdfUri, assignment} = useLocalSearchParams();
+    const {pdfUri, assignment, answer} = useLocalSearchParams();
 
 
     return (
@@ -22,7 +22,7 @@ const PdfPreview = () => {
             <View style={{width:'100%', height:120, display:'flex', flexDirection:'row', alignItems:'flex-end', justifyContent:'space-between', paddingHorizontal:10, paddingBottom:30, backgroundColor:'#0094DA', borderBottomRightRadius:40, borderBottomLeftRadius:40}}>
                 <View style={{display:'flex', flexDirection:'row', alignItems:'center', gap:20}}>
                     <TouchableOpacity
-                        onPress={() => router.push({pathname:'/assignments/teacher/view', params:JSON.parse(assignment)})}
+                        onPress={() => answer ? router.push({pathname:'/assignments/teacher/view-answer', params:{a:assignment, answer:answer}}) : router.push({pathname:'/assignments/teacher/view', params:JSON.parse(assignment)})}
                     >
                         <Icon source='chevron-left' size={40} color='#fff'/>
                     </TouchableOpacity>

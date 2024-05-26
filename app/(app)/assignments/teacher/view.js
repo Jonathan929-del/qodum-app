@@ -153,8 +153,8 @@ const App = () => {
                         </View>
 
                         {/* Assignment */}
-                        <Card style={{width:'80%', height:200, maxHeight:250, borderRadius:10, backgroundColor:'#fff'}}>
-                            <View style={{height:'100%', display:'flex', flexDirection:'column', justifyContent:'space-between', gap:10}}>
+                        <Card style={{width:'80%', borderRadius:10, backgroundColor:'#fff'}}>
+                            <View style={{display:'flex', flexDirection:'column', justifyContent:'space-between', gap:10}}>
 
                                 {/* Top */}
                                 <View style={{display:'flex', flexDirection:'row', justifyContent:'space-between', padding:10}}>
@@ -214,7 +214,7 @@ const App = () => {
                         </Card>
 
 
-                        <View style={{width:'80%', gap:10}}>
+                        <View style={{width:'80%', gap:10, marginTop:30}}>
                             <View style={{display:'flex', flexDirection:'row', alignItems:'center', justifyContent:'space-between'}}>
                                 <Text style={{fontSize:20, fontWeight:'600'}}>{selectedTab === 'submitted' ? 'Submitted' : 'Not Submitted'}</Text>
                                 <Text style={{color:'#0094DA'}}>{
@@ -225,7 +225,6 @@ const App = () => {
                             </View>
 
                             {/* Submitted / Unsubmitted answers */}
-
                             {selectedTab === 'submitted' ? (
                                 <View style={{gap:20}}>
                                     {students.filter(s => assignment?.submitted_assignments?.map(sa => sa.student.name).includes(s.student.name)).map(s =>
@@ -284,7 +283,7 @@ const App = () => {
                             ) : (
                                 <View style={{gap:20}}>
                                     {students.filter(s => !assignment?.submitted_assignments?.map(sa => sa.student.name).includes(s.student.name)).map(s => (
-                                        <Card style={{width:'100%', height:80, borderRadius:10, backgroundColor:'#fff'}} key={s.created_at}>
+                                        <Card style={{width:'100%', height:80, borderRadius:10, backgroundColor:'#fff'}} key={s._is}>
                                             <View style={{height:'100%', display:'flex', flexDirection:'column', justifyContent:'space-between'}}>
 
                                                 {/* Top */}
