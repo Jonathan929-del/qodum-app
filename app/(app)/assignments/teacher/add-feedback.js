@@ -108,6 +108,11 @@ const App = () => {
             const res = await axios.put(link, params);
 
 
+            // Sending notification
+            const notificationLink = `${process.env.EXPO_PUBLIC_API_URL}/notifications/send-notification`;
+            await axios.post(notificationLink, {title:'Feedback Added!', body:'Your teacher added a feedback to your answer', topic:`student_${JSON.parse(answer).student.adm_no.replace(/\//g, '_')}`});
+
+
             // Reseting
             if(res.data === 'Feedback sent'){
                 reset({

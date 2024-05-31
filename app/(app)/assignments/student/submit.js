@@ -114,6 +114,7 @@ const CreateAssignment = () => {
           throw error;
         }
     };
+    console.log(assignment.creator_adm_no);
 
 
     // On submit
@@ -136,7 +137,11 @@ const CreateAssignment = () => {
             // Api call
             const link = `${process.env.EXPO_PUBLIC_API_URL}/assignments/assignment/submit`;
             const res = await axios.post(link, {assignment_id:assignment._id, student:{adm_no:user.adm_no, name:user?.student?.name, roll_no:user?.student?.roll_no}, answer:data.answer, attachment:pdfUploadResponse});
-            console.log(res.data);
+
+
+            // Sending notification
+            const notificationLink = `${process.env.EXPO_PUBLIC_API_URL}/notifications/send-notification`;
+            await axios.post(notificationLink, {title:'Answer Added!', body:'A student added his/her answer!', topic:`teacher_${assignment.creator_adm_no}`});
 
 
             // Reseting

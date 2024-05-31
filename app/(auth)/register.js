@@ -79,9 +79,12 @@ const register = () => {
                 });
 
                 // Subscribing to topic
-                type === 'student'
-                    ? await messaging().subscribeToTopic(`student_assignments_${res.data.student.class_name}`)
-                    : await messaging().subscribeToTopic(`teacher_assignments_${res.data.class_name}`);
+                if(type === 'student'){
+                    await messaging().subscribeToTopic(`student_assignments_${res.data.student.class_name}`);
+                    await messaging().subscribeToTopic(`student_${res.data.adm_no.replace(/\//g, '_')}`);
+                }else{
+                    await messaging().subscribeToTopic(`teacher_${res.data.adm_no.replace(/\//g, '_')}`);
+                };
             }catch(err){
                 setSnackbarMessage('Error Registring!');
                 setVisible(true);
