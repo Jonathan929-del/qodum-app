@@ -1,10 +1,8 @@
 // Imports
-import moment from 'moment';
-import {Icon, Modal} from 'react-native-paper';
-import {StatusBar} from 'expo-status-bar';
+import {Icon} from 'react-native-paper';
 import {AuthContext} from '../../context/Auth';
 import {useContext, useState, useEffect} from 'react';
-import {Image, Text, TouchableOpacity, View, Animated, Pressable, TouchableWithoutFeedback, Button, Dimensions} from 'react-native';
+import {Text, TouchableOpacity, View, Animated, TouchableWithoutFeedback, Dimensions} from 'react-native';
 
 
 

@@ -31,11 +31,12 @@ const CreateAssignment = () => {
             <View style={{width:'90%', flex:1, display:'flex', flexDirection:'column', alignItems:'center', paddingTop:30, gap:30}}>
                 <View style={{width:'90%', display:'flex', flexDirection:'column', gap:8}}>
                     <Text style={{fontSize:18, fontWeight:'700'}}>Grade:</Text>
-                    <Text style={{fontSize:16, color:'gray', borderWidth:1, borderColor:'#ccc', borderRadius:4, paddingVertical:10, paddingHorizontal:20}}>{JSON.parse(answer).feedback.grade}</Text>
+                    <Text style={{fontSize:16, color:'gray'}}>{JSON.parse(answer).feedback.grade}</Text>
                 </View>
                 <View style={{width:'90%', display:'flex', flexDirection:'column', gap:4}}>
                     <Text style={{fontSize:18, fontWeight:'700'}}>Feedback:</Text>
-                    <Text style={{minHeight:150, borderWidth:1, borderColor:'#ccc', borderRadius:4, paddingVertical:10, paddingHorizontal:20, fontSize:16, color:'gray'}}>{JSON.parse(answer).feedback.feedback}</Text>
+                    {/* <Text style={{minHeight:150, borderWidth:1, borderColor:'#ccc', borderRadius:4, paddingVertical:10, paddingHorizontal:20, fontSize:16, color:'gray'}}>{JSON.parse(answer).feedback.feedback}</Text> */}
+                    <Text style={{minHeight:150, fontSize:16, color:'gray'}}>{JSON.parse(answer).feedback.feedback}</Text>
                 </View>
             </View>
 

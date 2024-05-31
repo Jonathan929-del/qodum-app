@@ -1,6 +1,12 @@
 // Imports
-import axios from 'axios';
+import '../../firebase';
+import {app} from '../../firebase';
 import {AuthContext} from '../../context/Auth';
+import messaging from '@react-native-firebase/messaging';
+import {getFirestore, collection, addDoc, updateDoc} from 'firebase/firestore'; 
+import {getAuth, createUserWithEmailAndPassword} from 'firebase/auth';
+
+import axios from 'axios';
 import {useForm, Controller} from 'react-hook-form';
 import {useContext, useEffect, useState} from 'react';
 import {Image, Text, View, Button} from 'react-native';
@@ -24,6 +30,7 @@ const register = () => {
 
 
     // Snack bar actions
+    const [snackbarMessage, setSnackbarMessage] = useState('');
     const [visible, setVisible] = useState(false);
     const onDismissSnackBar = () => setVisible(false);
 
@@ -56,7 +63,36 @@ const register = () => {
             };
 
 
+            // Firebase registration (Working only in deployment build)
+            try {
+                const auth = getAuth();
+                await createUserWithEmailAndPassword(auth, type === 'student' ? res.data.student.email : res.data.email, data.password);
+                const currentUser = auth.currentUser;
+                const db = getFirestore(app);
+                let fcmToken = await messaging().getToken();
+                await addDoc(collection(db, 'users'), {
+                    fcmToken:fcmToken,
+                    id:currentUser.uid,
+                    email:currentUser.email,
+                    adm_no:res.data.adm_no,
+                    role:type
+                });
+
+                // Subscribing to topic
+                type === 'student'
+                    ? await messaging().subscribeToTopic(`student_assignments_${res.data.student.class_name}`)
+                    : await messaging().subscribeToTopic(`teacher_assignments_${res.data.class_name}`);
+            }catch(err){
+                setSnackbarMessage('Error Registring!');
+                setVisible(true);
+                setIsLoading(false);
+                console.log(err);
+                return;
+            }
+
+
             // User registration
+            setSnackbarMessage('Registered successfully!');
             setVisible(true);
             setIsLoading(false);
             login(res.data);
@@ -153,14 +189,14 @@ const register = () => {
 
                 <Snackbar
                     visible={visible}
-                    style={{backgroundColor:'green'}}
+                    style={{backgroundColor:snackbarMessage === 'Registered successfully!' ? 'green' : 'red'}}
                     onDismiss={onDismissSnackBar}
                     action={{
                         label: <Icon source='close' color='#fff' size={20}/>,
                         onPress:() => setVisible(false)
                     }}
                 >
-                    Registered successfully!
+                    {snackbarMessage}
                 </Snackbar>
 
             </View>

@@ -60,9 +60,6 @@
           "isAccessMediaLocationEnabled": true
         }
       ],
-      "@react-native-firebase/app",
-      "@react-native-firebase/perf",
-      "@react-native-firebase/crashlytics",
       [
         "expo-build-properties",
         {
@@ -70,7 +67,16 @@
             "useFrameworks": "static"
           }
         }
-      ]
+      ],
+      [
+        "@react-native-firebase/app",
+        {
+          "config": {
+            "googleServicesFile": "./google-services.json"
+          }
+        }
+      ],
+      "@react-native-firebase/messaging"
     ]
   }
 }

@@ -132,12 +132,18 @@ const StudentProfile = () => {
                 <View style={{display:'flex', flexDirection:'row', alignItems:'center', gap:20}}>
 
                   {/* Image */}
-                  <Image
-                    width={100}
-                    height={100}
-                    source={{uri:user?.student?.image}}
-                    style={{borderRadius:10, borderWidth:1, borderColor:'#4F58CF'}}
-                  />
+                  {user?.student?.image ? (
+                    <Image
+                      width={100}
+                      height={100}
+                      source={{uri:user?.student?.image}}
+                      style={{borderRadius:10, borderWidth:1, borderColor:'#4F58CF'}}
+                    />
+                  ) : (
+                    <View style={{height:100, width:100, alignItems:'center', justifyContent:'center', borderRadius:10, borderWidth:1, borderColor:'#ccc'}}>
+                      <Text>No Photo</Text>
+                    </View>
+                  )}
 
 
                   <View style={{display:'flex', flexDirection:'column', gap:10}}>
@@ -206,7 +212,7 @@ const StudentProfile = () => {
 
 
                 {/* Aadhar Card No. */}
-                {user?.student?.aadhar_card_no && (
+                {user?.student?.aadhar_card_no !== undefined && (
                   <View style={{display:'flex', flexDirection:'row', alignItems:'center', gap:2}}>
                     <Text style={{fontSize:16}}>Aadhar Card No.: </Text>
                     <Text style={{color:'gray', fontSize:16}}>{user?.student?.aadhar_card_no}</Text>

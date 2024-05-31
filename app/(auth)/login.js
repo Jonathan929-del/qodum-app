@@ -1,9 +1,11 @@
 // Imports
+import '../../firebase';
 import axios from 'axios';
-import {router, useLocalSearchParams} from 'expo-router';
 import {useContext, useState} from 'react';
 import {AuthContext} from '../../context/Auth';
 import {useForm, Controller} from 'react-hook-form';
+import {router, useLocalSearchParams} from 'expo-router';
+import {getAuth, signInWithEmailAndPassword} from 'firebase/auth';
 import {Image, Text, View, Button, TouchableOpacity} from 'react-native';
 import {TextInput as PaperTextInput, ActivityIndicator, Snackbar, Icon} from 'react-native-paper';
 
@@ -56,6 +58,17 @@ const login = () => {
                 setVisible(true);
                 setIsLoading(false);
                 return;
+            };
+
+
+            // Firebase registration
+            const auth = getAuth();
+            const firebaseRes = await signInWithEmailAndPassword(auth, type === 'student' ? res.data.student.email : res.data.email, data.password);
+            if(!firebaseRes._tokenResponse){
+                setSnackbarMessage('Error Registring!');
+                setVisible(true);
+                setIsLoading(false);
+                return;                
             };
 
 

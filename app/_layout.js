@@ -1,11 +1,12 @@
 // Imports
+import '../firebase';
 import {useEffect} from 'react';
 import {Slot} from 'expo-router';
 import theme from '../theme/theme';
 import * as Updates from 'expo-updates';
 import {StatusBar} from 'expo-status-bar';
 import {AuthProvider} from '../context/Auth';
-import {PaperProvider} from 'react-native-paper';
+import {PaperProvider} from 'react-native-paper'
 
 
 
@@ -31,7 +32,10 @@ export default function HomeLayout() {
 
     // Use effect
     useEffect(() => {
+
+        // Eas update
         onFetchUpdateAsync();
+
     }, []);
 
 
