@@ -20,63 +20,63 @@ export default function HomeLayout() {
 
 
     // Reqquesting push messages permission (Working only in deployment build)
-    const requestPushMessagesPermission = async () => {
-        const authStatus = await messaging().requestPermission();
-        const enabled =
-            authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
-            authStatus === messaging.AuthorizationStatus.PROVISIONAL;
+    // const requestPushMessagesPermission = async () => {
+    //     const authStatus = await messaging().requestPermission();
+    //     const enabled =
+    //         authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
+    //         authStatus === messaging.AuthorizationStatus.PROVISIONAL;
 
-        if(enabled){
-            console.log('Authorization status: ', authStatus);
-        }
-    };
-
-
-    // Use effect (Working only in deployment build)
-    useEffect(() => {
-
-        // Messaging request
-        if(requestPushMessagesPermission()){
-            messaging()
-                .getToken()
-                .then(token => {
-                    console.log(token);
-                });
-        }else{
-            console.log('Permission not granted');
-        };
-
-        // Checking for initial notification
-        messaging()
-            .getInitialNotification()
-            .then(async remoteMessage => {
-                if(remoteMessage){
-                    console.log('Notification caused app to open from quit state', remoteMessage.notification);
-                }
-            });
-
-        // On notification opened app
-        messaging().onNotificationOpenedApp(remoteMessage => {
-            console.log('Notification caused app to open from quit state', remoteMessage.notification);
-        });
+    //     if(enabled){
+    //         console.log('Authorization status: ', authStatus);
+    //     }
+    // };
 
 
-        // Background notification
-        messaging().setBackgroundMessageHandler(async remoteMessage => {
-            console.log('Message handled in the background', remoteMessage);
-        });
+    // // Use effect (Working only in deployment build)
+    // useEffect(() => {
+
+    //     // Messaging request
+    //     if(requestPushMessagesPermission()){
+    //         messaging()
+    //             .getToken()
+    //             .then(token => {
+    //                 console.log(token);
+    //             });
+    //     }else{
+    //         console.log('Permission not granted');
+    //     };
+
+    //     // Checking for initial notification
+    //     messaging()
+    //         .getInitialNotification()
+    //         .then(async remoteMessage => {
+    //             if(remoteMessage){
+    //                 console.log('Notification caused app to open from quit state', remoteMessage.notification);
+    //             }
+    //         });
+
+    //     // On notification opened app
+    //     messaging().onNotificationOpenedApp(remoteMessage => {
+    //         console.log('Notification caused app to open from quit state', remoteMessage.notification);
+    //     });
 
 
-        // Unsubscribe
-        const unsubscribe = messaging().onMessage(async remoteMessage => {
-            Alert.alert('A new FCM message arrived', JSON.stringify(remoteMessage));
-        });
+    //     // Background notification
+    //     messaging().setBackgroundMessageHandler(async remoteMessage => {
+    //         console.log('Message handled in the background', remoteMessage);
+    //     });
 
 
-        // Return
-        return unsubscribe;
+    //     // Unsubscribe
+    //     const unsubscribe = messaging().onMessage(async remoteMessage => {
+    //         Alert.alert('A new FCM message arrived', JSON.stringify(remoteMessage));
+    //     });
 
-    }, []);
+
+    //     // Return
+    //     return unsubscribe;
+
+    // }, []);
 
     return (
         <>
