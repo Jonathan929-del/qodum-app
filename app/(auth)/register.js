@@ -3,7 +3,7 @@ import '../../firebase';
 import {app} from '../../firebase';
 import {AuthContext} from '../../context/Auth';
 import messaging from '@react-native-firebase/messaging';
-import {getFirestore, collection, addDoc, updateDoc} from 'firebase/firestore'; 
+import {getFirestore, collection, addDoc} from 'firebase/firestore'; 
 import {getAuth, createUserWithEmailAndPassword} from 'firebase/auth';
 
 import axios from 'axios';

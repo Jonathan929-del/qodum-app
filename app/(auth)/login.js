@@ -4,6 +4,7 @@ import axios from 'axios';
 import {useContext, useState} from 'react';
 import {AuthContext} from '../../context/Auth';
 import {useForm, Controller} from 'react-hook-form';
+import messaging from '@react-native-firebase/messaging';
 import {router, useLocalSearchParams} from 'expo-router';
 import {getAuth, signInWithEmailAndPassword} from 'firebase/auth';
 import {Image, Text, View, Button, TouchableOpacity} from 'react-native';
@@ -62,14 +63,23 @@ const login = () => {
 
 
             // Firebase registration
-            const auth = getAuth();
-            const firebaseRes = await signInWithEmailAndPassword(auth, type === 'student' ? res.data.student.email : res.data.email, data.password);
-            if(!firebaseRes._tokenResponse){
+            try {
+                const auth = getAuth();
+                await signInWithEmailAndPassword(auth, type === 'student' ? res.data.student.email : res.data.email, data.password);
+                // Subscribing to topic
+                if(type === 'student'){
+                    await messaging().subscribeToTopic(`student_assignments_${res.data.student.class_name}`);
+                    await messaging().subscribeToTopic(`student_${res.data.adm_no.replace(/\//g, '_')}`);
+                }else{
+                    await messaging().subscribeToTopic(`teacher_${res.data.adm_no.replace(/\//g, '_')}`);
+                };
+                
+            }catch(err){
                 setSnackbarMessage('Error Registring!');
                 setVisible(true);
                 setIsLoading(false);
-                return;                
-            };
+                return;
+            }
 
 
             // User login
