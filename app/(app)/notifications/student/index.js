@@ -1,9 +1,9 @@
 // Imports
 import axios from 'axios';
 import moment from 'moment';
-import {ActivityIndicator, Card, Icon} from 'react-native-paper';
 import {AuthContext} from '../../../../context/Auth';
 import {useContext, useEffect, useState} from 'react';
+import {ActivityIndicator, Card, Icon} from 'react-native-paper';
 import {ScrollView, Text, TouchableOpacity, View} from 'react-native';
 
 
@@ -41,7 +41,7 @@ export default function App() {
 
             // Viewing notifications
             const viewNotificationLink = `${process.env.EXPO_PUBLIC_API_URL}/notifications/view-notifications`;
-            const viewhNotificationsRes = await axios.post(viewNotificationLink, {notifications_ids:fetchNotificationsRes.data.map(d => d.id)});
+            await axios.post(viewNotificationLink, {notifications_ids:fetchNotificationsRes.data.map(d => d.id)});
             setIsLoading(false);
 
         };
@@ -80,7 +80,7 @@ export default function App() {
             </View>
 
             {/* Notifications */}
-            <View style={{width:'80%', display:'flex', flexDirection:'column', alignItems:'center', gap:10}}>
+            {/* <View style={{width:'80%', display:'flex', flexDirection:'column', alignItems:'center', gap:10}}>
                 {isLoading ? (
                     <ActivityIndicator />
                 ) : notifications.map(n => (
@@ -96,7 +96,7 @@ export default function App() {
                         </View>
                     </Card>
                 ))}
-            </View>
+            </View> */}
 
         </ScrollView>
     );

@@ -48,6 +48,6 @@ export default function HomeLayout() {
                     <Slot/>
                 </AuthProvider>
             </PaperProvider>
-        // </NotificationProvider>
+        </NotificationProvider>
     );
 };
