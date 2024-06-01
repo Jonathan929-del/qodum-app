@@ -2,12 +2,12 @@
 import Topbar from './Topbar';
 import Academics from './Academics';
 import Transport from './Transport';
-import {ScrollView, View, StatusBar} from 'react-native';
 import Celebration from './Celebration';
 import EdisappToday from './EdisappToday';
 import Communication from './Communication';
 import SchoolUpdates from './SchoolUpdates';
 import AttendanceProgress from './AttendanceProgress';
+import {ScrollView, View, StatusBar} from 'react-native';
 
 
 

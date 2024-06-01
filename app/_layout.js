@@ -7,6 +7,7 @@ import * as Updates from 'expo-updates';
 import {StatusBar} from 'expo-status-bar';
 import {AuthProvider} from '../context/Auth';
 import {PaperProvider} from 'react-native-paper'
+// import {NotificationProvider} from '../context/NotificationProvider';
 
 
 
@@ -40,12 +41,13 @@ export default function HomeLayout() {
 
 
     return (
-        <PaperProvider theme={theme}>
-            <AuthProvider>
-                <StatusBar style='auto' />
-                <Slot/>
-            </AuthProvider>
-        </PaperProvider>
-
+        // <NotificationProvider>
+            <PaperProvider theme={theme}>
+                <AuthProvider>
+                    <StatusBar style='auto' />
+                    <Slot/>
+                </AuthProvider>
+            </PaperProvider>
+        // {/* </NotificationProvider> */}
     );
 };

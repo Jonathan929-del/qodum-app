@@ -1,12 +1,12 @@
 // Imports
 import '../../firebase';
 import {app} from '../../firebase';
-import {AuthContext} from '../../context/Auth';
 import messaging from '@react-native-firebase/messaging';
 import {getFirestore, collection, addDoc} from 'firebase/firestore'; 
 import {getAuth, createUserWithEmailAndPassword} from 'firebase/auth';
 
 import axios from 'axios';
+import {AuthContext} from '../../context/Auth';
 import {useForm, Controller} from 'react-hook-form';
 import {useContext, useEffect, useState} from 'react';
 import {Image, Text, View, Button} from 'react-native';
@@ -80,16 +80,15 @@ const register = () => {
 
                 // Subscribing to topic
                 if(type === 'student'){
-                    await messaging().subscribeToTopic(`student_assignments_${res.data.student.class_name}`);
-                    await messaging().subscribeToTopic(`student_${res.data.adm_no.replace(/\//g, '_')}`);
+                    await messaging().subscribeToTopic(`student.assignments.${res.data.student.class_name}`);
+                    await messaging().subscribeToTopic(`student.${res.data.adm_no.replace(/\//g, '_')}`);
                 }else{
-                    await messaging().subscribeToTopic(`teacher_${res.data.adm_no.replace(/\//g, '_')}`);
+                    await messaging().subscribeToTopic(`teacher.${res.data.adm_no.replace(/\//g, '_')}`);
                 };
             }catch(err){
                 setSnackbarMessage('Error Registring!');
                 setVisible(true);
                 setIsLoading(false);
-                console.log(err);
                 return;
             }
 

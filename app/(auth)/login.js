@@ -1,12 +1,13 @@
 // Imports
 import '../../firebase';
+import messaging from '@react-native-firebase/messaging';
+import {getAuth, signInWithEmailAndPassword} from 'firebase/auth';
+
 import axios from 'axios';
 import {useContext, useState} from 'react';
 import {AuthContext} from '../../context/Auth';
 import {useForm, Controller} from 'react-hook-form';
-import messaging from '@react-native-firebase/messaging';
 import {router, useLocalSearchParams} from 'expo-router';
-import {getAuth, signInWithEmailAndPassword} from 'firebase/auth';
 import {Image, Text, View, Button, TouchableOpacity} from 'react-native';
 import {TextInput as PaperTextInput, ActivityIndicator, Snackbar, Icon} from 'react-native-paper';
 
@@ -27,6 +28,7 @@ const login = () => {
 
 
     // Snack bar actions
+    const [snackbarMessage, setSnackbarMessage] = useState('');
     const [visible, setVisible] = useState(false);
     const onDismissSnackBar = () => setVisible(false);
 
@@ -68,10 +70,10 @@ const login = () => {
                 await signInWithEmailAndPassword(auth, type === 'student' ? res.data.student.email : res.data.email, data.password);
                 // Subscribing to topic
                 if(type === 'student'){
-                    await messaging().subscribeToTopic(`student_assignments_${res.data.student.class_name}`);
-                    await messaging().subscribeToTopic(`student_${res.data.adm_no.replace(/\//g, '_')}`);
+                    await messaging().subscribeToTopic(`student.assignments.${res.data.student.class_name}`);
+                    await messaging().subscribeToTopic(`student.${res.data.adm_no.replace(/\//g, '_')}`);
                 }else{
-                    await messaging().subscribeToTopic(`teacher_${res.data.adm_no.replace(/\//g, '_')}`);
+                    await messaging().subscribeToTopic(`teacher.${res.data.adm_no.replace(/\//g, '_')}`);
                 };
                 
             }catch(err){

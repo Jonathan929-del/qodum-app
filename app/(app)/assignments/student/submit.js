@@ -140,7 +140,7 @@ const CreateAssignment = () => {
 
             // Sending notification
             const notificationLink = `${process.env.EXPO_PUBLIC_API_URL}/notifications/send-notification`;
-            await axios.post(notificationLink, {title:'Answer Added!', body:'A student added his/her answer!', topic:`teacher_${assignment.creator_adm_no.replace(/\//g, '_')}`});
+            await axios.post(notificationLink, {title:'Answer Added!', body:'A student added his/her answer!', topic:`teacher.${assignment.creator_adm_no.replace(/\//g, '_')}`});
 
 
             // Reseting

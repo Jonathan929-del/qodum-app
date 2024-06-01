@@ -155,7 +155,7 @@ const CreateAssignment = () => {
 
             // Sending notification
             const notificationLink = `${process.env.EXPO_PUBLIC_API_URL}/notifications/send-notification`;
-            await axios.post(notificationLink, {title:'New Assignment!', body:'A new assignment has been added', topic:`student_assignments_${selectedClass.label}`});
+            await axios.post(notificationLink, {title:'New Assignment!', body:'A new assignment has been added', topic:`student.assignments.${selectedClass.label}`});
 
             // Reseting
             setVisible(true);
