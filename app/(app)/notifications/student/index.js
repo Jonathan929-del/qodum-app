@@ -80,7 +80,7 @@ export default function App() {
             </View>
 
             {/* Notifications */}
-            {/* <View style={{width:'80%', display:'flex', flexDirection:'column', alignItems:'center', gap:10}}>
+            <View style={{width:'80%', display:'flex', flexDirection:'column', alignItems:'center', gap:10}}>
                 {isLoading ? (
                     <ActivityIndicator />
                 ) : notifications.map(n => (
@@ -96,7 +96,7 @@ export default function App() {
                         </View>
                     </Card>
                 ))}
-            </View> */}
+            </View>
 
         </ScrollView>
     );
