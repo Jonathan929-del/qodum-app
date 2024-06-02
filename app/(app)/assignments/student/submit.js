@@ -2,15 +2,15 @@
 import axios from 'axios';
 import {Buffer} from 'buffer'
 import 'react-native-get-random-values';
-import {useState, useContext} from 'react';
 import * as FileSystem from 'expo-file-system';
-import {useForm, Controller} from 'react-hook-form';
 import {AuthContext} from '../../../../context/Auth';
+import {useState, useContext, useEffect} from 'react';
 import * as DocumentPicker from'expo-document-picker';
 import {router, useLocalSearchParams} from 'expo-router';
 import {S3Client, PutObjectCommand} from '@aws-sdk/client-s3';
 import {Text, TouchableOpacity, View, ScrollView, Button} from 'react-native';
 import {TextInput as PaperTextInput, ActivityIndicator, Snackbar, Icon} from 'react-native-paper';
+import SubmissionConfirmation from '../../../../components/assignments/student/SubmissionConfirmation';
 
 
 
@@ -33,6 +33,15 @@ const CreateAssignment = () => {
     const assignment = useLocalSearchParams();
 
 
+    // Submission confirmation
+    const [isSubmissionConfirmation, setIsSubmissionConfirmation] = useState(false);
+    const [isSubmissionConfirmed, setIsSubmissionConfirmed] = useState(false);
+
+
+    // Answer
+    const [answer, setAnswer] = useState('');
+
+
     // States
     const [states, setStates] = useState({
         errors:{
@@ -42,10 +51,6 @@ const CreateAssignment = () => {
         loading:false,
         loadingData:false
     });
-
-
-    // Controller
-    const {control, handleSubmit, reset} = useForm();
 
 
     // Values
@@ -116,26 +121,36 @@ const CreateAssignment = () => {
     };
 
 
+    // Submit click
+    const submitClick = () => {
+
+        // Empty validations
+        if(!answer || !selectedFile){
+            setStates({...states, errors:{
+                answer:!answer ? '*Please enter an answer' : '',
+                attachment:!selectedFile ? '*Please upload an attachment ' : '',
+            }});
+            return;
+        };
+
+        // Submitting
+        setIsSubmissionConfirmation(true);
+
+    };
+
+
     // On submit
-    const onSubmit = async data => {
+    const onSubmit = async () => {
         setStates({...states, loading:true});
         try {
-
-            // Empty validations
-            if(!data.answer || !selectedFile){
-                setStates({...states, errors:{
-                    answer:!data.answer ? '*Please enter an answer' : '',
-                    attachment:!selectedFile ? '*Please upload an attachment ' : '',
-                }});
-                return;
-            };
 
             // Upload pdf
             const pdfUploadResponse = await uploadFileToS3();
 
             // Api call
             const link = `${process.env.EXPO_PUBLIC_API_URL}/assignments/assignment/submit`;
-            const res = await axios.post(link, {assignment_id:assignment._id, student:{adm_no:user.adm_no, name:user?.student?.name, roll_no:user?.student?.roll_no}, answer:data.answer, attachment:pdfUploadResponse});
+            const res = await axios.post(link, {assignment_id:assignment._id, student:{adm_no:user.adm_no, name:user?.student?.name, roll_no:user?.student?.roll_no}, answer:answer, attachment:pdfUploadResponse});
+            console.log(res.data);
 
 
             // Sending notification
@@ -147,15 +162,20 @@ const CreateAssignment = () => {
             setMessage(res.data === 'Submitted' ? 'Submitted Successfully!' : 'Error Submitting');
             setVisible(true);
             setSelectedFile();
-            reset({
-                answer:''
-            });
             setStates({...states, loading:false});
-            router.push({pathname:'/assignments/student', params:{submitted:true}})
+            router.push({pathname:'/assignments/student', params:{submitted:true}});
         }catch(err){
             console.log(err);
         }
     };
+
+
+    // Use effect
+    useEffect(() => {
+        if(isSubmissionConfirmed){
+            onSubmit();
+        };
+    }, [isSubmissionConfirmation, isSubmissionConfirmed]);
 
 
     return (
@@ -198,22 +218,16 @@ const CreateAssignment = () => {
                             {/* Answer */}
                             <View style={{gap:6}}>
                                 <Text>Answer</Text>
-                                <Controller
-                                    control={control}
-                                    render={({field:{onChange, onBlur, value}}) => (
-                                        <PaperTextInput
-                                            style={{backgroundColor:'#F5F5F8'}}
-                                            placeholder='Enter Answer'
-                                            onBlur={() =>setStates({...states, errors:{...states.errors, answer:value === '' ? '*Please enter an answer' : ''}})}
-                                            placeholderTextColor='gray'
-                                            left={<PaperTextInput.Icon icon='pencil' size={30} color='gray' />}
-                                            value={value}
-                                            onChangeText={onChange}
-                                            multiline
-                                            numberOfLines={4}
-                                        />
-                                    )}
-                                    name='answer'
+                                <PaperTextInput
+                                    style={{backgroundColor:'#F5F5F8'}}
+                                    placeholder='Enter Answer'
+                                    onBlur={v => setStates({...states, errors:{...states.errors, answer:v === '' ? '*Please enter an answer' : ''}})}
+                                    placeholderTextColor='gray'
+                                    left={<PaperTextInput.Icon icon='pencil' size={30} color='gray' />}
+                                    value={answer}
+                                    onChangeText={v => setAnswer(v)}
+                                    multiline
+                                    numberOfLines={4}
                                 />
                                 {states.errors.answer !== '' && <Text style={{color:'red', marginTop:-6}}>{states.errors.answer}</Text>}
                             </View>
@@ -224,7 +238,7 @@ const CreateAssignment = () => {
                                 <ActivityIndicator />
                             ) : (
                                 <Button
-                                    onPress={handleSubmit(onSubmit)}
+                                    onPress={submitClick}
                                     title='Submit'
                                 />
                             )}
@@ -233,6 +247,16 @@ const CreateAssignment = () => {
                     )}
                 </View>
             </ScrollView>
+
+
+            {/* Submission confirmation message */}
+            {isSubmissionConfirmation && (
+                <SubmissionConfirmation
+                    isSubmissionConfirmation={isSubmissionConfirmation}
+                    setIsSubmissionConfirmation={setIsSubmissionConfirmation}
+                    setIsSubmissionConfirmed={setIsSubmissionConfirmed}
+                />
+            )}
 
 
             {/* Snackbar */}

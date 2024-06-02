@@ -64,7 +64,6 @@ const App = () => {
             [
                 {
                     text: 'No',
-                    // onPress: () => Alert.alert('Cancel Pressed'),
                     style:'destructive',
                 },
                 {
@@ -72,14 +71,7 @@ const App = () => {
                     onPress: () => deleteAssignment(id),
                     style:'default',
                 },
-            ],
-            {
-                cancelable: true,
-                onDismiss: () =>
-                Alert.alert(
-                    'This alert was dismissed by tapping outside of the alert dialog.',
-                ),
-            },
+            ]
     );
 
 

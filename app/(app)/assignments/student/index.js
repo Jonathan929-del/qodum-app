@@ -9,6 +9,7 @@ import {router, useLocalSearchParams} from 'expo-router';
 import {Text, TouchableOpacity, View, ScrollView, Image} from 'react-native';
 import {ActivityIndicator, Card, Icon, Snackbar, Switch} from 'react-native-paper';
 import PassedAssignmentDate from '../../../../components/assignments/student/PassedAssignmentDate';
+import SubmissionConfirmed from '../../../../components/assignments/student/SubmissionConfirmed';
 
 
 
@@ -33,6 +34,10 @@ const App = () => {
 
     // Media library permissions
     const [permissionResponse, requestPermission] = MediaLibrary.usePermissions();
+
+
+    // Is submission confirmed
+    const [isSubmissionConfirmed, setIsSubmissionConfirmed] = useState(false);
 
 
     // Selected tab
@@ -103,8 +108,7 @@ const App = () => {
     // Use effect
     useEffect(() => {
         if(submitted){
-            setVisible(true);
-            setSnackbarMessage('Submitted Successfully');
+            setIsSubmissionConfirmed(true);
         };
         setIsLoading(true);
         const fetcher = async () => {
@@ -358,6 +362,15 @@ const App = () => {
                 isSubmitDatePassed={isSubmitDatePassed}
                 setIsSubmitDatePassed={setIsSubmitDatePassed}
                 pastDate={moment(new Date(isSubmitDatePassed)).format('DD MMM, YYYY')}
+            />
+        )}
+
+
+        {/* Submission confirmation message */}
+        {isSubmissionConfirmed && (
+            <SubmissionConfirmed
+                isSubmissionConfirmed={isSubmissionConfirmed}
+                setIsSubmissionConfirmed={setIsSubmissionConfirmed}
             />
         )}
 
