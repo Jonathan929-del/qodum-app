@@ -41,13 +41,13 @@ export default function HomeLayout() {
 
 
     return (
+    <AuthProvider>
         <NotificationProvider>
             <PaperProvider theme={theme}>
-                <AuthProvider>
-                    <StatusBar style='auto' />
-                    <Slot/>
-                </AuthProvider>
+                <StatusBar style='auto' />
+                <Slot/>
             </PaperProvider>
         </NotificationProvider>
+    </AuthProvider>
     );
 };

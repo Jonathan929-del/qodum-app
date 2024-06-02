@@ -1,4 +1,6 @@
 // Imports
+import axios from 'axios';
+import {AuthContext} from './Auth';
 import {Snackbar, Icon} from 'react-native-paper';
 import messaging from '@react-native-firebase/messaging';
 import {createContext, useContext, useState, useEffect} from 'react';
@@ -24,56 +26,78 @@ export const useNotification = () => useContext(NotificationContext);
 // Notification provider
 export const NotificationProvider = ({ children }) => {
 
-    
-    const [visible, setVisible] = useState(false);
-    const [snackbarMessage, setSnackbarMessage] = useState('');
-    const [messageStyle, setMessageStyle] = useState('');
-    const onDismissSnackBar = () => setVisible(false);
+  // User
+  const {user} = useContext(AuthContext);
 
-    const requestPushMessagesPermission = async () => {
-        const authStatus = await messaging().requestPermission();
-        const enabled =
-        authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
-        authStatus === messaging.AuthorizationStatus.PROVISIONAL;
+  
+  // States
+  const [visible, setVisible] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState('');
+  const [messageStyle, setMessageStyle] = useState('');
+  const onDismissSnackBar = () => setVisible(false);
 
-        if (enabled) {
-            console.log('Authorization status: ', authStatus);
-        }
+
+  // Notifications count
+  const [notificationsCount, setNotificationsCount] = useState(0);
+
+
+  // Request push notification
+  const requestPushMessagesPermission = async () => {
+    const authStatus = await messaging().requestPermission();
+    const enabled =
+    authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
+    authStatus === messaging.AuthorizationStatus.PROVISIONAL;
+
+    if (enabled) {
+      console.log('Authorization status: ', authStatus);
+    }
+  };
+
+
+  // Use effect
+  useEffect(() => {
+
+    // Fetcher
+    const fetcher = async () => {
+      // API call
+      const link = `${process.env.EXPO_PUBLIC_API_URL}/notifications/notifications-count`;
+      const res = await axios.post(link, {to:[user.adm_no, user?.student?.class_name]});
+      setNotificationsCount(res.data);
+    };
+    fetcher();
+    // Messaging request
+    if(requestPushMessagesPermission()){
+      messaging().getToken();
+    }else{
+      setMessageStyle('alert');
+      setSnackbarMessage('Permission not granted');
+      setVisible(true);
     };
 
-    useEffect(() => {
-        // Messaging request
-        if (requestPushMessagesPermission()) {
-        messaging().getToken();
-        } else {
-        setMessageStyle('alert');
-        setSnackbarMessage('Permission not granted');
-        setVisible(true);
-        }
+    // On notification opened app
+    // messaging().onNotificationOpenedApp(remoteMessage => {
+    // console.log('Notification caused app to open from quit state', remoteMessage.notification);
+    // });
 
-        // On notification opened app
-        // messaging().onNotificationOpenedApp(remoteMessage => {
-        // console.log('Notification caused app to open from quit state', remoteMessage.notification);
-        // });
+    // Background notification
+    // messaging().setBackgroundMessageHandler(async remoteMessage => {
+    //     console.log('Message handled in the background', remoteMessage);
+    // });
 
-        // Background notification
-        // messaging().setBackgroundMessageHandler(async remoteMessage => {
-        //     console.log('Message handled in the background', remoteMessage);
-        // });
+    // Unsubscribe
+    const unsubscribe = messaging().onMessage(async remoteMessage => {
+      setMessageStyle('green');
+      setSnackbarMessage(remoteMessage.notification.body);
+      setVisible(true);
+    });
 
-        // Unsubscribe
-        const unsubscribe = messaging().onMessage(async remoteMessage => {
-            setMessageStyle('green');
-            setSnackbarMessage(remoteMessage.notification.body);
-            setVisible(true);
-        });
+    // Return
+    return unsubscribe;
 
-        // Return
-        return unsubscribe;
-  }, []);
+}, []);
 
   return (
-    <NotificationContext.Provider value={{setMessageStyle, setSnackbarMessage, setVisible}}>
+    <NotificationContext.Provider value={{setMessageStyle, setSnackbarMessage, setVisible, notificationsCount, setNotificationsCount}}>
       {children}
       <Snackbar
         style={{ backgroundColor: messageStyle }}

@@ -1,11 +1,11 @@
 // Imports
-import axios from 'axios';
+import {useContext} from 'react';
 import {router} from 'expo-router';
 import {Icon} from 'react-native-paper';
 import {usePathname} from 'expo-router';
 import {AuthContext} from '../../context/Auth';
-import {useContext, useEffect, useState} from 'react';
 import {Text, TouchableOpacity, View} from 'react-native';
+import {useNotification} from '../../context/NotificationProvider';
 
 
 
@@ -19,26 +19,12 @@ const Tabs = () => {
     const pathname = usePathname();
 
 
+    // Notifcation count
+    const {notificationsCount} = useNotification();
+
+
     // User
     const {user} = useContext(AuthContext);
-
-
-    // Notification count
-    const [notificationCount, setNotificationCount] = useState(0);
-
-
-    // Use effect
-    useEffect(() => {
-        const fetcher = async () => {
-
-            // API call
-            const link = `${process.env.EXPO_PUBLIC_API_URL}/notifications/notifications-count`;
-            const res = await axios.post(link, {to:[user.adm_no, user?.student?.class_name]});
-            setNotificationCount(res.data);
-
-        };
-        fetcher();
-    }, []);
 
 
     return (
@@ -69,9 +55,9 @@ const Tabs = () => {
                     size={30}
                 />
                 <Text style={{color:(pathname === '/notifications/teacher' || pathname === '/notifications/student') ? '#0094DA' : '#889CB7', fontSize:12}}>Activity</Text>
-                {notificationCount !== 0 && (
+                {notificationsCount !== 0 && (
                     <View style={{position:'absolute', top:0, right:10, width:20, height:20, display:'flex', alignItems:'center', justifyContent:'center', borderRadius:30, backgroundColor:'red'}}>
-                        <Text style={{fontSize:11, color:'#fff'}}>{notificationCount}</Text>
+                        <Text style={{fontSize:11, color:'#fff'}}>{notificationsCount}</Text>
                     </View>
                 )}
             </TouchableOpacity>

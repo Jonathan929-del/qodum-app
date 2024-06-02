@@ -110,7 +110,7 @@ const App = () => {
 
             // Sending notification
             const notificationLink = `${process.env.EXPO_PUBLIC_API_URL}/notifications/send-notification`;
-            await axios.post(notificationLink, {title:'Feedback Added!', body:'Your teacher added a feedback to your answer', topic:`student.${JSON.parse(answer).student.adm_no.replace(/\//g, '_')}`});
+            await axios.post(notificationLink, {title:'Feedback Added!', body:'Your teacher added a feedback to your answer', topic:`student.${JSON.parse(answer).student.adm_no.replace(/\//g, '_')}`, type:'feedback'});
 
 
             // Reseting

@@ -155,13 +155,14 @@ const CreateAssignment = () => {
 
             // Sending notification
             const notificationLink = `${process.env.EXPO_PUBLIC_API_URL}/notifications/send-notification`;
-            await axios.post(notificationLink, {title:'New Assignment!', body:'A new assignment has been added', topic:`student.assignments.${selectedClass.label}`});
+            await axios.post(notificationLink, {title:'New Assignment!', body:'A new assignment has been added', topic:`student.assignments.${selectedClass.label}`, type:'assignment'});
 
             // Reseting
             setVisible(true);
             setSelectedSubject({label:'', value:''});
             setSelectedClass({label:'', value:''});
             setAssignmentDate(new Date());
+            setLastDateOfSubmission(new Date());
             setSelectedFile();
             setIsAllowStudentForMultipleSubmission(false);
             setIsActive(false);
