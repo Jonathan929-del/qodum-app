@@ -1,9 +1,8 @@
 // Imports
 import axios from 'axios';
+import {useState} from 'react';
 import 'react-native-get-random-values';
-import {useState, useContext} from 'react';
 import {useForm, Controller} from 'react-hook-form';
-import {AuthContext} from '../../../../context/Auth';
 import {Dropdown} from 'react-native-element-dropdown';
 import {router, useLocalSearchParams} from 'expo-router';
 import {Text, TouchableOpacity, View, ScrollView, Button} from 'react-native';
@@ -20,10 +19,6 @@ const App = () => {
     const [visible, setVisible] = useState(false);
     const [message, setMessage] = useState('');
     const onDismissSnackBar = () => setVisible(false);
-
-
-    // User
-    const {user} = useContext(AuthContext);
 
 
     // Link params
@@ -110,7 +105,15 @@ const App = () => {
 
             // Sending notification
             const notificationLink = `${process.env.EXPO_PUBLIC_API_URL}/notifications/send-notification`;
-            await axios.post(notificationLink, {title:'Feedback Added!', body:'Your teacher added a feedback to your answer', topic:`student.${JSON.parse(answer).student.adm_no.replace(/\//g, '_')}`, type:'feedback'});
+            const notificationsParams = {
+                title:'Feedback Added!',
+                body:'Your teacher added a feedback to your answer!',
+                topic:`student.${JSON.parse(answer).student.adm_no.replace(/\//g, '_')}`,
+                type:'feedback',
+                assignment_id:JSON.parse(assignment)._id,
+                answer_id:JSON.parse(answer)._id
+            };
+            await axios.post(notificationLink, notificationsParams);
 
 
             // Reseting

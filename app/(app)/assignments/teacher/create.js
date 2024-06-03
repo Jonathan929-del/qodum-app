@@ -151,11 +151,18 @@ const CreateAssignment = () => {
 
             // Api call
             const link = `${process.env.EXPO_PUBLIC_API_URL}/assignments/create`;
-            await axios.post(link, {creator:user.name, creator_image:user.image, creator_adm_no:user.adm_no, subject:selectedSubject.label, class_name:selectedClass.label, title:data.title, assignment_date:assignmentDate, last_date_of_submission:lastDateOfSubmission, attachment:pdfUploadResponse, description:data.description, is_allow_student_for_multiple_submission:isAllowStudentForMultipleSubmission, is_active:isActive});
-
+            const res = await axios.post(link, {creator:user.name, creator_image:user.image, creator_adm_no:user.adm_no, subject:selectedSubject.label, class_name:selectedClass.label, title:data.title, assignment_date:assignmentDate, last_date_of_submission:lastDateOfSubmission, attachment:pdfUploadResponse, description:data.description, is_allow_student_for_multiple_submission:isAllowStudentForMultipleSubmission, is_active:isActive});
+            
             // Sending notification
+            const params = {
+                title:'New Assignment!',
+                body:'A new assignment has been added!',
+                topic:`student.assignments.${selectedClass.label}`,
+                type:'assignment',
+                assignment_id:res.data._id
+            };
             const notificationLink = `${process.env.EXPO_PUBLIC_API_URL}/notifications/send-notification`;
-            await axios.post(notificationLink, {title:'New Assignment!', body:'A new assignment has been added', topic:`student.assignments.${selectedClass.label}`, type:'assignment'});
+            await axios.post(notificationLink, params);
 
             // Reseting
             setVisible(true);

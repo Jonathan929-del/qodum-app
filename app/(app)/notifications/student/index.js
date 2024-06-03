@@ -1,12 +1,13 @@
 // Imports
 import axios from 'axios';
 import moment from 'moment';
+import { router } from 'expo-router';
 import {LinearGradient} from 'expo-linear-gradient';
 import {AuthContext} from '../../../../context/Auth';
 import {useContext, useEffect, useState} from 'react';
 import {ActivityIndicator, Card, Icon} from 'react-native-paper';
-import {Image, ScrollView, Text, TouchableOpacity, View} from 'react-native';
 import {useNotification} from '../../../../context/NotificationProvider';
+import {Image, ScrollView, Text, TouchableOpacity, View} from 'react-native';
 
 
 
@@ -33,7 +34,26 @@ export default function App() {
 
     // Notifications
     const [notifications, setNotifications] = useState({});
-    console.log(notifications.unviewed_notifications);
+
+
+    // Click handler
+    const clickHandler = n => {
+        if(n.type === 'assignment'){
+            const a = {
+                _id:n.assignment_id
+            }
+            router.push({pathname:'/assignments/student/view', params:a});
+        }else{
+            router.push({pathname:'/assignments/student/view-feedback', params:{
+                a:JSON.stringify({
+                    _id:n.assignment_id
+                }),
+                answer:JSON.stringify({
+                    _id:n.answer_id
+                })
+            }});
+        }
+    };
 
 
     // Use effect
@@ -49,7 +69,7 @@ export default function App() {
             // Viewing notifications
             const viewNotificationLink = `${process.env.EXPO_PUBLIC_API_URL}/notifications/view-notifications`;
             await axios.post(viewNotificationLink, {notifications_ids:fetchNotificationsRes.data.unviewed_notifications.map(d => d.id)});
-            setNotificationsCount(0);
+            // setNotificationsCount(0);
             setIsLoading(false);
 
         };
@@ -93,33 +113,38 @@ export default function App() {
                     <View style={{width:'100%', gap:20}}>
 
                         {notifications.unviewed_notifications?.map(n => (
-                            <Card style={{width:'100%'}} key={n.id}>
-                                <View style={{display:'flex', flexDirection:'column', gap:4, paddingVertical:10, paddingHorizontal:20}}>
-                                    <View style={{display:'flex', flexDirection:'row', alignItems:'center', gap:8}}>
-                                        <Image
-                                            source={n.type === 'assignment'? require('../../../../assets/Home/Results.png') : require('../../../../assets/Notifications/AddedFeedback.png')}
-                                            style={{height:30, width:30}}
-                                        />
-                                        <Text style={{fontSize:16, fontWeight:'600'}}>{n.title}</Text>
-                                    </View>
-                                    <Text style={{fontSize:14}}>{n.body}</Text>
-                                    <View style={{display:'flex', flexDirection:'row', alignItems:'center', justifyContent:'space-between'}}>
-                                        <View style={{display:'flex', flexDirection:'row', alignItems:'center', marginTop:10}}>
-                                            <Icon source='calendar' color='#0094DA' size={20}/>
-                                            <Text style={{fontSize:14, color:'#0094DA', marginLeft:2}}>Date:</Text>
-                                            <Text style={{fontSize:14, color:'gray'}}>{moment(new Date(n.created_at._seconds * 1000 + n.created_at._nanoseconds / 1000000)).format('DD-MM-YYYY')}</Text>
+                            <TouchableOpacity
+                                key={n.id}
+                                onPress={() => clickHandler(n)}
+                            >
+                                <Card style={{width:'100%'}}>
+                                    <View style={{display:'flex', flexDirection:'column', gap:4, paddingVertical:10, paddingHorizontal:20}}>
+                                        <View style={{display:'flex', flexDirection:'row', alignItems:'center', gap:8}}>
+                                            <Image
+                                                source={n.type === 'assignment'? require('../../../../assets/Home/Results.png') : require('../../../../assets/Notifications/AddedFeedback.png')}
+                                                style={{height:30, width:30}}
+                                            />
+                                            <Text style={{fontSize:16, fontWeight:'600'}}>{n.title}</Text>
                                         </View>
-                                        <View style={{display:'flex', flexDirection:'row', alignItems:'center', marginTop:10}}>
-                                            <Icon source='clock' color='#0094DA' size={20}/>
-                                            <Text style={{fontSize:14, color:'#0094DA', marginLeft:2}}>Time:</Text>
-                                            <Text style={{fontSize:14, color:'gray'}}>{moment(new Date(n.created_at._seconds * 1000 + Math.floor(n.created_at._nanoseconds / 1000000))).format('HH:mm')}</Text>
+                                        <Text style={{fontSize:14}}>{n.body}</Text>
+                                        <View style={{display:'flex', flexDirection:'row', alignItems:'center', justifyContent:'space-between'}}>
+                                            <View style={{display:'flex', flexDirection:'row', alignItems:'center', marginTop:10}}>
+                                                <Icon source='calendar' color='#0094DA' size={20}/>
+                                                <Text style={{fontSize:14, color:'#0094DA', marginLeft:2}}>Date:</Text>
+                                                <Text style={{fontSize:14, color:'gray'}}>{moment(new Date(n.created_at._seconds * 1000 + n.created_at._nanoseconds / 1000000)).format('DD-MM-YYYY')}</Text>
+                                            </View>
+                                            <View style={{display:'flex', flexDirection:'row', alignItems:'center', marginTop:10}}>
+                                                <Icon source='clock' color='#0094DA' size={20}/>
+                                                <Text style={{fontSize:14, color:'#0094DA', marginLeft:2}}>Time:</Text>
+                                                <Text style={{fontSize:14, color:'gray'}}>{moment(new Date(n.created_at._seconds * 1000 + Math.floor(n.created_at._nanoseconds / 1000000))).format('HH:mm')}</Text>
+                                            </View>
                                         </View>
                                     </View>
-                                </View>
-                            </Card>
+                                </Card>
+                            </TouchableOpacity>
                         ))}
 
-                        {notifications?.unviewed_notifications?.length > 0 && (
+                        {notifications?.unviewed_notifications?.length > 0 && notifications?.viewed_notifications?.length > 0 && (
                             <View style={{display:'flex', flexDirection:'row', gap:10, alignItems:'center'}}>
                                 <LinearGradient
                                     colors={['#fff', '#0094DA']}
@@ -138,30 +163,35 @@ export default function App() {
                         )}
 
                         {notifications.viewed_notifications?.map(n => (
-                            <Card style={{width:'100%'}} key={n.id}>
-                                <View style={{display:'flex', flexDirection:'column', gap:4, paddingVertical:10, paddingHorizontal:20}}>
-                                    <View style={{display:'flex', flexDirection:'row', alignItems:'center', gap:8}}>
-                                        <Image
-                                            source={n.type === 'assignment'? require('../../../../assets/Home/Results.png') : require('../../../../assets/Notifications/AddedFeedback.png')}
-                                            style={{height:30, width:30}}
-                                        />
-                                        <Text style={{fontSize:16, fontWeight:'600'}}>{n.title}</Text>
-                                    </View>
-                                    <Text style={{fontSize:14}}>{n.body}</Text>
-                                    <View style={{display:'flex', flexDirection:'row', alignItems:'center', justifyContent:'space-between'}}>
-                                        <View style={{display:'flex', flexDirection:'row', alignItems:'center', marginTop:10}}>
-                                            <Icon source='calendar' color='#0094DA' size={20}/>
-                                            <Text style={{fontSize:14, color:'#0094DA', marginLeft:2}}>Date:</Text>
-                                            <Text style={{fontSize:14, color:'gray'}}>{moment(new Date(n.created_at._seconds * 1000 + n.created_at._nanoseconds / 1000000)).format('DD-MM-YYYY')}</Text>
+                            <TouchableOpacity
+                                key={n.id}
+                                onPress={() => clickHandler(n)}
+                            >
+                                <Card style={{width:'100%'}}>
+                                    <View style={{display:'flex', flexDirection:'column', gap:4, paddingVertical:10, paddingHorizontal:20}}>
+                                        <View style={{display:'flex', flexDirection:'row', alignItems:'center', gap:8}}>
+                                            <Image
+                                                source={n.type === 'assignment'? require('../../../../assets/Home/Results.png') : require('../../../../assets/Notifications/AddedFeedback.png')}
+                                                style={{height:30, width:30}}
+                                            />
+                                            <Text style={{fontSize:16, fontWeight:'600'}}>{n.title}</Text>
                                         </View>
-                                        <View style={{display:'flex', flexDirection:'row', alignItems:'center', marginTop:10}}>
-                                            <Icon source='clock' color='#0094DA' size={20}/>
-                                            <Text style={{fontSize:14, color:'#0094DA', marginLeft:2}}>Time:</Text>
-                                            <Text style={{fontSize:14, color:'gray'}}>{moment(new Date(n.created_at._seconds * 1000 + Math.floor(n.created_at._nanoseconds / 1000000))).format('HH:mm')}</Text>
+                                        <Text style={{fontSize:14}}>{n.body}</Text>
+                                        <View style={{display:'flex', flexDirection:'row', alignItems:'center', justifyContent:'space-between'}}>
+                                            <View style={{display:'flex', flexDirection:'row', alignItems:'center', marginTop:10}}>
+                                                <Icon source='calendar' color='#0094DA' size={20}/>
+                                                <Text style={{fontSize:14, color:'#0094DA', marginLeft:2}}>Date:</Text>
+                                                <Text style={{fontSize:14, color:'gray'}}>{moment(new Date(n.created_at._seconds * 1000 + n.created_at._nanoseconds / 1000000)).format('DD-MM-YYYY')}</Text>
+                                            </View>
+                                            <View style={{display:'flex', flexDirection:'row', alignItems:'center', marginTop:10}}>
+                                                <Icon source='clock' color='#0094DA' size={20}/>
+                                                <Text style={{fontSize:14, color:'#0094DA', marginLeft:2}}>Time:</Text>
+                                                <Text style={{fontSize:14, color:'gray'}}>{moment(new Date(n.created_at._seconds * 1000 + Math.floor(n.created_at._nanoseconds / 1000000))).format('HH:mm')}</Text>
+                                            </View>
                                         </View>
                                     </View>
-                                </View>
-                            </Card>
+                                </Card>
+                            </TouchableOpacity>
                         ))}
 
                     </View>

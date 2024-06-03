@@ -6,8 +6,8 @@ import * as MediaLibrary from 'expo-media-library';
 import {AuthContext} from '../../../../context/Auth';
 import {useContext, useEffect, useState} from 'react';
 import {router, useLocalSearchParams} from 'expo-router';
-import {ActivityIndicator, Card, Icon, Snackbar} from 'react-native-paper';
 import {Text, TouchableOpacity, View, ScrollView} from 'react-native';
+import {ActivityIndicator, Card, Icon, Snackbar} from 'react-native-paper';
 import PassedAssignmentDate from '../../../../components/assignments/student/PassedAssignmentDate';
 
 
@@ -159,7 +159,7 @@ const App = () => {
                                 {/* Bottom */}
                                 <View style={{width:'100%', display:'flex', flexDirection:'row', backgroundColor:'#DAE0EF', borderBottomLeftRadius:10, borderBottomRightRadius:10}}>
                                     <TouchableOpacity
-                                        onPress={() => router.push({pathname:'/assignments/student/pdf-preview', params:{pdfUri:a.attachment, a:JSON.stringify(a), page:'view'}})}
+                                        onPress={() => router.push({pathname:'/assignments/student/pdf-preview', params:{pdfUri:assignment.attachment, a:JSON.stringify(assignment), page:'view'}})} 
                                         style={{flex:1, height:'100%', display:'flex', flexDirection:'row', alignItems:'center', justifyContent:'center', gap:6, paddingVertical:10, borderBottomLeftRadius:10, borderRightColor:'#fff', borderRightWidth:1.5}}
                                     >
                                         <Icon source='eye' color='#3C5EAB' size={20}/>
@@ -184,9 +184,9 @@ const App = () => {
                                             if(new Date() > new Date(assignment.last_date_of_submission)){
                                                 setIsSubmitDatePassed(assignment.last_date_of_submission);
                                             }else{
-                                                router.push({pathname:'/assignments/student/submit', params:a})}
+                                                router.push({pathname:'/assignments/student/submit', params:assignment})
                                             }
-                                        }
+                                        }}
                                         style={{flex:1, height:'100%', display:'flex', flexDirection:'row', alignItems:'center', justifyContent:'center', gap:6, borderBottomRightRadius:10, opacity:assignment?.submitted_assignments?.map(s => s.student.name).includes(user.student.name) && !assignment.is_allow_student_for_multiple_submission ? 0.5 : 1}}
                                     >
                                         {assignment?.submitted_assignments?.map(s => s.student.name).includes(user.student.name) && !assignment.is_allow_student_for_multiple_submission ? (
@@ -260,7 +260,7 @@ const App = () => {
                                                     </TouchableOpacity>
                                                     {s?.feedback?.feedback && (
                                                         <TouchableOpacity
-                                                            onPress={() => router.push({pathname:'/assignments/student/view-feedback', params:{a:JSON.stringify(a), answer:JSON.stringify(s)}})}
+                                                            onPress={() => router.push({pathname:'/assignments/student/view-feedback', params:{a:JSON.stringify(assignment), answer:JSON.stringify(s)}})}
                                                             style={{flex:1, height:'100%', display:'flex', flexDirection:'row', alignItems:'center', justifyContent:'center', gap:4}}
                                                         >
                                                             <Icon source='information' color='#3C5EAB' size={20}/>

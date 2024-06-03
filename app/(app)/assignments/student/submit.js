@@ -111,7 +111,7 @@ const CreateAssignment = () => {
                 ContentType:'application/pdf'
             };
             const command = new PutObjectCommand(uploadParams);
-            const result = await s3Client.send(command);
+            await s3Client.send(command);
             return `https://${process.env.EXPO_PUBLIC_AWS_BUCKET_NAME}.s3.amazonaws.com/assignments/${selectedFile?.assets[0].name}`;
 
         } catch (error) {
@@ -150,20 +150,28 @@ const CreateAssignment = () => {
             // Api call
             const link = `${process.env.EXPO_PUBLIC_API_URL}/assignments/assignment/submit`;
             const res = await axios.post(link, {assignment_id:assignment._id, student:{adm_no:user.adm_no, name:user?.student?.name, roll_no:user?.student?.roll_no}, answer:answer, attachment:pdfUploadResponse});
-            console.log(res.data);
 
 
             // Sending notification
             const notificationLink = `${process.env.EXPO_PUBLIC_API_URL}/notifications/send-notification`;
-            await axios.post(notificationLink, {title:'Answer Added!', body:'A student added his/her answer!', topic:`teacher.${assignment.creator_adm_no.replace(/\//g, '_')}`, type:'submission'});
+            const params = {
+                title:`${assignment.subject} - Answer Added!`,
+                body:`${user.student.name} added an answer!`,
+                topic:`teacher.${assignment.creator_adm_no.replace(/\//g, '_')}`,
+                type:'submission',
+                assignment_id:assignment._id,
+                answer_id:res.data.submitted_assignments.filter(a => a.student.adm_no === user.adm_no)[0]._id
+            };
+            await axios.post(notificationLink, params);
 
 
             // Reseting
-            setMessage(res.data === 'Submitted' ? 'Submitted Successfully!' : 'Error Submitting');
+            setMessage(res.data._id ? 'Submitted Successfully!' : 'Error Submitting');
             setVisible(true);
             setSelectedFile();
             setStates({...states, loading:false});
             router.push({pathname:'/assignments/student', params:{submitted:true}});
+
         }catch(err){
             console.log(err);
         }
