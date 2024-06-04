@@ -41,6 +41,10 @@ export const NotificationProvider = ({ children }) => {
   const [notificationsCount, setNotificationsCount] = useState(0);
 
 
+  // Class notices count
+  const [classNoticesCount, setClassNoticesCount] = useState(0);
+
+
   // Request push notification
   const requestPushMessagesPermission = async () => {
     const authStatus = await messaging().requestPermission();
@@ -59,10 +63,16 @@ export const NotificationProvider = ({ children }) => {
 
     // Fetcher
     const fetcher = async () => {
-      // API call
-      const link = `${process.env.EXPO_PUBLIC_API_URL}/notifications/notifications-count`;
-      const res = await axios.post(link, {to:[user.adm_no, user?.student?.class_name]});
-      setNotificationsCount(res.data);
+
+      // Setting notifications count
+      const notificationsLink = `${process.env.EXPO_PUBLIC_API_URL}/notifications/notifications-count`;
+      const notificationsRes = await axios.post(notificationsLink, {to:[user.adm_no, user?.student?.class_name]});
+      setNotificationsCount(notificationsRes.data);
+
+      // Class notices count
+      const classNoticesLink = `${process.env.EXPO_PUBLIC_API_URL}/notifications/class-notices-count`;
+      const classNoticesRes = await axios.post(classNoticesLink, {to:[user.adm_no, user?.student?.class_name]});
+      setClassNoticesCount(classNoticesRes.data);
     };
     fetcher();
     // Messaging request
@@ -97,7 +107,7 @@ export const NotificationProvider = ({ children }) => {
 }, []);
 
   return (
-    <NotificationContext.Provider value={{setMessageStyle, setSnackbarMessage, setVisible, notificationsCount, setNotificationsCount}}>
+    <NotificationContext.Provider value={{setMessageStyle, setSnackbarMessage, setVisible, notificationsCount, setNotificationsCount, classNoticesCount, setClassNoticesCount}}>
       {children}
       <Snackbar
         style={{ backgroundColor: messageStyle }}

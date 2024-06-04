@@ -1,8 +1,10 @@
 // Imports
 import React from 'react';
+import {router} from 'expo-router';
 import {Card} from 'react-native-paper';
 import {LinearGradient} from 'expo-linear-gradient';
 import {Image, Text, TouchableOpacity, View} from 'react-native';
+import {useNotification} from '../../../context/NotificationProvider';
 
 
 
@@ -10,6 +12,10 @@ import {Image, Text, TouchableOpacity, View} from 'react-native';
 
 // Main function
 const SchoolUpdates = () => {
+
+    // Class notices count
+    const {classNoticesCount} = useNotification();
+
     return (
         <View style={{width:'100%', display:'flex', flexDirection:'column', gap:10, paddingHorizontal:20}}>
 
@@ -45,12 +51,20 @@ const SchoolUpdates = () => {
                 {/* Class Notice */}
                 <View style={{width:'21%', height:100, alignItems:'center', gap:5}}>
                     <Card style={{width:'100%', height:80, borderRadius:20}}>
-                        <TouchableOpacity style={{height:'100%', width:'100%', alignItems:'center', justifyContent:'center'}}>
+                        <TouchableOpacity 
+                            onPress={() => router.push('/class-notice/student')}
+                            style={{height:'100%', width:'100%', alignItems:'center', justifyContent:'center'}}
+                        >
                             <Image
                                 style={{width:'70%', height:'70%'}}
                                 source={require('../../../assets/Home/ClassNotice.png')}
                             />
                         </TouchableOpacity>
+                        {classNoticesCount !== 0 && (
+                            <View style={{position:'absolute', top:0, right:0, width:22, height:22, display:'flex', alignItems:'center', justifyContent:'center', borderRadius:30, backgroundColor:'red'}}>
+                                <Text style={{fontSize:12, color:'#fff'}}>{classNoticesCount}</Text>
+                            </View>
+                        )}
                     </Card>
                     <Text style={{color:'gray', fontSize:11}}>Class Notice</Text>
                 </View>

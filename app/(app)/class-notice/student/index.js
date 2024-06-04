@@ -1,0 +1,166 @@
+// Imports
+import axios from 'axios';
+import moment from 'moment';
+import {LinearGradient} from 'expo-linear-gradient';
+import {AuthContext} from '../../../../context/Auth';
+import {useContext, useEffect, useState} from 'react';
+import {ActivityIndicator, Card, Icon} from 'react-native-paper';
+import {useNotification} from '../../../../context/NotificationProvider';
+import {Image, ScrollView, Text, TouchableOpacity, View} from 'react-native';
+
+
+
+
+
+// Main functions
+export default function App() {
+
+    // User
+    const {user} = useContext(AuthContext);
+
+
+    // Class notices count
+    const {setClassNoticesCount} = useNotification();
+
+
+    // Selected tab
+    const [selectedTab, setSelectedTab] = useState('class-notice');
+
+
+    // Is loading
+    const [isLoading, setIsLoading] = useState(false);
+
+
+    // CLass notices
+    const [classNotices, setClassNotices] = useState({});
+
+
+    // Use effect
+    useEffect(() => {
+        setIsLoading(true);
+        const fetcher = async () => {
+
+            // Fetching class notices
+            const fetchclassNoticesLink = `${process.env.EXPO_PUBLIC_API_URL}/notifications/user-class-notices`;
+            const fetchclassNoticesRes = await axios.post(fetchclassNoticesLink, {to:[user.adm_no, user?.student?.class_name]});
+            setClassNotices(fetchclassNoticesRes.data);
+
+            // Viewing class notices
+            const viewNotificationLink = `${process.env.EXPO_PUBLIC_API_URL}/notifications/view-class-notices`;
+            await axios.post(viewNotificationLink, {notifications_ids:fetchclassNoticesRes.data.unviewed_notifications.map(d => d.id)});
+            setClassNoticesCount(0);
+            setIsLoading(false);
+
+        };
+        fetcher()
+    }, []);
+
+    return (
+        <ScrollView style={{paddingTop:50}} contentContainerStyle={{alignItems:'center', gap:30, paddingBottom:50}}>
+
+            {/* Tabs */}
+            <View style={{width:'80%', display:'flex', flexDirection:'row', borderRadius:100, backgroundColor:'#F5F5F8'}}>
+                <TouchableOpacity
+                    onPress={() => setSelectedTab('notice')}
+                    style={{flex:1}}
+                >
+                    <Text style={{paddingVertical:10, fontWeight:'800', textAlign:'center', borderRadius:100, color:selectedTab === 'notice' ? '#fff' : 'gray', backgroundColor:selectedTab === 'notice' ? '#3C5EAB' : '#F5F5F8'}}>Notice</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                    onPress={() => {
+                        setSelectedTab('class-notice');
+                    }}
+                    style={{flex:1}}
+                >
+                    <Text style={{paddingVertical:10, fontWeight:'800', textAlign:'center', borderRadius:100, color:selectedTab === 'class-notice' ? '#fff' : 'gray', backgroundColor:selectedTab === 'class-notice' ? '#3C5EAB' : '#F5F5F8'}}>Class Notice</Text>
+                </TouchableOpacity>
+            </View>
+
+            {/* Class Notices */}
+            <View style={{width:'80%', display:'flex', flexDirection:'column', alignItems:'center', gap:10, paddingBottom:10}}>
+                {isLoading ? (
+                    <ActivityIndicator />
+                ) : (classNotices?.unviewed_notifications?.length + classNotices?.viewed_notifications?.length) < 1 ? (
+                    <Text>No class notices</Text>
+                ) : (
+                    <View style={{width:'100%', gap:20}}>
+
+                        {classNotices.unviewed_notifications?.map(n => (
+                            <Card style={{width:'100%'}} key={n.id}>
+                                <View style={{display:'flex', flexDirection:'column', gap:4, paddingVertical:10, paddingHorizontal:20}}>
+                                    <View style={{display:'flex', flexDirection:'row', alignItems:'center', gap:8}}>
+                                        {/* <Image
+                                            source={n.type === 'assignment'? require('../../../../assets/Home/Results.png') : require('../../../../assets/Notifications/AddedFeedback.png')}
+                                            style={{height:30, width:30}}
+                                        /> */}
+                                        <Text style={{fontSize:16, fontWeight:'600'}}>{n.title}</Text>
+                                    </View>
+                                    <Text style={{fontSize:14}}>{n.body}</Text>
+                                    <View style={{display:'flex', flexDirection:'row', alignItems:'center', justifyContent:'space-between'}}>
+                                        <View style={{display:'flex', flexDirection:'row', alignItems:'center', marginTop:10}}>
+                                            <Icon source='calendar' color='#0094DA' size={20}/>
+                                            <Text style={{fontSize:14, color:'#0094DA', marginLeft:2}}>Date:</Text>
+                                            <Text style={{fontSize:14, color:'gray'}}>{moment(new Date(n.created_at._seconds * 1000 + n.created_at._nanoseconds / 1000000)).format('DD-MM-YYYY')}</Text>
+                                        </View>
+                                        <View style={{display:'flex', flexDirection:'row', alignItems:'center', marginTop:10}}>
+                                            <Icon source='clock' color='#0094DA' size={20}/>
+                                            <Text style={{fontSize:14, color:'#0094DA', marginLeft:2}}>Time:</Text>
+                                            <Text style={{fontSize:14, color:'gray'}}>{moment(new Date(n.created_at._seconds * 1000 + Math.floor(n.created_at._nanoseconds / 1000000))).format('HH:mm')}</Text>
+                                        </View>
+                                    </View>
+                                </View>
+                            </Card>
+                        ))}
+
+                        {classNotices?.unviewed_notifications?.length > 0 && classNotices?.viewed_notifications?.length > 0 && (
+                            <View style={{display:'flex', flexDirection:'row', gap:10, alignItems:'center'}}>
+                                <LinearGradient
+                                    colors={['#fff', '#0094DA']}
+                                    start={{x:0, y:0}}
+                                    end={{x:1, y:0}}
+                                    style={{flex:1, opacity:0.7, height:1}}
+                                />
+                                <Text style={{color:'#0094DA'}}>Last read</Text>
+                                <LinearGradient
+                                    colors={['#0094DA', '#fff']}
+                                    start={{x:0, y:0}}
+                                    end={{x:1, y:0}}
+                                    style={{flex:1, opacity:0.7, height:1}}
+                                />
+                            </View>
+                        )}
+
+                        {classNotices.viewed_notifications?.map(n => (
+                            <Card style={{width:'100%'}} key={n.id}>
+                                <View style={{display:'flex', flexDirection:'column', gap:4, paddingVertical:10, paddingHorizontal:20}}>
+                                    <View style={{display:'flex', flexDirection:'row', alignItems:'center', gap:8}}>
+                                        {/* <Image
+                                            source={n.type === 'assignment'? require('../../../../assets/Home/Results.png') : require('../../../../assets/Notifications/AddedFeedback.png')}
+                                            style={{height:30, width:30}}
+                                        /> */}
+                                        <Text style={{fontSize:16, fontWeight:'600'}}>{n.title}</Text>
+                                    </View>
+                                    <Text style={{fontSize:14}}>{n.body}</Text>
+                                    <View style={{display:'flex', flexDirection:'row', alignItems:'center', justifyContent:'space-between'}}>
+                                        <View style={{display:'flex', flexDirection:'row', alignItems:'center', marginTop:10}}>
+                                            <Icon source='calendar' color='#0094DA' size={20}/>
+                                            <Text style={{fontSize:14, color:'#0094DA', marginLeft:2}}>Date:</Text>
+                                            <Text style={{fontSize:14, color:'gray'}}>{moment(new Date(n.created_at._seconds * 1000 + n.created_at._nanoseconds / 1000000)).format('DD-MM-YYYY')}</Text>
+                                        </View>
+                                        <View style={{display:'flex', flexDirection:'row', alignItems:'center', marginTop:10}}>
+                                            <Icon source='clock' color='#0094DA' size={20}/>
+                                            <Text style={{fontSize:14, color:'#0094DA', marginLeft:2}}>Time:</Text>
+                                            <Text style={{fontSize:14, color:'gray'}}>{moment(new Date(n.created_at._seconds * 1000 + Math.floor(n.created_at._nanoseconds / 1000000))).format('HH:mm')}</Text>
+                                        </View>
+                                    </View>
+                                </View>
+                            </Card>
+                        ))}
+
+                    </View>
+                )}
+            </View>
+
+        </ScrollView>
+    );
+};

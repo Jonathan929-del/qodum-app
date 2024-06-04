@@ -6,10 +6,11 @@ import * as MediaLibrary from 'expo-media-library';
 import {AuthContext} from '../../../../context/Auth';
 import {useState, useEffect, useContext} from 'react';
 import {router, useLocalSearchParams} from 'expo-router';
+import DateTimePicker from '@react-native-community/datetimepicker';
+import {ActivityIndicator, Card, Icon, Snackbar} from 'react-native-paper';
 import {Text, TouchableOpacity, View, ScrollView, Image} from 'react-native';
-import {ActivityIndicator, Card, Icon, Snackbar, Switch} from 'react-native-paper';
-import PassedAssignmentDate from '../../../../components/assignments/student/PassedAssignmentDate';
 import SubmissionConfirmed from '../../../../components/assignments/student/SubmissionConfirmed';
+import PassedAssignmentDate from '../../../../components/assignments/student/PassedAssignmentDate';
 
 
 
@@ -30,6 +31,14 @@ const App = () => {
 
     // User
     const {user} = useContext(AuthContext);
+
+
+    // Opened dropdown
+    const [openedField, setOpenedField] = useState('');
+
+
+    // Selected date
+    const [selectedDate, setSelectedDate] = useState(new Date());
 
 
     // Media library permissions
@@ -70,10 +79,6 @@ const App = () => {
 
     // Filtered assignments
     const [filteredAssignments, setFilteredAssignments] = useState([]);
-
-
-    // Is new checked
-    const [isNewChecked, setIsNewChecked] = useState(false);
 
 
     // Download handler
@@ -174,7 +179,7 @@ const App = () => {
                 <TouchableOpacity
                     onPress={() => {
                         setSelectedTab('date');
-                        setFilteredAssignments(allAssignments.sort((a, b) => new Date(a.assignment_date) - new Date(b.assignment_date)));
+                        // setFilteredAssignments(allAssignments.sort((a, b) => new Date(a.assignment_date) - new Date(b.assignment_date)));
                     }}
                     style={{flex:1}}
                 >
@@ -206,21 +211,28 @@ const App = () => {
             )}
 
 
-            {/* Sorting method */}
+            {/* Date filter */}
             {selectedTab === 'date' && (
-                <View style={{display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between'}}>
-                    <Text>Newest</Text>
-                    <Switch
-                        value={isNewChecked}
-                        onValueChange={() => {
-                            setIsNewChecked(!isNewChecked);
-                            if(isNewChecked){
-                                setFilteredAssignments(allAssignments.sort((a, b) => new Date(a.assignment_date) - new Date(b.assignment_date)));
-                            }else{
-                                setFilteredAssignments(allAssignments.sort((a, b) => new Date(b.assignment_date) - new Date(a.assignment_date)));
-                            };
-                        }}
-                    />
+                <View style={{gap:6}}>
+                    <Text>Select Date</Text>
+                    <TouchableOpacity
+                        onPress={() => setOpenedField('selected_date')}
+                        style={{display:'flex', flexDirection:'row', alignItems:'center', backgroundColor:'#F5F5F8', height:60, paddingHorizontal:20, borderTopLeftRadius:5, borderTopRightRadius:5, borderBottomWidth:openedField === 'selected_date' ? 2 : 1, borderBottomColor:openedField === 'selected_date' ? '#0094DA' : 'gray'}}
+                    >
+                        <Icon source='calendar' size={30} color='gray'/>
+                        <Text style={{marginLeft:10}}>{moment(assignmentDate).format('D-M-YYYY')}</Text>
+                    </TouchableOpacity>
+                    {openedField === 'selected_date' && (
+                        <DateTimePicker
+                            mode='date'
+                            display='spinner'
+                            value={selectedDate}
+                            onChange={(v, date) => {
+                                setOpenedField('');
+                                setSelectedDate(date);
+                            }}
+                        />
+                    )}
                 </View>
             )}
 

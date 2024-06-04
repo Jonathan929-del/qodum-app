@@ -69,7 +69,7 @@ export default function App() {
             // Viewing notifications
             const viewNotificationLink = `${process.env.EXPO_PUBLIC_API_URL}/notifications/view-notifications`;
             await axios.post(viewNotificationLink, {notifications_ids:fetchNotificationsRes.data.unviewed_notifications.map(d => d.id)});
-            // setNotificationsCount(0);
+            setNotificationsCount(0);
             setIsLoading(false);
 
         };

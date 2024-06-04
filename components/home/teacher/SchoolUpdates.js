@@ -3,6 +3,7 @@ import React from 'react';
 import {Card} from 'react-native-paper';
 import {LinearGradient} from 'expo-linear-gradient';
 import {Image, Text, TouchableOpacity, View} from 'react-native';
+import { router } from 'expo-router';
 
 
 
@@ -45,7 +46,10 @@ const SchoolUpdates = () => {
                 {/* Class Notice */}
                 <View style={{width:'21%', height:100, alignItems:'center', gap:5}}>
                     <Card style={{width:'100%', height:80, borderRadius:20}}>
-                        <TouchableOpacity style={{height:'100%', width:'100%', alignItems:'center', justifyContent:'center'}}>
+                        <TouchableOpacity
+                            onPress={() => router.push('/class-notice/teacher')}
+                            style={{height:'100%', width:'100%', alignItems:'center', justifyContent:'center'}}
+                        >
                             <Image
                                 style={{width:'70%', height:'70%'}}
                                 source={require('../../../assets/Home/ClassNotice.png')}
