@@ -72,34 +72,20 @@ export default function App() {
     }, []);
 
     return (
-        <ScrollView style={{paddingTop:50}} contentContainerStyle={{alignItems:'center', gap:30, paddingBottom:50}}>
-
-            {/* Tabs */}
-            <View style={{width:'80%', display:'flex', flexDirection:'row', borderRadius:100, backgroundColor:'#F5F5F8'}}>
-                <TouchableOpacity
-                    onPress={() => setSelectedTab('notice')}
-                    style={{flex:1}}
-                >
-                    <Text style={{paddingVertical:10, fontWeight:'800', textAlign:'center', borderRadius:100, color:selectedTab === 'notice' ? '#fff' : 'gray', backgroundColor:selectedTab === 'notice' ? '#3C5EAB' : '#F5F5F8'}}>Notice</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                    onPress={() => {
-                        setSelectedTab('circular');
-                    }}
-                    style={{flex:1}}
-                >
-                    <Text style={{paddingVertical:10, fontWeight:'800', textAlign:'center', borderRadius:100, color:selectedTab === 'circular' ? '#fff' : 'gray', backgroundColor:selectedTab === 'circular' ? '#3C5EAB' : '#F5F5F8'}}>Circular</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                    onPress={() => setSelectedTab('message')}
-                    style={{flex:1}}
-                >
-                    <Text style={{paddingVertical:10, fontWeight:'800', textAlign:'center', borderRadius:100, color:selectedTab === 'message' ? '#fff' : 'gray', backgroundColor:selectedTab === 'message' ? '#3C5EAB' : '#F5F5F8'}}>Message</Text>
-                </TouchableOpacity>
+        <ScrollView contentContainerStyle={{alignItems:'center', gap:30, paddingBottom:50}}>
+            <View style={{width:'100%', height:120, display:'flex', flexDirection:'row', alignItems:'flex-end', justifyContent:'space-between', paddingHorizontal:10, paddingBottom:30, backgroundColor:'#0094DA', borderBottomRightRadius:40, borderBottomLeftRadius:40}}>
+                <View style={{display:'flex', flexDirection:'row', alignItems:'center', gap:20}}>
+                    <TouchableOpacity
+                        onPress={() => router.push('/')}
+                    >
+                        <Icon source='chevron-left' size={40} color='#fff'/>
+                    </TouchableOpacity>
+                    <Text style={{textAlign:'center', fontSize:18, color:'#fff', fontWeight:'900'}}>Activity</Text>
+                </View>
             </View>
 
             {/* Notifications */}
-            <View style={{width:'80%', display:'flex', flexDirection:'column', alignItems:'center', gap:10, paddingBottom:10}}>
+            <View style={{width:'90%', display:'flex', flexDirection:'column', alignItems:'center', gap:10, paddingBottom:10}}>
                 {isLoading ? (
                     <ActivityIndicator />
                 ) : (notifications?.unviewed_notifications?.length + notifications?.viewed_notifications?.length) < 1 ? (

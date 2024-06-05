@@ -20,16 +20,16 @@ export default function App() {
     const {user} = useContext(AuthContext);
 
 
-    // Class notices count
-    const {setClassNoticesCount} = useNotification();
+    // Notices count
+    const {setNoticesCount} = useNotification();
 
 
     // Is loading
     const [isLoading, setIsLoading] = useState(false);
 
 
-    // CLass notices
-    const [classNotices, setClassNotices] = useState({});
+    // Notices
+    const [notices, setNotices] = useState({});
 
 
     // Use effect
@@ -37,15 +37,15 @@ export default function App() {
         setIsLoading(true);
         const fetcher = async () => {
 
-            // Fetching class notices
-            const fetchclassNoticesLink = `${process.env.EXPO_PUBLIC_API_URL}/notifications/user-class-notices`;
-            const fetchclassNoticesRes = await axios.post(fetchclassNoticesLink, {to:[user.adm_no, user?.student?.class_name]});
-            setClassNotices(fetchclassNoticesRes.data);
+            // Fetching notices
+            const fetchNoticesLink = `${process.env.EXPO_PUBLIC_API_URL}/notifications/user-notices`;
+            const fetchNoticesRes = await axios.post(fetchNoticesLink, {to:[user.adm_no, user?.student?.class_name]});
+            setNotices(fetchNoticesRes.data);
 
-            // Viewing class notices
-            const viewNotificationLink = `${process.env.EXPO_PUBLIC_API_URL}/notifications/view-class-notices`;
-            await axios.post(viewNotificationLink, {notifications_ids:fetchclassNoticesRes.data.unviewed_notifications.map(d => d.id)});
-            setClassNoticesCount(0);
+            // Viewing notices
+            const viewNoticesLink = `${process.env.EXPO_PUBLIC_API_URL}/notifications/view-notices`;
+            await axios.post(viewNoticesLink, {notifications_ids:fetchNoticesRes.data.unviewed_notifications.map(d => d.id)});
+            setNoticesCount(0);
             setIsLoading(false);
 
         };
@@ -61,20 +61,20 @@ export default function App() {
                     >
                         <Icon source='chevron-left' size={40} color='#fff'/>
                     </TouchableOpacity>
-                    <Text style={{textAlign:'center', fontSize:18, color:'#fff', fontWeight:'900'}}>Class Notice</Text>
+                    <Text style={{textAlign:'center', fontSize:18, color:'#fff', fontWeight:'900'}}>Notice</Text>
                 </View>
             </View>
 
-            {/* Class Notices */}
+            {/* Notices */}
             <View style={{width:'90%', display:'flex', flexDirection:'column', alignItems:'center', gap:10, paddingBottom:10}}>
                 {isLoading ? (
                     <ActivityIndicator />
-                ) : (classNotices?.unviewed_notifications?.length + classNotices?.viewed_notifications?.length) < 1 ? (
-                    <Text>No class notices</Text>
+                ) : (notices?.unviewed_notifications?.length + notices?.viewed_notifications?.length) < 1 ? (
+                    <Text>No notices</Text>
                 ) : (
                     <View style={{width:'100%', gap:20}}>
 
-                        {classNotices.unviewed_notifications?.map(n => (
+                        {notices.unviewed_notifications?.map(n => (
                             <Card style={{width:'100%'}} key={n.id}>
                                 <View style={{display:'flex', flexDirection:'column', gap:4, paddingVertical:10, paddingHorizontal:20}}>
                                     <View style={{display:'flex', flexDirection:'row', alignItems:'center', gap:8}}>
@@ -101,7 +101,7 @@ export default function App() {
                             </Card>
                         ))}
 
-                        {classNotices?.unviewed_notifications?.length > 0 && classNotices?.viewed_notifications?.length > 0 && (
+                        {notices?.unviewed_notifications?.length > 0 && notices?.viewed_notifications?.length > 0 && (
                             <View style={{display:'flex', flexDirection:'row', gap:10, alignItems:'center'}}>
                                 <LinearGradient
                                     colors={['#fff', '#0094DA']}
@@ -119,7 +119,7 @@ export default function App() {
                             </View>
                         )}
 
-                        {classNotices.viewed_notifications?.map(n => (
+                        {notices.viewed_notifications?.map(n => (
                             <Card style={{width:'100%'}} key={n.id}>
                                 <View style={{display:'flex', flexDirection:'column', gap:4, paddingVertical:10, paddingHorizontal:20}}>
                                     <View style={{display:'flex', flexDirection:'row', alignItems:'center', gap:8}}>

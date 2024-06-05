@@ -5,7 +5,7 @@ import {Icon} from 'react-native-paper';
 import {usePathname} from 'expo-router';
 import {AuthContext} from '../../context/Auth';
 import {Text, TouchableOpacity, View} from 'react-native';
-import {useNotification} from '../../context/NotificationProvider';
+// import {useNotification} from '../../context/NotificationProvider';
 
 
 
@@ -20,7 +20,7 @@ const Tabs = () => {
 
 
     // Notifcation count
-    const {notificationsCount} = useNotification();
+    // const {notificationsCount} = useNotification();
 
 
     // User
@@ -29,20 +29,6 @@ const Tabs = () => {
 
     return (
         <View style={{height:'auto', width:'100%', display:'flex', flexDirection:'row', paddingHorizontal:20, paddingVertical:10, backgroundColor:'#fff'}}>
-
-            {/* Profile */}
-            <TouchableOpacity
-                onPress={() => user.type === 'Teacher' ? router.push('/profile/teacher') : router.push('/profile/student')}
-                style={{flex:1, display:'flex', flexDirection:'column', justifyContent:'center', alignItems:'center', gap:2}}
-            >
-                <Icon
-                    color={(pathname === '/profile/teacher' || pathname === '/profile/student') ? '#0094DA' : '#889CB7'}
-                    source='account'
-                    size={30}
-                />
-                <Text style={{color:(pathname === '/profile/teacher' || pathname === '/profile/student') ? '#0094DA' : '#889CB7', fontSize:12}}>Profile</Text>
-            </TouchableOpacity>
-
 
             {/* Notification */}
             <TouchableOpacity
@@ -55,11 +41,25 @@ const Tabs = () => {
                     size={30}
                 />
                 <Text style={{color:(pathname === '/notifications/teacher' || pathname === '/notifications/student') ? '#0094DA' : '#889CB7', fontSize:12}}>Activity</Text>
-                {notificationsCount !== 0 && (
+                {/* {notificationsCount !== 0 && (
                     <View style={{position:'absolute', top:0, right:10, width:20, height:20, display:'flex', alignItems:'center', justifyContent:'center', borderRadius:30, backgroundColor:'red'}}>
                         <Text style={{fontSize:11, color:'#fff'}}>{notificationsCount}</Text>
                     </View>
-                )}
+                )} */}
+            </TouchableOpacity>
+
+
+            {/* Profile */}
+            <TouchableOpacity
+                onPress={() => user.type === 'Teacher' ? router.push('/profile/teacher') : router.push('/profile/student')}
+                style={{flex:1, display:'flex', flexDirection:'column', justifyContent:'center', alignItems:'center', gap:2}}
+            >
+                <Icon
+                    color={(pathname === '/profile/teacher' || pathname === '/profile/student') ? '#0094DA' : '#889CB7'}
+                    source='account'
+                    size={30}
+                />
+                <Text style={{color:(pathname === '/profile/teacher' || pathname === '/profile/student') ? '#0094DA' : '#889CB7', fontSize:12}}>Profile</Text>
             </TouchableOpacity>
 
 

@@ -63,7 +63,7 @@ export default function App() {
                 topic:`student.assignments.${selectedClass.label}`,
                 type:'notice'
             };
-            const notificationLink = `${process.env.EXPO_PUBLIC_API_URL}/notifications/send-class-notice`;
+            const notificationLink = `${process.env.EXPO_PUBLIC_API_URL}/notifications/send-notice`;
             await axios.post(notificationLink, params);
 
             // Reseting
@@ -107,11 +107,11 @@ export default function App() {
                     >
                         <Icon source='chevron-left' size={40} color='#fff'/>
                     </TouchableOpacity>
-                    <Text style={{textAlign:'center', fontSize:18, color:'#fff', fontWeight:'900'}}>Class Notice</Text>
+                    <Text style={{textAlign:'center', fontSize:18, color:'#fff', fontWeight:'900'}}>Notice</Text>
                 </View>
             </View>
 
-            {/* Send class notice */}
+            {/* Send notice */}
             {states.loadingData ? (
                 <View style={{paddingTop:50}}>
                     <ActivityIndicator />
