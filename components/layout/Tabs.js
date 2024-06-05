@@ -5,7 +5,7 @@ import {Icon} from 'react-native-paper';
 import {usePathname} from 'expo-router';
 import {AuthContext} from '../../context/Auth';
 import {Text, TouchableOpacity, View} from 'react-native';
-// import {useNotification} from '../../context/NotificationProvider';
+import {useNotification} from '../../context/NotificationProvider';
 
 
 
@@ -20,7 +20,7 @@ const Tabs = () => {
 
 
     // Notifcation count
-    // const {notificationsCount} = useNotification();
+    const {notificationsCount} = useNotification();
 
 
     // User
@@ -41,11 +41,11 @@ const Tabs = () => {
                     size={30}
                 />
                 <Text style={{color:(pathname === '/notifications/teacher' || pathname === '/notifications/student') ? '#0094DA' : '#889CB7', fontSize:12}}>Activity</Text>
-                {/* {notificationsCount !== 0 && (
+                {notificationsCount !== 0 && (
                     <View style={{position:'absolute', top:0, right:10, width:20, height:20, display:'flex', alignItems:'center', justifyContent:'center', borderRadius:30, backgroundColor:'red'}}>
                         <Text style={{fontSize:11, color:'#fff'}}>{notificationsCount}</Text>
                     </View>
-                )} */}
+                )}
             </TouchableOpacity>
 
 
