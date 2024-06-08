@@ -48,7 +48,7 @@ const Tabs = () => {
                 )}
             </TouchableOpacity>
 
-
+            
             {/* Profile */}
             <TouchableOpacity
                 onPress={() => user.type === 'Teacher' ? router.push('/profile/teacher') : router.push('/profile/student')}
@@ -61,6 +61,8 @@ const Tabs = () => {
                 />
                 <Text style={{color:(pathname === '/profile/teacher' || pathname === '/profile/student') ? '#0094DA' : '#889CB7', fontSize:12}}>Profile</Text>
             </TouchableOpacity>
+
+
 
 
             {/* Home */}

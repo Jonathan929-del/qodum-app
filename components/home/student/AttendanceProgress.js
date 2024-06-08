@@ -1,5 +1,6 @@
 // Imports
 import React from 'react';
+import {router} from 'expo-router';
 import {Card, ProgressBar} from 'react-native-paper';
 import {Image, Text, TouchableOpacity, View} from 'react-native';
 
@@ -45,7 +46,10 @@ const AttendanceProgress = () => {
             {/* Fees */}
             <View style={{width:100, height:100, alignItems:'center', gap:5}}>
                 <Card style={{width:'100%', borderRadius:20}}>
-                    <TouchableOpacity style={{height:'100%', width:'100%', alignItems:'center', justifyContent:'center'}}>
+                    <TouchableOpacity
+                        onPress={() => router.push('fee/student')}
+                        style={{height:'100%', width:'100%', alignItems:'center', justifyContent:'center'}}
+                    >
                         <Image
                             style={{width:'70%', height:'70%'}}
                             source={require('../../../assets/Home/Fee.png')}
