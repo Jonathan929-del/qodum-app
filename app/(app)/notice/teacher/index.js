@@ -5,7 +5,7 @@ import {LinearGradient} from 'expo-linear-gradient';
 import {AuthContext} from '../../../../context/Auth';
 import {useContext, useEffect, useState} from 'react';
 import {router, useLocalSearchParams} from 'expo-router';
-// import {useNotification} from '../../../../context/NotificationProvider';
+import {useNotification} from '../../../../context/NotificationProvider';
 import {ActivityIndicator, Card, Icon, Menu, IconButton, Snackbar} from 'react-native-paper';
 import {ScrollView, Text, TouchableOpacity, View, Animated, Dimensions, TouchableWithoutFeedback, Alert} from 'react-native';
 
@@ -39,7 +39,7 @@ export default function App() {
 
 
     // Notices count
-    // const {setNoticesCount} = useNotification();
+    const {setNoticesCount} = useNotification();
 
 
     // Is loading
@@ -65,7 +65,7 @@ export default function App() {
         // Viewing notices
         const viewNoticesLink = `${process.env.EXPO_PUBLIC_API_URL}/notifications/view-notices`;
         await axios.post(viewNoticesLink, {notifications_ids:fetchNoticesRes.data.unviewed_notifications.map(d => d.id)});
-        // setNoticesCount(0);
+        setNoticesCount(0);
         setIsLoading(false);
 
     };

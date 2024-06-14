@@ -1,11 +1,13 @@
 // Imports
 import axios from 'axios';
-import {router} from 'expo-router';
+import moment from 'moment';
+import {LinearGradient} from 'expo-linear-gradient';
 import {AuthContext} from '../../../../context/Auth';
 import {useContext, useEffect, useState} from 'react';
-import {Dropdown} from 'react-native-element-dropdown';
-import {Text, TouchableOpacity, View} from 'react-native';
-import {TextInput as PaperTextInput, ActivityIndicator, Icon, Button, Snackbar} from 'react-native-paper';
+import {router, useLocalSearchParams} from 'expo-router';
+// import {useNotification} from '../../../../context/NotificationProvider';
+import {ActivityIndicator, Card, Icon, Menu, IconButton, Snackbar} from 'react-native-paper';
+import {ScrollView, Text, TouchableOpacity, View, Animated, Dimensions, TouchableWithoutFeedback, Alert} from 'react-native';
 
 
 
@@ -17,177 +19,299 @@ export default function App() {
     // Snack bar actions
     const [visible, setVisible] = useState(false);
     const onDismissSnackBar = () => setVisible(false);
-
-
-    // Opened dropdown
-    const [openedField, setOpenedField] = useState('');
+    const [snackbarMessage, setSnackbarMessage] = useState('');
 
 
     // User
     const {user} = useContext(AuthContext);
 
 
-    // States
-    const [states, setStates] = useState({
-        errors:{
-            class_name:'',
-            message:''
-        },
-        loading:false,
-        loadingData:false
-    });
+    // Local params
+    const {isEdited} = useLocalSearchParams();
 
 
-    // Classes
-    const [classes, setClasses] = useState([]);
-    const [selectedClass, setSelectedClass] = useState({label:'', value:''});
+    // Fade animation
+    const [fadeAnim] = useState(new Animated.Value(0));
 
 
-    // Message
-    const [message, setMessage] = useState('');
+    // Opened field
+    const [openedField, setOpenedField] = useState('');
 
 
-    // Submit handler
-    const submitHandler = async () => {
-        setStates({...states, loading:true});
+    // Notices count
+    // const {setNoticesCount} = useNotification();
+
+
+    // Is loading
+    const [isLoading, setIsLoading] = useState(false);
+
+
+    // Is compose opened
+    const [isComposeOpened, setIsComposeOpened] = useState(false);
+
+
+    // Class notices
+    const [classNotices, setClassNotices] = useState({});
+
+
+    // Fetcher
+    const fetcher = async () => {
+
+        // Fetching class notices
+        const fetchNoticesLink = `${process.env.EXPO_PUBLIC_API_URL}/notifications/user-class-notices`;
+        const fetchNoticesRes = await axios.post(fetchNoticesLink, {topic:[user.adm_no.replace(/\//g, '_'), user.class_name]});
+        setClassNotices(fetchNoticesRes.data);
+
+        // Viewing class notices
+        const viewNoticesLink = `${process.env.EXPO_PUBLIC_API_URL}/notifications/view-class-notices`;
+        await axios.post(viewNoticesLink, {notifications_ids:fetchNoticesRes.data.unviewed_notifications.map(d => d.id)});
+        // setNoticesCount(0);
+        setIsLoading(false);
+
+    };
+
+
+    // Show delete alert
+    const showDeleteAlert = id =>
+        Alert.alert(
+            'Are you sure?',
+            'Are you sure you want to delete this record?',
+            [
+                {
+                    text: 'No',
+                    style:'destructive',
+                },
+                {
+                    text: 'Yes',
+                    onPress: () => deleteClassNotice(id),
+                    style:'default',
+                },
+            ]
+    );
+
+
+    // Delete assignment
+    const deleteClassNotice = async id => {
         try {
-
-            // Empty validations
-            if(!selectedClass || !message){
-                setStates({...states, errors:{
-                    class_name:!selectedClass ? '*Please select a class' : '',
-                    message:!message ? '*Please enter a message' : '',
-                }});
-                return;
-            };
-            
-            // Sending notification
-            const params = {
-                title:'Class Notice!',
-                body:message,
-                topic:selectedClass.label,
-                type:'notice',
-                created_by:user.adm_no
-            };
-            const notificationLink = `${process.env.EXPO_PUBLIC_API_URL}/notifications/send-class-notice`;
-            await axios.post(notificationLink, params);
-
-            // Reseting
+            setIsLoading(true);
+            const link = `${process.env.EXPO_PUBLIC_API_URL}/notifications/delete-class-notice`;
+            await axios.post(link, {id});
+            setSnackbarMessage('Message Deleted Successfully!');
             setVisible(true);
-            setSelectedClass({label:'', value:''});
-            setMessage('');
-            setStates({...states, loading:false});
+            fetcher();
         }catch(err){
             console.log(err);
         }
     };
 
 
-    // Use effect
+    // Use effects
     useEffect(() => {
-        setStates({...states, loadingData:true});
-        const fetcher = async () => {
-
-            // classes response
-            const classesLink = `${process.env.EXPO_PUBLIC_API_URL}/classes/names`;
-            const classesRes = await axios.get(classesLink);
-            const classesDropdownData = classesRes.data.map(s => {
-                return{
-                    label:s.class_name,
-                    value:s.class_name.toLowerCase()
-                };
-            });
-            setClasses(classesDropdownData);
-            setStates({...states, loadingData:false});
-
+        setIsLoading(true);
+        if(isEdited){
+            setVisible(true);
+            setSnackbarMessage('Message Edited Successfully!');
         };
-        fetcher()
+        fetcher();
     }, []);
+    useEffect(() => {
+        if (isComposeOpened) {
+        Animated.timing(fadeAnim, {
+            toValue:1,
+            duration:200,
+            useNativeDriver:true
+        }).start();
+        }else{
+        Animated.timing(fadeAnim, {
+            toValue:0,
+            duration:200,
+            useNativeDriver:true
+        }).start();
+        }
+    }, [isComposeOpened]);
 
     return (
-        <View style={{height:'100%', alignItems:'center'}}>
-            <View style={{width:'100%', height:120, display:'flex', flexDirection:'row', alignItems:'flex-end', justifyContent:'space-between', paddingHorizontal:10, paddingBottom:30, backgroundColor:'#0094DA', borderBottomRightRadius:40, borderBottomLeftRadius:40}}>
-                <View style={{display:'flex', flexDirection:'row', alignItems:'center', gap:20}}>
-                    <TouchableOpacity
-                        onPress={() => router.push('/')}
-                    >
-                        <Icon source='chevron-left' size={40} color='#fff'/>
-                    </TouchableOpacity>
-                    <Text style={{textAlign:'center', fontSize:18, color:'#fff', fontWeight:'900'}}>Class Notice</Text>
-                </View>
-            </View>
-
-            {/* Send class notice */}
-            {states.loadingData ? (
-                <View style={{paddingTop:50}}>
-                    <ActivityIndicator />
-                </View>
-            ) : (
-                <View style={{width:'80%', flex:1, display:'flex', flexDirection:'column', justifyContent:'space-between', paddingVertical:50}}>
-
-
-                    <View style={{gap:10}}>
-                        {/* Class */}
-                        <View style={{gap:6}}>
-                            <Text>Class</Text>
-                            <Dropdown
-                                placeholderStyle={{color:'gray', paddingLeft:10}}
-                                selectedTextStyle={{paddingLeft:10}}
-                                data={classes}
-                                search
-                                activeColor='#ccc'
-                                labelField='label'
-                                valueField='value'
-                                placeholder='Select Class'
-                                searchPlaceholder='Search...'
-                                value={selectedClass}
-                                onFocus={() => setOpenedField('classes')}
-                                onBlur={() => setOpenedField('')}
-                                onChange={item => {setSelectedClass(item);setStates({states, errors:{...states.errors, class_name:!item.label  ? '*Please select a class' : ''}})}}
-                                style={{backgroundColor:'#F5F5F8', height:60, paddingHorizontal:20, borderTopLeftRadius:5, borderTopRightRadius:5, borderBottomWidth:openedField === 'classes' ? 2 : 1, borderBottomColor:openedField === 'classes' ? '#0094DA' : 'gray'}}
-                                renderLeftIcon={() => (
-                                    <Icon source='book-edit' color='gray' size={25}/>
-                                )}
-                                name='class'
-                            />
-                            {states.errors.class_name !== '' && <Text style={{color:'red', marginTop:-6}}>{states.errors.class_name}</Text>}
-                        </View>
-
-
-                        {/* Message */}
-                        <View style={{gap:6}}>
-                            <Text>Message</Text>
-                                <PaperTextInput
-                                    placeholder='Enter Message'
-                                    onBlur={v => setStates({states, errors:{...states.errors, message:v === ''  ? '*Please enter a message' : ''}})}
-                                    placeholderTextColor='gray'
-                                    style={{backgroundColor:'#F5F5F8'}}
-                                    left={<PaperTextInput.Icon icon='pencil-outline' size={30} color='gray'/>}
-                                    value={message}
-                                    multiline
-                                    numberOfLines={4}
-                                    onChangeText={v => setMessage(v)}
-                                />
-                            {states.errors.message !== '' && <Text style={{color:'red', marginTop:-6}}>{states.errors.message}</Text>}
-                        </View>
-                    </View>
-
-
-                    {/* Button */}
-                    {states.loading ? (
-                        <ActivityIndicator />
-                    ) : (
-                        <Button
-                            onPress={submitHandler}
-                            textColor='#fff'
-                            style={{backgroundColor:'#0094DA', borderRadius:4}}
+        <View style={{height:'100%'}}>
+            <ScrollView contentContainerStyle={{alignItems:'center', gap:30, paddingBottom:50}}>
+                <View style={{width:'100%', height:120, display:'flex', flexDirection:'row', alignItems:'flex-end', justifyContent:'space-between', paddingHorizontal:10, paddingBottom:30, backgroundColor:'#0094DA', borderBottomRightRadius:40, borderBottomLeftRadius:40}}>
+                    <View style={{display:'flex', flexDirection:'row', alignItems:'center', gap:20}}>
+                        <TouchableOpacity
+                            onPress={() => router.push('/')}
                         >
-                            Submit
-                        </Button>
-                    )}
-
+                            <Icon source='chevron-left' size={40} color='#fff'/>
+                        </TouchableOpacity>
+                        <Text style={{textAlign:'center', fontSize:18, color:'#fff', fontWeight:'900'}}>Class Notice</Text>
+                    </View>
                 </View>
+
+                {/* Notices */}
+                <View style={{width:'90%', display:'flex', flexDirection:'column', alignItems:'center', gap:10, paddingBottom:10}}>
+                    {isLoading ? (
+                        <ActivityIndicator />
+                    ) : (classNotices?.unviewed_notifications?.length + classNotices?.viewed_notifications?.length) < 1 ? (
+                        <Text>No class notices</Text>
+                    ) : (
+                        <View style={{width:'100%', gap:20}}>
+
+                            {classNotices.unviewed_notifications?.map(n => (
+                                <Card style={{width:'100%'}} key={n.id}>
+                                    <View style={{display:'flex', flexDirection:'column', gap:4, paddingVertical:10, paddingHorizontal:20}}>
+                                        <View style={{display:'flex', flexDirection:'row', alignItems:'center', justifyContent:'space-between'}}>
+                                            <View style={{display:'flex', flexDirection:'column'}}>
+                                                <Text style={{fontSize:16, fontWeight:'600'}}>{n.title}</Text>
+                                                <Text style={{fontSize:14}}>{n.body}</Text>
+                                            </View>
+                                            {n.created_by === user.adm_no && (
+                                                <Menu
+                                                    visible={openedField === n.id}
+                                                    onDismiss={() => setOpenedField('')}
+                                                    anchor={
+                                                        <IconButton
+                                                            size={20}
+                                                            icon='dots-vertical'
+                                                            onPress={() => setOpenedField(n.id)}
+                                                        />
+                                                    }
+                                                >
+                                                    <Menu.Item onPress={() => router.push({pathname:'/class-notice/teacher/edit', params:n})} title='Edit' />
+                                                    <Menu.Item onPress={() => showDeleteAlert(n.id)} title='Delete' />
+                                                </Menu>
+                                            )}
+                                        </View>
+                                        <View style={{display:'flex', flexDirection:'row', alignItems:'center', justifyContent:'space-between'}}>
+                                            <View style={{display:'flex', flexDirection:'row', alignItems:'center', marginTop:10}}>
+                                                <Icon source='calendar' color='#0094DA' size={20}/>
+                                                <Text style={{fontSize:14, color:'#0094DA', marginLeft:2}}>Date:</Text>
+                                                <Text style={{fontSize:14, color:'gray'}}>{moment(new Date(n.created_at._seconds * 1000 + n.created_at._nanoseconds / 1000000)).format('DD-MM-YYYY')}</Text>
+                                            </View>
+                                            <View style={{display:'flex', flexDirection:'row', alignItems:'center', marginTop:10}}>
+                                                <Icon source='clock' color='#0094DA' size={20}/>
+                                                <Text style={{fontSize:14, color:'#0094DA', marginLeft:2}}>Time:</Text>
+                                                <Text style={{fontSize:14, color:'gray'}}>{moment(new Date(n.created_at._seconds * 1000 + Math.floor(n.created_at._nanoseconds / 1000000))).format('HH:mm')}</Text>
+                                            </View>
+                                        </View>
+                                    </View>
+                                </Card>
+                            ))}
+
+                            {classNotices?.unviewed_notifications?.length > 0 && classNotices?.viewed_notifications?.length > 0 && (
+                                <View style={{display:'flex', flexDirection:'row', gap:10, alignItems:'center'}}>
+                                    <LinearGradient
+                                        colors={['#fff', '#0094DA']}
+                                        start={{x:0, y:0}}
+                                        end={{x:1, y:0}}
+                                        style={{flex:1, opacity:0.7, height:1}}
+                                    />
+                                    <Text style={{color:'#0094DA'}}>Last read</Text>
+                                    <LinearGradient
+                                        colors={['#0094DA', '#fff']}
+                                        start={{x:0, y:0}}
+                                        end={{x:1, y:0}}
+                                        style={{flex:1, opacity:0.7, height:1}}
+                                    />
+                                </View>
+                            )}
+
+                            {classNotices.viewed_notifications?.map(n => (
+                                <Card style={{width:'100%'}} key={n.id}>
+                                    <View style={{display:'flex', flexDirection:'column', gap:4, paddingVertical:10, paddingHorizontal:20}}>
+                                        <View style={{display:'flex', flexDirection:'row', alignItems:'center', justifyContent:'space-between'}}>
+                                            <View style={{display:'flex', flexDirection:'column'}}>
+                                                <Text style={{fontSize:16, fontWeight:'600'}}>{n.title}</Text>
+                                                <Text style={{fontSize:14}}>{n.body}</Text>
+                                            </View>
+                                            {n.created_by === user.adm_no && (
+                                                <Menu
+                                                    visible={openedField === n.id}
+                                                    onDismiss={() => setOpenedField('')}
+                                                    anchor={
+                                                        <IconButton
+                                                            size={20}
+                                                            icon='dots-vertical'
+                                                            onPress={() => setOpenedField(n.id)}
+                                                        />
+                                                    }
+                                                >
+                                                    <Menu.Item onPress={() => router.push({pathname:'/class-notice/teacher/edit', params:n})} title='Edit' />
+                                                    <Menu.Item onPress={() => showDeleteAlert(n.id)} title='Delete' />
+                                                </Menu>
+                                            )}
+                                        </View>
+                                        <View style={{display:'flex', flexDirection:'row', alignItems:'center', justifyContent:'space-between'}}>
+                                            <View style={{display:'flex', flexDirection:'row', alignItems:'center', marginTop:10}}>
+                                                <Icon source='calendar' color='#0094DA' size={20}/>
+                                                <Text style={{fontSize:14, color:'#0094DA', marginLeft:2}}>Date:</Text>
+                                                <Text style={{fontSize:14, color:'gray'}}>{moment(new Date(n.created_at._seconds * 1000 + n.created_at._nanoseconds / 1000000)).format('DD-MM-YYYY')}</Text>
+                                            </View>
+                                            <View style={{display:'flex', flexDirection:'row', alignItems:'center', marginTop:10}}>
+                                                <Icon source='clock' color='#0094DA' size={20}/>
+                                                <Text style={{fontSize:14, color:'#0094DA', marginLeft:2}}>Time:</Text>
+                                                <Text style={{fontSize:14, color:'gray'}}>{moment(new Date(n.created_at._seconds * 1000 + Math.floor(n.created_at._nanoseconds / 1000000))).format('HH:mm')}</Text>
+                                            </View>
+                                        </View>
+                                    </View>
+                                </Card>
+                            ))}
+
+                        </View>
+                    )}
+                </View>
+
+            </ScrollView>
+
+            {!isComposeOpened && (
+                <TouchableOpacity
+                    onPress={() => setIsComposeOpened(true)}
+                    style={{position:'absolute', bottom:30, right:20, width:40, height:40, alignItems:'center', justifyContent:'center', borderRadius:40, backgroundColor:'#0094DA'}}
+                >
+                    <Icon source='square-edit-outline' size={25} color='#fff'/>
+                </TouchableOpacity>
             )}
+
+            {/* Compose page */}
+            {isComposeOpened && (
+                <Animated.View
+                    style={{position:'absolute', width:'100%', height:Dimensions.get('screen').height, zIndex:10, backgroundColor:'rgba(0, 0, 0, 0.5)', opacity:fadeAnim}}
+                >
+                    <TouchableWithoutFeedback
+                        onPress={() => setIsComposeOpened(false)}
+                    >
+                        <View style={{height:'100%', width:'100%', alignItems:'flex-end', justifyContent:'flex-end'}}>
+                            <Text>-</Text>
+                            <TouchableWithoutFeedback onPress={() => setIsComposeOpened(isComposeOpened)}>
+                                <View
+                                    style={{display:'flex', justifyContent:'flex-end', alignItems:'flex-end', width:300, height:200, borderRadius:10, marginBottom:50, paddingBottom:30, paddingRight:20}}
+                                >
+
+                                    <View style={{display:'flex', flexDirection:'row', alignItems:'center', justifyContent:'center', marginBottom:10}}>
+                                        <TouchableOpacity
+                                            onPress={() => router.push('/class-notice/teacher/create')}
+                                            style={{marginRight:10, paddingVertical:2, paddingHorizontal:10, borderRadius:4, backgroundColor:'#fff'}}
+                                        >
+                                            <Text>Send Class Notice</Text>
+                                        </TouchableOpacity>
+                                        <TouchableOpacity
+                                            onPress={() => router.push('/class-notice/teacher/create')}
+                                            style={{width:40, height:40, alignItems:'center', justifyContent:'center', borderRadius:40, backgroundColor:'#0094DA'}}
+                                        >
+                                            <Icon source='chat-processing' size={25} color='#fff'/>
+                                        </TouchableOpacity>
+                                    </View>
+
+                                    <TouchableOpacity
+                                        onPress={() => setIsComposeOpened(false)}
+                                        style={{width:40, height:40, alignItems:'center', justifyContent:'center', borderRadius:40, backgroundColor:'#0094DA'}}
+                                    >
+                                        <Icon source='square-edit-outline' size={25} color='#fff'/>
+                                    </TouchableOpacity>
+
+                                </View>
+                            </TouchableWithoutFeedback>
+                        </View>
+                    </TouchableWithoutFeedback>
+                </Animated.View>
+            )}
+
 
             {/* Snackbar */}
             <Snackbar
@@ -199,7 +323,7 @@ export default function App() {
                     onPress:() => setVisible(false)
                 }}
             >
-                Notice Sent Successfully!
+                {snackbarMessage}
             </Snackbar>
 
         </View>

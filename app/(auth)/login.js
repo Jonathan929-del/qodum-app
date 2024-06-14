@@ -74,6 +74,7 @@ const login = () => {
                     await messaging().subscribeToTopic(res.data.adm_no.replace(/\//g, '_'));
                 }else{
                     await messaging().subscribeToTopic(res.data.adm_no.replace(/\//g, '_'));
+                    await messaging().subscribeToTopic(res.data.class_name);
                 };
 
             }catch(err){
