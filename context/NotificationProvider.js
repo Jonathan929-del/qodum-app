@@ -56,14 +56,14 @@ export const NotificationProvider = ({ children }) => {
   // Changable
   // Request push notification
   const requestPushMessagesPermission = async () => {
-    // const authStatus = await messaging().requestPermission();
-    // const enabled =
-    // authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
-    // authStatus === messaging.AuthorizationStatus.PROVISIONAL;
+    const authStatus = await messaging().requestPermission();
+    const enabled =
+    authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
+    authStatus === messaging.AuthorizationStatus.PROVISIONAL;
 
-    // if (enabled) {
-    //   console.log('Authorization status: ', authStatus);
-    // }
+    if (enabled) {
+      console.log('Authorization status: ', authStatus);
+    }
   };
 
 
@@ -97,14 +97,14 @@ export const NotificationProvider = ({ children }) => {
     fetcher();
 
     // Changable
-    // // Messaging request
-    // if(requestPushMessagesPermission()){
-    //   messaging().getToken();
-    // }else{
-    //   setMessageStyle('alert');
-    //   setSnackbarMessage('Permission not granted');
-    //   setVisible(true);
-    // };
+    // Messaging request
+    if(requestPushMessagesPermission()){
+      messaging().getToken();
+    }else{
+      setMessageStyle('alert');
+      setSnackbarMessage('Permission not granted');
+      setVisible(true);
+    };
 
     // On notification opened app
     // messaging().onNotificationOpenedApp(remoteMessage => {
@@ -119,16 +119,16 @@ export const NotificationProvider = ({ children }) => {
 
     // Changable
     // Unsubscribe
-    // const unsubscribe = messaging().onMessage(async remoteMessage => {
-    //   setMessageStyle('green');
-    //   setSnackbarMessage(remoteMessage.notification.body);
-    //   setVisible(true);
-    // });
+    const unsubscribe = messaging().onMessage(async remoteMessage => {
+      setMessageStyle('green');
+      setSnackbarMessage(remoteMessage.notification.body);
+      setVisible(true);
+    });
 
 
     // Changable
     // Return
-    // return unsubscribe;
+    return unsubscribe;
 
 }, []);
 
