@@ -2,7 +2,7 @@
 import axios from 'axios';
 import {AuthContext} from './Auth';
 import {Snackbar, Icon} from 'react-native-paper';
-import messaging from '@react-native-firebase/messaging';
+// import messaging from '@react-native-firebase/messaging';
 import {createContext, useContext, useState, useEffect} from 'react';
 
 
@@ -49,16 +49,21 @@ export const NotificationProvider = ({ children }) => {
   const [noticesCount, setNoticesCount] = useState(0);
 
 
+  // Ediaries count
+  const [ediariesCount, setEdiariesCount] = useState(0);
+
+
+  // Changable
   // Request push notification
   const requestPushMessagesPermission = async () => {
-    const authStatus = await messaging().requestPermission();
-    const enabled =
-    authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
-    authStatus === messaging.AuthorizationStatus.PROVISIONAL;
+    // const authStatus = await messaging().requestPermission();
+    // const enabled =
+    // authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
+    // authStatus === messaging.AuthorizationStatus.PROVISIONAL;
 
-    if (enabled) {
-      console.log('Authorization status: ', authStatus);
-    }
+    // if (enabled) {
+    //   console.log('Authorization status: ', authStatus);
+    // }
   };
 
 
@@ -83,16 +88,23 @@ export const NotificationProvider = ({ children }) => {
       const noticesRes = await axios.post(noticesLink, {topic:[user.adm_no.replace(/\//g, '_'), user?.student?.class_name]});
       setNoticesCount(noticesRes.data);
 
+      // Ediaries count
+      const ediariesCountLink = `${process.env.EXPO_PUBLIC_API_URL}/notifications/ediaries-count`;
+      const ediariesCountRes = await axios.post(ediariesCountLink, {topic:[user.adm_no.replace(/\//g, '_'), user?.student?.class_name]});
+      setNoticesCount(ediariesCountRes.data);
+
     };
     fetcher();
-    // Messaging request
-    if(requestPushMessagesPermission()){
-      messaging().getToken();
-    }else{
-      setMessageStyle('alert');
-      setSnackbarMessage('Permission not granted');
-      setVisible(true);
-    };
+
+    // Changable
+    // // Messaging request
+    // if(requestPushMessagesPermission()){
+    //   messaging().getToken();
+    // }else{
+    //   setMessageStyle('alert');
+    //   setSnackbarMessage('Permission not granted');
+    //   setVisible(true);
+    // };
 
     // On notification opened app
     // messaging().onNotificationOpenedApp(remoteMessage => {
@@ -104,20 +116,24 @@ export const NotificationProvider = ({ children }) => {
     //     console.log('Message handled in the background', remoteMessage);
     // });
 
-    // Unsubscribe
-    const unsubscribe = messaging().onMessage(async remoteMessage => {
-      setMessageStyle('green');
-      setSnackbarMessage(remoteMessage.notification.body);
-      setVisible(true);
-    });
 
+    // Changable
+    // Unsubscribe
+    // const unsubscribe = messaging().onMessage(async remoteMessage => {
+    //   setMessageStyle('green');
+    //   setSnackbarMessage(remoteMessage.notification.body);
+    //   setVisible(true);
+    // });
+
+
+    // Changable
     // Return
-    return unsubscribe;
+    // return unsubscribe;
 
 }, []);
 
   return (
-    <NotificationContext.Provider value={{setMessageStyle, setSnackbarMessage, setVisible, notificationsCount, setNotificationsCount, classNoticesCount, setClassNoticesCount, noticesCount, setNoticesCount}}>
+    <NotificationContext.Provider value={{setMessageStyle, setSnackbarMessage, setVisible, notificationsCount, setNotificationsCount, classNoticesCount, setClassNoticesCount, noticesCount, setNoticesCount, ediariesCount, setEdiariesCount}}>
       {children}
       <Snackbar
         style={{ backgroundColor: messageStyle }}
