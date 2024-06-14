@@ -24,10 +24,6 @@ export default function App() {
     const {setNotificationsCount} = useNotification();
 
 
-    // Selected tab
-    const [selectedTab, setSelectedTab] = useState('notice');
-
-
     // Is loading
     const [isLoading, setIsLoading] = useState(false);
 
@@ -58,7 +54,7 @@ export default function App() {
 
             // Fetching notifications
             const fetchNotificationLink = `${process.env.EXPO_PUBLIC_API_URL}/notifications/user-notifications`;
-            const fetchNotificationsRes = await axios.post(fetchNotificationLink, {to:[user.adm_no]});
+            const fetchNotificationsRes = await axios.post(fetchNotificationLink, {topic:[user.adm_no.replace(/\//g, '_')]});
             setNotifications(fetchNotificationsRes.data);
 
             // Viewing notifications

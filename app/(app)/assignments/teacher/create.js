@@ -157,7 +157,7 @@ const CreateAssignment = () => {
             const params = {
                 title:'New Assignment!',
                 body:'A new assignment has been added!',
-                topic:`student.assignments.${selectedClass.label}`,
+                topic:selectedClass.label,
                 type:'assignment',
                 assignment_id:res.data._id
             };

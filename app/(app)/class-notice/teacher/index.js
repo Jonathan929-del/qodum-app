@@ -1,7 +1,8 @@
 // Imports
 import axios from 'axios';
 import {router} from 'expo-router';
-import {useEffect, useState} from 'react';
+import {AuthContext} from '../../../../context/Auth';
+import {useContext, useEffect, useState} from 'react';
 import {Dropdown} from 'react-native-element-dropdown';
 import {Text, TouchableOpacity, View} from 'react-native';
 import {TextInput as PaperTextInput, ActivityIndicator, Icon, Button, Snackbar} from 'react-native-paper';
@@ -20,6 +21,10 @@ export default function App() {
 
     // Opened dropdown
     const [openedField, setOpenedField] = useState('');
+
+
+    // User
+    const {user} = useContext(AuthContext);
 
 
     // States
@@ -60,8 +65,9 @@ export default function App() {
             const params = {
                 title:'Class Notice!',
                 body:message,
-                topic:`student.assignments.${selectedClass.label}`,
-                type:'notice'
+                topic:selectedClass.label,
+                type:'notice',
+                created_by:user.adm_no
             };
             const notificationLink = `${process.env.EXPO_PUBLIC_API_URL}/notifications/send-class-notice`;
             await axios.post(notificationLink, params);

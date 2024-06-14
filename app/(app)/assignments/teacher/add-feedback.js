@@ -108,7 +108,7 @@ const App = () => {
             const notificationsParams = {
                 title:'Feedback Added!',
                 body:'Your teacher added a feedback to your answer!',
-                topic:`student.${JSON.parse(answer).student.adm_no.replace(/\//g, '_')}`,
+                topic:JSON.parse(answer).student.adm_no.replace(/\//g, '_'),
                 type:'feedback',
                 assignment_id:JSON.parse(assignment)._id,
                 answer_id:JSON.parse(answer)._id

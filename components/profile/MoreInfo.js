@@ -54,10 +54,10 @@ const MoreInfo = ({isInfoOpened, setIsInfoOpened}) => {
 
                     {/* Header */}
                     <View style={{display:'flex', flexDirection:'row', alignItems:'center', justifyContent:'space-between', paddingVertical:15, paddingHorizontal:20, backgroundColor:'#0094DA', borderTopLeftRadius:10, borderTopRightRadius:10}}>
-                    <Text style={{color:'#fff', fontSize:16}}>More Information</Text>
-                    <TouchableOpacity onPress={() => setIsInfoOpened(false)}>
-                        <Icon source='close' color='#fff' size={20}/>
-                    </TouchableOpacity>
+                        <Text style={{color:'#fff', fontSize:16}}>More Information</Text>
+                        <TouchableOpacity onPress={() => setIsInfoOpened(false)}>
+                            <Icon source='close' color='#fff' size={20}/>
+                        </TouchableOpacity>
                     </View>
 
                     {/* Buttons */}

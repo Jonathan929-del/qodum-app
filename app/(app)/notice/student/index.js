@@ -39,7 +39,7 @@ export default function App() {
 
             // Fetching notices
             const fetchNoticesLink = `${process.env.EXPO_PUBLIC_API_URL}/notifications/user-notices`;
-            const fetchNoticesRes = await axios.post(fetchNoticesLink, {to:[user.adm_no, user?.student?.class_name]});
+            const fetchNoticesRes = await axios.post(fetchNoticesLink, {topic:[user.adm_no.replace(/\//g, '_'), user?.student?.class_name]});
             setNotices(fetchNoticesRes.data);
 
             // Viewing notices

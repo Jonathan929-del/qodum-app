@@ -1,8 +1,8 @@
 // Imports
 import axios from 'axios';
 import {router} from 'expo-router';
-import {useEffect, useState} from 'react';
-import {Dropdown} from 'react-native-element-dropdown';
+import {AuthContext} from '../../../../context/Auth';
+import {useContext, useEffect, useState} from 'react';
 import {Image, ScrollView, Text, TouchableOpacity, View} from 'react-native';
 import {TextInput as PaperTextInput, ActivityIndicator, Icon, Button, Snackbar, Checkbox} from 'react-native-paper';
 
@@ -16,6 +16,10 @@ export default function App() {
     // Snack bar actions
     const [visible, setVisible] = useState(false);
     const onDismissSnackBar = () => setVisible(false);
+
+
+    // User
+    const {user} = useContext(AuthContext);
 
 
     // Opened dropdown
@@ -50,15 +54,25 @@ export default function App() {
     // Receptients dropdown
     const receptientsDropdown = (
         <ScrollView style={{position:'absolute', width:'100%', maxHeight:300, top:85, paddingVertical:6, zIndex:10, backgroundColor:'#fff', borderWidth:1, borderTopWidth:0, borderColor:'#ccc', borderBottomLeftRadius:4, borderBottomRightRadius:4}}>
-            <View style={{display:'flex', flexDirection:'row', alignItems:'center', paddingHorizontal:12, marginBottom:6, borderBottomWidth:1, borderBottomColor:'#ccc'}}>
+            <View style={{display:'flex', flexDirection:'row', alignItems:'center', marginBottom:6, borderBottomWidth:1, borderBottomColor:'#ccc'}}>
                 <Checkbox
                     status={receptients.length === selectedReceptients.length ? 'checked' : 'unchecked'}
                     onPress={() => selectedReceptients.length === receptients.length ? setSelectedReceptients([]) : setSelectedReceptients(receptients)}
                 />
                 <Text style={{fontWeight:'600'}}>Select All</Text>
             </View>
-            {receptients?.map(r => (
-                <View style={{display:'flex', flexDirection:'row', alignItems:'center', gap:6, paddingHorizontal:12, paddingVertical:4, borderBottomWidth:receptients.indexOf(r) === receptients.length - 1 ? 0 : 1, borderBottomColor:'#ccc'}}>
+
+
+            {/* Students */}
+            <View style={{display:'flex', flexDirection:'row', alignItems:'center', marginBottom:6, borderBottomWidth:1, borderBottomColor:'#ccc'}}>
+                <Checkbox
+                    status={receptients?.filter(r => r.role === 'Student').length === selectedReceptients?.filter(r => r.role === 'Student').length ? 'checked' : 'unchecked'}
+                    onPress={() => receptients?.filter(r => r.role === 'Student').length === selectedReceptients?.filter(r => r.role === 'Student').length ? setSelectedReceptients(selectedReceptients.filter(r => r.role !== 'Student')) : setSelectedReceptients(receptients.filter(r => r.role === 'Student'))}
+                />
+                <Text style={{fontWeight:'600'}}>Students</Text>
+            </View>
+            {receptients?.filter(r => r.role === 'Student')?.map(r => (
+                <View style={{display:'flex', flexDirection:'row', alignItems:'center', gap:6, marginLeft:20, paddingVertical:4, borderLeftColor:'#0094DA', borderLeftWidth:1, borderBottomWidth:receptients.indexOf(r) === receptients.length - 1 ? 0 : 1, borderBottomColor:'#ccc'}}>
                     <Checkbox
                         status={selectedReceptients.map(sr => sr.adm_no).includes(r.adm_no) ? 'checked' : 'unchecked'}
                         onPress={() => selectedReceptients.map(sr => sr.adm_no).includes(r.adm_no)
@@ -81,6 +95,64 @@ export default function App() {
                     </View>
                 </View>
             ))}
+
+
+            {/* Teachers */}
+            <View style={{display:'flex', flexDirection:'row', alignItems:'center', marginBottom:6, borderBottomWidth:1, borderBottomColor:'#ccc'}}>
+                <Checkbox
+                    status={receptients?.filter(r => r.role === 'Teacher').length === selectedReceptients?.filter(r => r.role === 'Teacher').length ? 'checked' : 'unchecked'}
+                    onPress={() => receptients?.filter(r => r.role === 'Teacher').length === selectedReceptients?.filter(r => r.role === 'Teacher').length ? setSelectedReceptients(selectedReceptients.filter(r => r.role !== 'Teacher')) : setSelectedReceptients(receptients.filter(r => r.role === 'Teacher'))}
+                />
+                <Text style={{fontWeight:'600'}}>Teachers</Text>
+            </View>
+            {receptients?.filter(r => r.role === 'Teacher')?.map(r => (
+                <View style={{display:'flex', flexDirection:'row', alignItems:'center', gap:6, marginLeft:20, paddingVertical:4, borderLeftColor:'#0094DA', borderLeftWidth:1, borderBottomWidth:receptients.indexOf(r) === receptients.length - 1 ? 0 : 1, borderBottomColor:'#ccc'}}>
+                    <Checkbox
+                        status={selectedReceptients.map(sr => sr.adm_no).includes(r.adm_no) ? 'checked' : 'unchecked'}
+                        onPress={() => selectedReceptients.map(sr => sr.adm_no).includes(r.adm_no)
+                            ? setSelectedReceptients(selectedReceptients.filter(sr => sr.adm_no !== r.adm_no))
+                            : setSelectedReceptients([...selectedReceptients, r])}
+                    />
+                    {r?.image ? (
+                        <Image
+                            source={{uri:r?.image}}
+                            style={{width:40, height:40, alignItems:'center', justifyContent:'center', borderWidth:1, borderColor:'#ccc', borderRadius:30}}
+                        />
+                    ) : (
+                        <View style={{width:40, height:40, alignItems:'center', justifyContent:'center', borderWidth:1, borderColor:'#ccc', borderRadius:30}}>
+                            <Text style={{fontSize:8, color:'gray'}}>No Photo</Text>
+                        </View>
+                    )}
+                    <View style={{display:'flex', flexDirection:'column'}}>
+                        <Text style={{fontWeight:'600'}}>{r.name}</Text>
+                        <Text style={{fontSize:11, color:'gray'}}>{r.role}</Text>
+                    </View>
+                </View>
+            ))}
+            {/* {receptients?.map(r => (
+                <View style={{display:'flex', flexDirection:'row', alignItems:'center', gap:6, paddingHorizontal:12, paddingVertical:4, borderBottomWidth:receptients.indexOf(r) === receptients.length - 1 ? 0 : 1, borderBottomColor:'#ccc'}}>
+                    <Checkbox
+                        status={selectedReceptients.map(sr => sr.adm_no).includes(r.adm_no) ? 'checked' : 'unchecked'}
+                        onPress={() => selectedReceptients.map(sr => sr.adm_no).includes(r.adm_no)
+                            ? setSelectedReceptients(selectedReceptients.filter(sr => sr.adm_no !== r.adm_no))
+                            : setSelectedReceptients([...selectedReceptients, r])}
+                    />
+                    {r?.image ? (
+                        <Image
+                            source={{uri:r?.image}}
+                            style={{width:40, height:40, alignItems:'center', justifyContent:'center', borderWidth:1, borderColor:'#ccc', borderRadius:30}}
+                        />
+                    ) : (
+                        <View style={{width:40, height:40, alignItems:'center', justifyContent:'center', borderWidth:1, borderColor:'#ccc', borderRadius:30}}>
+                            <Text style={{fontSize:8, color:'gray'}}>No Photo</Text>
+                        </View>
+                    )}
+                    <View style={{display:'flex', flexDirection:'column'}}>
+                        <Text style={{fontWeight:'600'}}>{r.name}</Text>
+                        <Text style={{fontSize:11, color:'gray'}}>{r.role}</Text>
+                    </View>
+                </View>
+            ))} */}
         </ScrollView>
     );
 
@@ -105,8 +177,9 @@ export default function App() {
                 const params = {
                     title:title,
                     body:message,
-                    topic:`student.assignments.${sr.adm_no.replace(/\//g, '_')}`,
-                    type:'notice'
+                    topic:sr.adm_no.replace(/\//g, '_'),
+                    type:'notice',
+                    created_by:user.adm_no.replace(/\//g, '_')
                 };
                 const notificationLink = `${process.env.EXPO_PUBLIC_API_URL}/notifications/send-notice`;
                 await axios.post(notificationLink, params);

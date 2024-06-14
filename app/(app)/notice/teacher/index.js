@@ -1,13 +1,13 @@
 // Imports
 import axios from 'axios';
 import moment from 'moment';
-import {router} from 'expo-router';
 import {LinearGradient} from 'expo-linear-gradient';
 import {AuthContext} from '../../../../context/Auth';
 import {useContext, useEffect, useState} from 'react';
-import {ActivityIndicator, Card, Icon} from 'react-native-paper';
-import {useNotification} from '../../../../context/NotificationProvider';
-import {ScrollView, Text, TouchableOpacity, View, Animated, Dimensions, TouchableWithoutFeedback} from 'react-native';
+import {router, useLocalSearchParams} from 'expo-router';
+// import {useNotification} from '../../../../context/NotificationProvider';
+import {ActivityIndicator, Card, Icon, Menu, IconButton, Snackbar} from 'react-native-paper';
+import {ScrollView, Text, TouchableOpacity, View, Animated, Dimensions, TouchableWithoutFeedback, Alert} from 'react-native';
 
 
 
@@ -16,16 +16,30 @@ import {ScrollView, Text, TouchableOpacity, View, Animated, Dimensions, Touchabl
 // Main functions
 export default function App() {
 
+    // Snack bar actions
+    const [visible, setVisible] = useState(false);
+    const onDismissSnackBar = () => setVisible(false);
+    const [snackbarMessage, setSnackbarMessage] = useState('');
+
+
     // User
     const {user} = useContext(AuthContext);
+
+
+    // Local params
+    const {isEdited} = useLocalSearchParams();
 
 
     // Fade animation
     const [fadeAnim] = useState(new Animated.Value(0));
 
 
+    // Opened field
+    const [openedField, setOpenedField] = useState('');
+
+
     // Notices count
-    const {setNoticesCount} = useNotification();
+    // const {setNoticesCount} = useNotification();
 
 
     // Is loading
@@ -40,24 +54,65 @@ export default function App() {
     const [notices, setNotices] = useState({});
 
 
+    // Fethcer
+    const fetcher = async () => {
+
+        // Fetching notices
+        const fetchNoticesLink = `${process.env.EXPO_PUBLIC_API_URL}/notifications/user-notices`;
+        const fetchNoticesRes = await axios.post(fetchNoticesLink, {topic:[user.adm_no.replace(/\//g, '_')]});
+        setNotices(fetchNoticesRes.data);
+
+        // Viewing notices
+        const viewNoticesLink = `${process.env.EXPO_PUBLIC_API_URL}/notifications/view-notices`;
+        await axios.post(viewNoticesLink, {notifications_ids:fetchNoticesRes.data.unviewed_notifications.map(d => d.id)});
+        // setNoticesCount(0);
+        setIsLoading(false);
+
+    };
+
+
+    // Show delete alert
+    const showDeleteAlert = id =>
+        Alert.alert(
+            'Are you sure?',
+            'Are you sure you want to delete this record?',
+            [
+                {
+                    text: 'No',
+                    style:'destructive',
+                },
+                {
+                    text: 'Yes',
+                    onPress: () => deleteNotice(id),
+                    style:'default',
+                },
+            ]
+    );
+
+
+    // Delete assignment
+    const deleteNotice = async id => {
+        try {
+            setIsLoading(true);
+            const link = `${process.env.EXPO_PUBLIC_API_URL}/notifications/delete-notice`;
+            await axios.post(link, {notice_id:Number(id)});
+            setSnackbarMessage('Message Deleted Successfully!');
+            setVisible(true);
+            fetcher();
+        }catch(err){
+            console.log(err);
+        }
+    };
+
+
     // Use effects
     useEffect(() => {
         setIsLoading(true);
-        const fetcher = async () => {
-
-            // Fetching notices
-            const fetchNoticesLink = `${process.env.EXPO_PUBLIC_API_URL}/notifications/user-notices`;
-            const fetchNoticesRes = await axios.post(fetchNoticesLink, {to:[user.adm_no]});
-            setNotices(fetchNoticesRes.data);
-
-            // Viewing notices
-            const viewNoticesLink = `${process.env.EXPO_PUBLIC_API_URL}/notifications/view-notices`;
-            await axios.post(viewNoticesLink, {notifications_ids:fetchNoticesRes.data.unviewed_notifications.map(d => d.id)});
-            setNoticesCount(0);
-            setIsLoading(false);
-
+        if(isEdited){
+            setVisible(true);
+            setSnackbarMessage('Message Edited Successfully!');
         };
-        fetcher()
+        fetcher();
     }, []);
     useEffect(() => {
         if (isComposeOpened) {
@@ -101,8 +156,28 @@ export default function App() {
                             {notices.unviewed_notifications?.map(n => (
                                 <Card style={{width:'100%'}} key={n.id}>
                                     <View style={{display:'flex', flexDirection:'column', gap:4, paddingVertical:10, paddingHorizontal:20}}>
-                                        <Text style={{fontSize:16, fontWeight:'600'}}>{n.title}</Text>
-                                        <Text style={{fontSize:14}}>{n.body}</Text>
+                                        <View style={{display:'flex', flexDirection:'row', alignItems:'center', justifyContent:'space-between'}}>
+                                            <View style={{display:'flex', flexDirection:'column'}}>
+                                                <Text style={{fontSize:16, fontWeight:'600'}}>{n.title}</Text>
+                                                <Text style={{fontSize:14}}>{n.body}</Text>
+                                            </View>
+                                            {n.created_by === user.adm_no && (
+                                                <Menu
+                                                    visible={openedField === n.id}
+                                                    onDismiss={() => setOpenedField('')}
+                                                    anchor={
+                                                        <IconButton
+                                                            size={20}
+                                                            icon='dots-vertical'
+                                                            onPress={() => setOpenedField(n.id)}
+                                                        />
+                                                    }
+                                                >
+                                                    <Menu.Item onPress={() => router.push({pathname:'/notice/teacher/edit-app-message', params:n})} title='Edit' />
+                                                    <Menu.Item onPress={() => showDeleteAlert(n.notice_id)} title='Delete' />
+                                                </Menu>
+                                            )}
+                                        </View>
                                         <View style={{display:'flex', flexDirection:'row', alignItems:'center', justifyContent:'space-between'}}>
                                             <View style={{display:'flex', flexDirection:'row', alignItems:'center', marginTop:10}}>
                                                 <Icon source='calendar' color='#0094DA' size={20}/>
@@ -140,8 +215,28 @@ export default function App() {
                             {notices.viewed_notifications?.map(n => (
                                 <Card style={{width:'100%'}} key={n.id}>
                                     <View style={{display:'flex', flexDirection:'column', gap:4, paddingVertical:10, paddingHorizontal:20}}>
-                                        <Text style={{fontSize:16, fontWeight:'600'}}>{n.title}</Text>
-                                        <Text style={{fontSize:14}}>{n.body}</Text>
+                                        <View style={{display:'flex', flexDirection:'row', alignItems:'center', justifyContent:'space-between'}}>
+                                            <View style={{display:'flex', flexDirection:'column'}}>
+                                                <Text style={{fontSize:16, fontWeight:'600'}}>{n.title}</Text>
+                                                <Text style={{fontSize:14}}>{n.body}</Text>
+                                            </View>
+                                            {n.created_by === user.adm_no && (
+                                                <Menu
+                                                    visible={openedField === n.id}
+                                                    onDismiss={() => setOpenedField('')}
+                                                    anchor={
+                                                        <IconButton
+                                                            size={20}
+                                                            icon='dots-vertical'
+                                                            onPress={() => setOpenedField(n.id)}
+                                                        />
+                                                    }
+                                                >
+                                                    <Menu.Item onPress={() => router.push({pathname:'/notice/teacher/edit-app-message', params:n})} title='Edit' />
+                                                    <Menu.Item onPress={() => showDeleteAlert(n.notice_id)} title='Delete' />
+                                                </Menu>
+                                            )}
+                                        </View>
                                         <View style={{display:'flex', flexDirection:'row', alignItems:'center', justifyContent:'space-between'}}>
                                             <View style={{display:'flex', flexDirection:'row', alignItems:'center', marginTop:10}}>
                                                 <Icon source='calendar' color='#0094DA' size={20}/>
@@ -231,6 +326,21 @@ export default function App() {
                     </TouchableWithoutFeedback>
                 </Animated.View>
             )}
+
+
+            {/* Snackbar */}
+            <Snackbar
+                style={{backgroundColor:'green'}}
+                visible={visible}
+                onDismiss={onDismissSnackBar}
+                action={{
+                    label: <Icon source='close' color='#fff' size={20}/>,
+                    onPress:() => setVisible(false)
+                }}
+            >
+                {snackbarMessage}
+            </Snackbar>
+
         </View>
     );
 };

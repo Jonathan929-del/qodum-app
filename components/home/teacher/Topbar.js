@@ -9,7 +9,7 @@ import {Image, Text, TouchableOpacity, View} from 'react-native';
 
 
 // Main function
-const Topbar = () => {
+const Topbar = ({setIsInfoPopupOpened}) => {
 
 
     // User
@@ -35,19 +35,27 @@ const Topbar = () => {
             {/* Image area */}
             <View style={{display:'flex', flexDirection:'row', alignItems:'center', justifyContent:'space-between', gap:10}}>
                 {user?.student?.image ? (
-                    <Image
-                        width={50}
-                        height={50}
-                        source={{uri:user?.student?.image}}
-                        style={{borderRadius:100}}
-                    />
+                    <TouchableOpacity
+                        onPress={() => setIsInfoPopupOpened(true)}
+                    >
+                        <Image
+                            width={50}
+                            height={50}
+                            source={{uri:user?.student?.image}}
+                            style={{borderRadius:100}}
+                        />
+                    </TouchableOpacity>
                 ) : user?.image ? (
-                    <Image
-                        width={50}
-                        height={50}
-                        source={{uri:user?.image}}
-                        style={{borderRadius:100}}
-                    />
+                    <TouchableOpacity
+                        onPress={() => setIsInfoPopupOpened(true)}
+                    >
+                        <Image
+                            width={50}
+                            height={50}
+                            source={{uri:user?.image}}
+                            style={{borderRadius:100}}
+                        />
+                    </TouchableOpacity>
                 ) : (
                     <View style={{width:50, height:50, display:'flex', alignItems:'center', justifyContent:'center', backgroundColor:'#fff', borderRadius:100}}>
                         <Text style={{fontSize:8}}>No Photo</Text>

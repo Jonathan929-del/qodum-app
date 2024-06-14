@@ -157,7 +157,7 @@ const CreateAssignment = () => {
             const params = {
                 title:`${assignment.subject} - Answer Added!`,
                 body:`${user.student.name} added an answer!`,
-                topic:`teacher.${assignment.creator_adm_no.replace(/\//g, '_')}`,
+                topic:assignment.creator_adm_no.replace(/\//g, '_'),
                 type:'submission',
                 assignment_id:assignment._id,
                 answer_id:res.data.submitted_assignments.filter(a => a.student.adm_no === user.adm_no)[0]._id

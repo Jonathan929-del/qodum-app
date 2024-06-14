@@ -70,12 +70,12 @@ const login = () => {
                 await signInWithEmailAndPassword(auth, type === 'student' ? res.data.student.email : res.data.email, data.password);
                 // Subscribing to topic
                 if(type === 'student'){
-                    await messaging().subscribeToTopic(`student.assignments.${res.data.student.class_name}`);
-                    await messaging().subscribeToTopic(`student.${res.data.adm_no.replace(/\//g, '_')}`);
+                    await messaging().subscribeToTopic(res.data.student.class_name);
+                    await messaging().subscribeToTopic(res.data.adm_no.replace(/\//g, '_'));
                 }else{
-                    await messaging().subscribeToTopic(`teacher.${res.data.adm_no.replace(/\//g, '_')}`);
+                    await messaging().subscribeToTopic(res.data.adm_no.replace(/\//g, '_'));
                 };
-                
+
             }catch(err){
                 setSnackbarMessage('Error Registring!');
                 setVisible(true);

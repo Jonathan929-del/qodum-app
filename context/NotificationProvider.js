@@ -70,17 +70,17 @@ export const NotificationProvider = ({ children }) => {
 
       // Setting notifications count
       const notificationsLink = `${process.env.EXPO_PUBLIC_API_URL}/notifications/notifications-count`;
-      const notificationsRes = await axios.post(notificationsLink, {to:[user.adm_no, user?.student?.class_name]});
+      const notificationsRes = await axios.post(notificationsLink, {topic:[user.adm_no.replace(/\//g, '_'), user?.student?.class_name]});
       setNotificationsCount(notificationsRes.data);
 
       // Class notices count
       const classNoticesLink = `${process.env.EXPO_PUBLIC_API_URL}/notifications/class-notices-count`;
-      const classNoticesRes = await axios.post(classNoticesLink, {to:[user.adm_no, user?.student?.class_name]});
+      const classNoticesRes = await axios.post(classNoticesLink, {topic:[user.adm_no.replace(/\//g, '_'), user?.student?.class_name]});
       setClassNoticesCount(classNoticesRes.data);
 
       // Notices count
       const noticesLink = `${process.env.EXPO_PUBLIC_API_URL}/notifications/notices-count`;
-      const noticesRes = await axios.post(noticesLink, {to:[user.adm_no, user?.student?.class_name]});
+      const noticesRes = await axios.post(noticesLink, {topic:[user.adm_no.replace(/\//g, '_'), user?.student?.class_name]});
       setNoticesCount(noticesRes.data);
 
     };

@@ -1,7 +1,9 @@
 // Imports
 import Topbar from './Topbar';
+import {useState} from 'react';
 import Academics from './Academics';
 import Transport from './Transport';
+import InfoPopup from './InfoPopup';
 import Celebration from './Celebration';
 import EdisappToday from './EdisappToday';
 import Communication from './Communication';
@@ -15,6 +17,10 @@ import {ScrollView, View, StatusBar} from 'react-native';
 
 // Main functions
 export default function App(){
+
+  // Is info pop up opened
+  const [isInfoPopupOpened, setIsInfoPopupOpened] = useState(false);
+
   return (
     <View style={{flex:1}}>
 
@@ -23,7 +29,10 @@ export default function App(){
         barStyle='light-content'
       />
 
-      <Topbar />
+      <Topbar
+        setIsInfoPopupOpened={setIsInfoPopupOpened}
+      />
+
       <ScrollView>
         <View style={{flex:1, display:'flex', flexDirection:'column', alignItems:'center', gap:20, marginTop:20}}>
           <Celebration />
@@ -35,6 +44,15 @@ export default function App(){
           <EdisappToday />
         </View>
       </ScrollView>
+
+      {/* Info Popup */}
+      {isInfoPopupOpened && (
+        <InfoPopup
+          isInfoPopupOpened={isInfoPopupOpened}
+          setIsInfoPopupOpened={setIsInfoPopupOpened}
+        />
+      )}
+
     </View>
   );
 };
