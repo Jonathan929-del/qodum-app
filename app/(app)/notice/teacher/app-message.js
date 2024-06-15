@@ -3,8 +3,8 @@ import axios from 'axios';
 import {router} from 'expo-router';
 import {AuthContext} from '../../../../context/Auth';
 import {useContext, useEffect, useState} from 'react';
-import {Image, ScrollView, Text, TouchableOpacity, View} from 'react-native';
-import {TextInput as PaperTextInput, ActivityIndicator, Icon, Button, Snackbar, Checkbox} from 'react-native-paper';
+import {Image, ScrollView, Text, TouchableOpacity, View, Modal} from 'react-native';
+import {TextInput as PaperTextInput, ActivityIndicator, Icon, Button, Checkbox} from 'react-native-paper';
 
 
 
@@ -13,13 +13,8 @@ import {TextInput as PaperTextInput, ActivityIndicator, Icon, Button, Snackbar, 
 // Main functions
 export default function App() {
 
-    // Snack bar actions
-    const [visible, setVisible] = useState(false);
-    const onDismissSnackBar = () => setVisible(false);
-
-
-    // Opened dropdown
-    const [openedField, setOpenedField] = useState('');
+    // Is receptiens opened
+    const [isReceptiensOpened, setIsReceptiensOpened] = useState('');
 
 
     // User
@@ -53,7 +48,7 @@ export default function App() {
 
     // Receptients dropdown
     const receptientsDropdown = (
-        <ScrollView style={{position:'absolute', width:'100%', maxHeight:300, top:85, paddingVertical:6, zIndex:10, backgroundColor:'#fff', borderWidth:1, borderTopWidth:0, borderColor:'#ccc', borderBottomLeftRadius:4, borderBottomRightRadius:4}}>
+        <ScrollView style={{width:'100%', paddingVertical:6}}>
             <View style={{display:'flex', flexDirection:'row', alignItems:'center', marginBottom:6, borderBottomWidth:1, borderBottomColor:'#ccc'}}>
                 <Checkbox
                     status={receptients.length === selectedReceptients.length ? 'checked' : 'unchecked'}
@@ -64,95 +59,79 @@ export default function App() {
 
 
             {/* Students */}
-            <View style={{display:'flex', flexDirection:'row', alignItems:'center', marginBottom:6, borderBottomWidth:1, borderBottomColor:'#ccc'}}>
-                <Checkbox
-                    status={receptients?.filter(r => r.role === 'Student').length === selectedReceptients?.filter(r => r.role === 'Student').length ? 'checked' : 'unchecked'}
-                    onPress={() => receptients?.filter(r => r.role === 'Student').length === selectedReceptients?.filter(r => r.role === 'Student').length ? setSelectedReceptients(selectedReceptients.filter(r => r.role !== 'Student')) : setSelectedReceptients(receptients.filter(r => r.role === 'Student'))}
-                />
-                <Text style={{fontWeight:'600'}}>Students</Text>
-            </View>
-            {receptients?.filter(r => r.role === 'Student')?.map(r => (
-                <View style={{display:'flex', flexDirection:'row', alignItems:'center', gap:6, marginLeft:20, paddingVertical:4, borderLeftColor:'#0094DA', borderLeftWidth:1, borderBottomWidth:receptients.indexOf(r) === receptients.length - 1 ? 0 : 1, borderBottomColor:'#ccc'}}>
-                    <Checkbox
-                        status={selectedReceptients.map(sr => sr.adm_no).includes(r.adm_no) ? 'checked' : 'unchecked'}
-                        onPress={() => selectedReceptients.map(sr => sr.adm_no).includes(r.adm_no)
-                            ? setSelectedReceptients(selectedReceptients.filter(sr => sr.adm_no !== r.adm_no))
-                            : setSelectedReceptients([...selectedReceptients, r])}
-                    />
-                    {r?.image ? (
-                        <Image
-                            source={{uri:r?.image}}
-                            style={{width:40, height:40, alignItems:'center', justifyContent:'center', borderWidth:1, borderColor:'#ccc', borderRadius:30}}
+            {receptients?.filter(r => r.role === 'Student').length > 0 && (
+                <>
+                    <View style={{display:'flex', flexDirection:'row', alignItems:'center', marginBottom:6, borderBottomWidth:1, borderBottomColor:'#ccc'}}>
+                        <Checkbox
+                            status={receptients?.filter(r => r.role === 'Student').length === selectedReceptients?.filter(r => r.role === 'Student').length ? 'checked' : 'unchecked'}
+                            onPress={() => receptients?.filter(r => r.role === 'Student').length === selectedReceptients?.filter(r => r.role === 'Student').length ? setSelectedReceptients(selectedReceptients.filter(r => r.role !== 'Student')) : setSelectedReceptients(receptients.filter(r => r.role === 'Student'))}
                         />
-                    ) : (
-                        <View style={{width:40, height:40, alignItems:'center', justifyContent:'center', borderWidth:1, borderColor:'#ccc', borderRadius:30}}>
-                            <Text style={{fontSize:8, color:'gray'}}>No Photo</Text>
-                        </View>
-                    )}
-                    <View style={{display:'flex', flexDirection:'column'}}>
-                        <Text style={{fontWeight:'600'}}>{r.name}</Text>
-                        <Text style={{fontSize:11, color:'gray'}}>{r.role}</Text>
+                        <Text style={{fontWeight:'600'}}>Students</Text>
                     </View>
-                </View>
-            ))}
+                    {receptients?.filter(r => r.role === 'Student')?.map(r => (
+                        <View style={{display:'flex', flexDirection:'row', alignItems:'center', gap:6, marginLeft:20, paddingVertical:4, borderLeftColor:'#0094DA', borderLeftWidth:1, borderBottomWidth:receptients.indexOf(r) === receptients.length - 1 ? 0 : 1, borderBottomColor:'#ccc'}}>
+                            <Checkbox
+                                status={selectedReceptients.map(sr => sr.adm_no).includes(r.adm_no) ? 'checked' : 'unchecked'}
+                                onPress={() => selectedReceptients.map(sr => sr.adm_no).includes(r.adm_no)
+                                    ? setSelectedReceptients(selectedReceptients.filter(sr => sr.adm_no !== r.adm_no))
+                                    : setSelectedReceptients([...selectedReceptients, r])}
+                            />
+                            {r?.image ? (
+                                <Image
+                                    source={{uri:r?.image}}
+                                    style={{width:40, height:40, alignItems:'center', justifyContent:'center', borderWidth:1, borderColor:'#ccc', borderRadius:30}}
+                                />
+                            ) : (
+                                <View style={{width:40, height:40, alignItems:'center', justifyContent:'center', borderWidth:1, borderColor:'#ccc', borderRadius:30}}>
+                                    <Text style={{fontSize:8, color:'gray'}}>No Photo</Text>
+                                </View>
+                            )}
+                            <View style={{display:'flex', flexDirection:'column'}}>
+                                <Text style={{fontWeight:'600'}}>{r.name}</Text>
+                                <Text style={{fontSize:11, color:'gray'}}>{r.role}</Text>
+                            </View>
+                        </View>
+                    ))}
+                </>
+            )}
 
 
             {/* Teachers */}
-            <View style={{display:'flex', flexDirection:'row', alignItems:'center', marginBottom:6, borderBottomWidth:1, borderBottomColor:'#ccc'}}>
-                <Checkbox
-                    status={receptients?.filter(r => r.role === 'Teacher').length === selectedReceptients?.filter(r => r.role === 'Teacher').length ? 'checked' : 'unchecked'}
-                    onPress={() => receptients?.filter(r => r.role === 'Teacher').length === selectedReceptients?.filter(r => r.role === 'Teacher').length ? setSelectedReceptients(selectedReceptients.filter(r => r.role !== 'Teacher')) : setSelectedReceptients(receptients.filter(r => r.role === 'Teacher'))}
-                />
-                <Text style={{fontWeight:'600'}}>Teachers</Text>
-            </View>
-            {receptients?.filter(r => r.role === 'Teacher')?.map(r => (
-                <View style={{display:'flex', flexDirection:'row', alignItems:'center', gap:6, marginLeft:20, paddingVertical:4, borderLeftColor:'#0094DA', borderLeftWidth:1, borderBottomWidth:receptients.indexOf(r) === receptients.length - 1 ? 0 : 1, borderBottomColor:'#ccc'}}>
-                    <Checkbox
-                        status={selectedReceptients.map(sr => sr.adm_no).includes(r.adm_no) ? 'checked' : 'unchecked'}
-                        onPress={() => selectedReceptients.map(sr => sr.adm_no).includes(r.adm_no)
-                            ? setSelectedReceptients(selectedReceptients.filter(sr => sr.adm_no !== r.adm_no))
-                            : setSelectedReceptients([...selectedReceptients, r])}
-                    />
-                    {r?.image ? (
-                        <Image
-                            source={{uri:r?.image}}
-                            style={{width:40, height:40, alignItems:'center', justifyContent:'center', borderWidth:1, borderColor:'#ccc', borderRadius:30}}
+            {receptients?.filter(r => r.role === 'Teacher').length > 0 && (
+                <>
+                    <View style={{display:'flex', flexDirection:'row', alignItems:'center', marginBottom:6, borderBottomWidth:1, borderBottomColor:'#ccc'}}>
+                        <Checkbox
+                            status={receptients?.filter(r => r.role === 'Teacher').length === selectedReceptients?.filter(r => r.role === 'Teacher').length ? 'checked' : 'unchecked'}
+                            onPress={() => receptients?.filter(r => r.role === 'Teacher').length === selectedReceptients?.filter(r => r.role === 'Teacher').length ? setSelectedReceptients(selectedReceptients.filter(r => r.role !== 'Teacher')) : setSelectedReceptients(receptients.filter(r => r.role === 'Teacher'))}
                         />
-                    ) : (
-                        <View style={{width:40, height:40, alignItems:'center', justifyContent:'center', borderWidth:1, borderColor:'#ccc', borderRadius:30}}>
-                            <Text style={{fontSize:8, color:'gray'}}>No Photo</Text>
-                        </View>
-                    )}
-                    <View style={{display:'flex', flexDirection:'column'}}>
-                        <Text style={{fontWeight:'600'}}>{r.name}</Text>
-                        <Text style={{fontSize:11, color:'gray'}}>{r.role}</Text>
+                        <Text style={{fontWeight:'600'}}>Teachers</Text>
                     </View>
-                </View>
-            ))}
-            {/* {receptients?.map(r => (
-                <View style={{display:'flex', flexDirection:'row', alignItems:'center', gap:6, paddingHorizontal:12, paddingVertical:4, borderBottomWidth:receptients.indexOf(r) === receptients.length - 1 ? 0 : 1, borderBottomColor:'#ccc'}}>
-                    <Checkbox
-                        status={selectedReceptients.map(sr => sr.adm_no).includes(r.adm_no) ? 'checked' : 'unchecked'}
-                        onPress={() => selectedReceptients.map(sr => sr.adm_no).includes(r.adm_no)
-                            ? setSelectedReceptients(selectedReceptients.filter(sr => sr.adm_no !== r.adm_no))
-                            : setSelectedReceptients([...selectedReceptients, r])}
-                    />
-                    {r?.image ? (
-                        <Image
-                            source={{uri:r?.image}}
-                            style={{width:40, height:40, alignItems:'center', justifyContent:'center', borderWidth:1, borderColor:'#ccc', borderRadius:30}}
-                        />
-                    ) : (
-                        <View style={{width:40, height:40, alignItems:'center', justifyContent:'center', borderWidth:1, borderColor:'#ccc', borderRadius:30}}>
-                            <Text style={{fontSize:8, color:'gray'}}>No Photo</Text>
+                    {receptients?.filter(r => r.role === 'Teacher')?.map(r => (
+                        <View style={{display:'flex', flexDirection:'row', alignItems:'center', gap:6, marginLeft:20, paddingVertical:4, borderLeftColor:'#0094DA', borderLeftWidth:1, borderBottomWidth:receptients.indexOf(r) === receptients.length - 1 ? 0 : 1, borderBottomColor:'#ccc'}}>
+                            <Checkbox
+                                status={selectedReceptients.map(sr => sr.adm_no).includes(r.adm_no) ? 'checked' : 'unchecked'}
+                                onPress={() => selectedReceptients.map(sr => sr.adm_no).includes(r.adm_no)
+                                    ? setSelectedReceptients(selectedReceptients.filter(sr => sr.adm_no !== r.adm_no))
+                                    : setSelectedReceptients([...selectedReceptients, r])}
+                            />
+                            {r?.image ? (
+                                <Image
+                                    source={{uri:r?.image}}
+                                    style={{width:40, height:40, alignItems:'center', justifyContent:'center', borderWidth:1, borderColor:'#ccc', borderRadius:30}}
+                                />
+                            ) : (
+                                <View style={{width:40, height:40, alignItems:'center', justifyContent:'center', borderWidth:1, borderColor:'#ccc', borderRadius:30}}>
+                                    <Text style={{fontSize:8, color:'gray'}}>No Photo</Text>
+                                </View>
+                            )}
+                            <View style={{display:'flex', flexDirection:'column'}}>
+                                <Text style={{fontWeight:'600'}}>{r.name}</Text>
+                                <Text style={{fontSize:11, color:'gray'}}>{r.role}</Text>
+                            </View>
                         </View>
-                    )}
-                    <View style={{display:'flex', flexDirection:'column'}}>
-                        <Text style={{fontWeight:'600'}}>{r.name}</Text>
-                        <Text style={{fontSize:11, color:'gray'}}>{r.role}</Text>
-                    </View>
-                </View>
-            ))} */}
+                    ))}
+                </>  
+            )}
         </ScrollView>
     );
 
@@ -174,7 +153,7 @@ export default function App() {
             
             // Sending notification
             const randomNumber = Math.floor(Math.random() * 1000000) + 1;
-            selectedReceptients?.map(async sr => {
+            selectedReceptients.concat({adm_no:user.adm_no.replace(/\//g, '_')})?.map(async sr => {
                 const params = {
                     title:title,
                     body:message,
@@ -184,7 +163,7 @@ export default function App() {
                     notice_id:randomNumber
                 };
                 const notificationLink = `${process.env.EXPO_PUBLIC_API_URL}/notifications/send-notice`;
-                await axios.post(notificationLink, params);
+                const res = await axios.post(notificationLink, params);
             })
 
             // Reseting
@@ -192,7 +171,7 @@ export default function App() {
             setTitle('');
             setMessage('');
             setStates({...states, loading:false});
-            setVisible(true);
+            router.push({pathname:'/notice/teacher', params:{isSubmitted:true}});
 
         }catch(err){
             console.log(err);
@@ -212,7 +191,7 @@ export default function App() {
             // Teachers response
             const teachersLink = `${process.env.EXPO_PUBLIC_API_URL}/teachers/adm-nos`;
             const teachersRes = await axios.get(teachersLink);
-            setReceptients([...studentsRes.data, ...teachersRes.data]);
+            setReceptients([...studentsRes.data, ...teachersRes.data.filter(t => t.adm_no !== user.adm_no)]);
             setStates({...states, loadingData:false});
 
         };
@@ -228,9 +207,39 @@ export default function App() {
                     >
                         <Icon source='chevron-left' size={40} color='#fff'/>
                     </TouchableOpacity>
-                    <Text style={{textAlign:'center', fontSize:18, color:'#fff', fontWeight:'900'}}>Message</Text>
+                    <Text style={{textAlign:'center', fontSize:18, color:'#fff', fontWeight:'900'}}>Compose Message</Text>
+                    <TouchableOpacity
+                        onPress={() => setIsReceptiensOpened(true)}
+                    >
+                        <Text style={{textAlign:'center', fontSize:14, color:'#fff'}}>Recipients +</Text>
+                    </TouchableOpacity>
                 </View>
             </View>
+
+
+            {/* Receptiens modal */}
+            <Modal visible={isReceptiensOpened}>
+                <View style={{flex:1, display:'flex', flexDirection:'column', alignItems:'center', marginBottom:10}}>
+                    {receptientsDropdown}
+                    <View style={{width:'80%', display:'flex', flexDirection:'row', alignItems:'center', justifyContent:'center', gap:20}}>
+                        <Button
+                            onPress={() => setIsReceptiensOpened(false)}
+                            textColor='#fff'
+                            style={{flex:1, backgroundColor:'#0094DA', borderRadius:4}}
+                        >
+                            Cancel
+                        </Button>
+                        <Button
+                            onPress={() => setIsReceptiensOpened(false)}
+                            textColor='#fff'
+                            style={{flex:1, backgroundColor:'#0094DA', borderRadius:4}}
+                        >
+                            Ok
+                        </Button>
+                    </View>
+                </View>
+            </Modal>
+
 
             {/* Send notice */}
             {states.loadingData ? (
@@ -242,33 +251,6 @@ export default function App() {
 
 
                     <View style={{gap:10}}>
-
-                        {/* Receptients */}
-                        <View style={{gap:6, position:'relative'}}>
-                            <Text>Receptients</Text>
-                            <TouchableOpacity
-                                onPress={() => {
-                                    if(openedField === 'receptients'){
-                                        setOpenedField('');
-                                        selectedReceptients.length > 0 && setStates({...states, errors:{...states.errors, receptients:''}})
-                                    }else{
-                                        setOpenedField('receptients');
-                                    }
-                                }}
-                                style={{display:'flex', flexDirection:'row', alignItems:'center', backgroundColor:'#F5F5F8', height:60, paddingHorizontal:20, borderTopLeftRadius:5, borderTopRightRadius:5, borderBottomWidth:1, borderBottomColor:openedField === 'receptients' ? '#0094DA' : 'gray'}}
-                            >
-                                {openedField === 'receptients' ? (
-                                    <Icon source='chevron-up' size={30} color='gray'/>
-                                ) : (
-                                    <Icon source='chevron-down' size={30} color='gray'/>
-                                )}
-                                <Text style={{marginLeft:10}}>{selectedReceptients.length === 0 ? 'Select Receptients' : selectedReceptients.length === 1 ? '1 Receptient Selected' : `${selectedReceptients.length} Receptients Selected`}</Text>
-                            </TouchableOpacity>
-                            {openedField === 'receptients' && receptientsDropdown}
-                            {states.errors.receptients !== '' && <Text style={{color:'red'}}>{states.errors.receptients}</Text>}
-                        </View>
-
-
                         {/* Title */}
                         <View style={{gap:6}}>
                             <Text>Title</Text>
@@ -317,23 +299,10 @@ export default function App() {
                             Submit
                         </Button>
                     )}
+                    {states.errors.receptients !== '' && <Text style={{color:'red'}}>{states.errors.receptients}</Text>}
 
                 </View>
             )}
-
-            {/* Snackbar */}
-            <Snackbar
-                style={{backgroundColor:'green'}}
-                visible={visible}
-                onDismiss={onDismissSnackBar}
-                action={{
-                    label: <Icon source='close' color='#fff' size={20}/>,
-                    onPress:() => setVisible(false)
-                }}
-            >
-                Notice Sent Successfully!
-            </Snackbar>
-
         </View>
     );
 };

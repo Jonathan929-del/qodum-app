@@ -27,7 +27,7 @@ export default function App() {
 
 
     // Local params
-    const {isEdited} = useLocalSearchParams();
+    const {isEdited, isSubmitted} = useLocalSearchParams();
 
 
     // Fade animation
@@ -108,11 +108,18 @@ export default function App() {
     // Use effects
     useEffect(() => {
         setIsLoading(true);
+        if(isSubmitted){
+            setVisible(true);
+            setSnackbarMessage('Message Sent Successfully!');
+
+        };
         if(isEdited){
             setVisible(true);
             setSnackbarMessage('Message Edited Successfully!');
         };
-        fetcher();
+        setTimeout(() => {
+            fetcher();
+        }, 1000);
     }, []);
     useEffect(() => {
         if (isComposeOpened) {

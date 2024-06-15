@@ -2,7 +2,8 @@
 import axios from 'axios';
 import {AuthContext} from './Auth';
 import {Snackbar, Icon} from 'react-native-paper';
-// import messaging from '@react-native-firebase/messaging';
+// Change
+import messaging from '@react-native-firebase/messaging';
 import {createContext, useContext, useState, useEffect} from 'react';
 
 
@@ -53,7 +54,7 @@ export const NotificationProvider = ({ children }) => {
   const [ediariesCount, setEdiariesCount] = useState(0);
 
 
-  // Changable
+  // Change
   // Request push notification
   const requestPushMessagesPermission = async () => {
     const authStatus = await messaging().requestPermission();
@@ -91,12 +92,12 @@ export const NotificationProvider = ({ children }) => {
       // Ediaries count
       const ediariesCountLink = `${process.env.EXPO_PUBLIC_API_URL}/notifications/ediaries-count`;
       const ediariesCountRes = await axios.post(ediariesCountLink, {topic:[user.adm_no.replace(/\//g, '_'), user?.student?.class_name]});
-      setNoticesCount(ediariesCountRes.data);
+      setEdiariesCount(ediariesCountRes.data);
 
     };
     fetcher();
 
-    // Changable
+    // Change
     // Messaging request
     if(requestPushMessagesPermission()){
       messaging().getToken();
@@ -117,7 +118,7 @@ export const NotificationProvider = ({ children }) => {
     // });
 
 
-    // Changable
+    // Change
     // Unsubscribe
     const unsubscribe = messaging().onMessage(async remoteMessage => {
       setMessageStyle('green');
@@ -126,7 +127,7 @@ export const NotificationProvider = ({ children }) => {
     });
 
 
-    // Changable
+    // Change
     // Return
     return unsubscribe;
 

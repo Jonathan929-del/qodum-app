@@ -113,7 +113,7 @@ export default function App() {
                     >
                         <Icon source='chevron-left' size={40} color='#fff'/>
                     </TouchableOpacity>
-                    <Text style={{textAlign:'center', fontSize:18, color:'#fff', fontWeight:'900'}}>Class Notice</Text>
+                    <Text style={{textAlign:'center', fontSize:18, color:'#fff', fontWeight:'900'}}>Compose Message</Text>
                 </View>
             </View>
 

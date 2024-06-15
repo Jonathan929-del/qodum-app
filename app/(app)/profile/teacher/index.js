@@ -5,7 +5,7 @@ import {StatusBar} from 'expo-status-bar';
 import {useContext, useState} from 'react';
 import {AuthContext} from '../../../../context/Auth';
 import MoreInfo from '../../../../components/profile/MoreInfo';
-import {Image, ScrollView, Text, TouchableOpacity, View} from 'react-native';
+import {Dimensions, Image, ScrollView, Text, TouchableOpacity, View} from 'react-native';
 
 
 
@@ -60,7 +60,7 @@ const TeacherProfile = () => {
             {/* Info icon */}
             <TouchableOpacity
               onPress={() => setIsInfoOpened(true)}
-              style={{position:'absolute', top:30, right:20, width:30, height:30, alignItems:'center', justifyContent:'center', backgroundColor:'#fff', borderRadius:50}}
+              style={{position:'absolute', top:Dimensions.get('screen').height / 16, right:20, width:30, height:30, alignItems:'center', justifyContent:'center', backgroundColor:'#fff', borderRadius:50}}
             >
               <Icon source='information-variant' color='gray' size={30}/>
             </TouchableOpacity>

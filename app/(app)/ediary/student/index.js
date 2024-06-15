@@ -42,9 +42,10 @@ export default function App() {
             const fetchEdiariesRes = await axios.post(fetchEdiariesLink, {topic:[user.adm_no.replace(/\//g, '_'), user?.student?.class_name]});
             setEdiaries(fetchEdiariesRes.data);
 
+
             // Viewing ediaries
             const viewEdiariesLink = `${process.env.EXPO_PUBLIC_API_URL}/notifications/view-ediaries`;
-            await axios.post(viewEdiariesLink, {notifications_ids:fetchEdiariesRes.data.unviewed_notifications.map(d => d.id)});
+            await axios.post(viewEdiariesLink, {ediaries_ids:fetchEdiariesRes.data.unviewed_notifications.map(d => d.id)});
             setEdiariesCount(0);
             setIsLoading(false);
 

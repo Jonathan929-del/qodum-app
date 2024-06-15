@@ -1,10 +1,10 @@
 // Imports
 import Topbar from './Topbar';
 import {useState} from 'react';
+import Message from './Message';
 import Academics from './Academics';
 import Transport from './Transport';
 import InfoPopup from './InfoPopup';
-import Celebration from './Celebration';
 import EdisappToday from './EdisappToday';
 import Communication from './Communication';
 import SchoolUpdates from './SchoolUpdates';
@@ -35,7 +35,7 @@ export default function App(){
 
       <ScrollView>
         <View style={{flex:1, display:'flex', flexDirection:'column', alignItems:'center', gap:20, marginTop:20}}>
-          <Celebration />
+          <Message />
           <AttendanceProgress />
           <SchoolUpdates />
           <Academics />
