@@ -3,9 +3,8 @@ import axios from 'axios';
 import {router} from 'expo-router';
 import {AuthContext} from '../../../../context/Auth';
 import {useContext, useEffect, useState} from 'react';
-import {Dropdown} from 'react-native-element-dropdown';
-import {Text, TouchableOpacity, View} from 'react-native';
-import {TextInput as PaperTextInput, ActivityIndicator, Icon, Button, Snackbar} from 'react-native-paper';
+import {ScrollView, Text, TouchableOpacity, View} from 'react-native';
+import {TextInput as PaperTextInput, ActivityIndicator, Icon, Button, Checkbox} from 'react-native-paper';
 
 
 
@@ -30,8 +29,9 @@ export default function App() {
     // States
     const [states, setStates] = useState({
         errors:{
-            class_name:'',
-            message:''
+            classes:'',
+            title:'',
+            message:'',
         },
         loading:false,
         loadingData:false
@@ -40,11 +40,51 @@ export default function App() {
 
     // Classes
     const [classes, setClasses] = useState([]);
-    const [selectedClass, setSelectedClass] = useState({label:'', value:''});
+    const [selectedClasses, setSelectedClasses] = useState([]);
+
+
+    // Title
+    const [title, setTitle] = useState('');
 
 
     // Message
     const [message, setMessage] = useState('');
+
+
+    // Classes dropdown
+    const classesDropdown = (
+        <ScrollView style={{width:'100%', maxHeight:300, paddingVertical:6, borderWidth:1, borderColor:'#ccc', borderBottomLeftRadius:4, borderBottomRightRadius:4}}>
+            <View style={{display:'flex', flexDirection:'row', alignItems:'center', marginBottom:6, borderBottomWidth:1, borderBottomColor:'#ccc'}}>
+                <Checkbox
+                    status={classes.length === selectedClasses.length ? 'checked' : 'unchecked'}
+                    onPress={() => classes.length === selectedClasses.length ? setSelectedClasses([]) : setSelectedClasses(classes)}
+                />
+                <Text style={{fontWeight:'600'}}>Select All</Text>
+            </View>
+
+
+            {/* Students */}
+            {classes.length == 0 ? (
+                <Text>
+                    No classes
+                </Text>
+            ) : (
+                <>
+                    {classes?.map(c => (
+                        <View style={{display:'flex', flexDirection:'row', alignItems:'center', gap:6, paddingVertical:4, borderBottomWidth:classes.indexOf(c) === classes.length - 1 ? 0 : 1, borderBottomColor:'#ccc'}}>
+                            <Checkbox
+                                status={selectedClasses.includes(c) ? 'checked' : 'unchecked'}
+                                onPress={() => selectedClasses.includes(c)
+                                    ? setSelectedClasses(selectedClasses.filter(sc => sc.class_name !== c.class_name))
+                                    : setSelectedClasses([...selectedClasses, c])}
+                            />
+                            <Text style={{fontWeight:'600'}}>{c.class_name}</Text>
+                        </View>
+                    ))}
+                </>
+            )}
+        </ScrollView>
+    );
 
 
     // Submit handler
@@ -53,30 +93,35 @@ export default function App() {
         try {
 
             // Empty validations
-            if(!selectedClass || !message){
+            if(selectedClasses.length == 0 || !title || !message){
                 setStates({...states, errors:{
-                    class_name:!selectedClass ? '*Please select a class' : '',
+                    classes:selectedClasses.length == 0 ? '*Please select at least one class' : '',
+                    title:!title ? '*Please enter a title' : '',
                     message:!message ? '*Please enter a message' : '',
                 }});
                 return;
             };
             
             // Sending notification
-            const params = {
-                title:'Class Notice!',
-                body:message,
-                topic:selectedClass.label,
-                type:'notice',
-                created_by:user.adm_no
-            };
-            const notificationLink = `${process.env.EXPO_PUBLIC_API_URL}/notifications/send-class-notice`;
-            await axios.post(notificationLink, params);
+            const randomNumber = Math.floor(Math.random() * 1000000) + 1;
+            selectedClasses.concat({class_name:user.adm_no.replace(/\//g, '_')}).map(async c => {
+                const params = {
+                    title,
+                    body:message,
+                    topic:c.class_name,
+                    type:'class_notice',
+                    created_by:user.adm_no.replace(/\//g, '_'),
+                    class_notice_id:randomNumber
+                };
+                const notificationLink = `${process.env.EXPO_PUBLIC_API_URL}/notifications/send-class-notice`;
+                await axios.post(notificationLink, params);
+            })
 
             // Reseting
-            setVisible(true);
-            setSelectedClass({label:'', value:''});
+            setSelectedClasses([]);
             setMessage('');
             setStates({...states, loading:false});
+            router.push({pathname:'/class-notice/teacher', params:{isSubmitted:true}})
         }catch(err){
             console.log(err);
         }
@@ -91,13 +136,7 @@ export default function App() {
             // classes response
             const classesLink = `${process.env.EXPO_PUBLIC_API_URL}/classes/names`;
             const classesRes = await axios.get(classesLink);
-            const classesDropdownData = classesRes.data.map(s => {
-                return{
-                    label:s.class_name,
-                    value:s.class_name.toLowerCase()
-                };
-            });
-            setClasses(classesDropdownData);
+            setClasses(classesRes.data);
             setStates({...states, loadingData:false});
 
         };
@@ -127,30 +166,39 @@ export default function App() {
 
 
                     <View style={{gap:10}}>
-                        {/* Class */}
-                        <View style={{gap:6}}>
-                            <Text>Class</Text>
-                            <Dropdown
-                                placeholderStyle={{color:'gray', paddingLeft:10}}
-                                selectedTextStyle={{paddingLeft:10}}
-                                data={classes}
-                                search
-                                activeColor='#ccc'
-                                labelField='label'
-                                valueField='value'
-                                placeholder='Select Class'
-                                searchPlaceholder='Search...'
-                                value={selectedClass}
-                                onFocus={() => setOpenedField('classes')}
-                                onBlur={() => setOpenedField('')}
-                                onChange={item => {setSelectedClass(item);setStates({states, errors:{...states.errors, class_name:!item.label  ? '*Please select a class' : ''}})}}
-                                style={{backgroundColor:'#F5F5F8', height:60, paddingHorizontal:20, borderTopLeftRadius:5, borderTopRightRadius:5, borderBottomWidth:openedField === 'classes' ? 2 : 1, borderBottomColor:openedField === 'classes' ? '#0094DA' : 'gray'}}
-                                renderLeftIcon={() => (
-                                    <Icon source='book-edit' color='gray' size={25}/>
+
+                        {/* Classes */}
+                        <View style={{gap:0}}>
+                            <Text>Classes</Text>
+                            <TouchableOpacity
+                                onPress={() => openedField === 'classes' ? setOpenedField('') : setOpenedField('classes')}
+                                style={{display:'flex', flexDirection:'row', alignItems:'center', justifyContent:'space-between', marginTop:6, backgroundColor:'#F5F5F8', height:60, paddingHorizontal:10, borderTopLeftRadius:5, borderTopRightRadius:5, borderBottomWidth:1, borderBottomColor:openedField === 'classes' ? '#0094DA' : 'gray'}}
+                            >
+                                <Text style={{marginLeft:10}}>{selectedClasses.length == 0 ? 'Select Classes' : selectedClasses.length === 1 ? '1 Class Selected' : `${selectedClasses.length} Classes Selected`}</Text>
+                                {openedField === 'classes' ? (
+                                    <Icon source='chevron-up' size={30} color='gray'/>
+                                ) : (
+                                    <Icon source='chevron-down' size={30} color='gray'/>
                                 )}
-                                name='class'
-                            />
-                            {states.errors.class_name !== '' && <Text style={{color:'red', marginTop:-6}}>{states.errors.class_name}</Text>}
+                            </TouchableOpacity>
+                            {openedField === 'classes' && classesDropdown}
+                            {states.errors.classes !== '' && <Text style={{color:'red'}}>{states.errors.classes}</Text>}
+                        </View>
+
+
+                        {/* Title */}
+                        <View style={{gap:6}}>
+                            <Text>Title</Text>
+                                <PaperTextInput
+                                    placeholder='Enter Title'
+                                    onBlur={v => setStates({states, errors:{...states.errors, title:v === ''  ? '*Please enter a title' : ''}})}
+                                    placeholderTextColor='gray'
+                                    style={{backgroundColor:'#F5F5F8'}}
+                                    left={<PaperTextInput.Icon icon='pencil-outline' size={30} color='gray'/>}
+                                    value={title}
+                                    onChangeText={v => setTitle(v)}
+                                />
+                            {states.errors.title !== '' && <Text style={{color:'red', marginTop:-6}}>{states.errors.title}</Text>}
                         </View>
 
 
@@ -170,6 +218,7 @@ export default function App() {
                                 />
                             {states.errors.message !== '' && <Text style={{color:'red', marginTop:-6}}>{states.errors.message}</Text>}
                         </View>
+
                     </View>
 
 
@@ -188,20 +237,6 @@ export default function App() {
 
                 </View>
             )}
-
-
-            {/* Snackbar */}
-            <Snackbar
-                style={{backgroundColor:'green'}}
-                visible={visible}
-                onDismiss={onDismissSnackBar}
-                action={{
-                    label: <Icon source='close' color='#fff' size={20}/>,
-                    onPress:() => setVisible(false)
-                }}
-            >
-                Notice Sent Successfully!
-            </Snackbar>
 
         </View>
     );

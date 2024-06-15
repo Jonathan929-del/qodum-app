@@ -29,6 +29,7 @@ export default function App() {
     // States
     const [states, setStates] = useState({
         errors:{
+            classes:'',
             receptient:'',
             title:'',
             message:''
@@ -39,9 +40,13 @@ export default function App() {
 
 
     // Receptients
+    const [classes, setClasses] = useState([]);
+    const [selectedClasses, setSelectedClasses] = useState([]);
+
+
+    // Receptients
     const [receptients, setReceptients] = useState([]);
-    const [selectedReceptient, setSelectedReceptient] = useState({});
-    console.log(selectedReceptient);
+    const [selectedReceptients, setSelectedReceptients] = useState([]);
 
 
     // Message
@@ -52,31 +57,90 @@ export default function App() {
     const [title, setTitle] = useState('');
 
 
+    // Classes dropdown
+    const classesDropdown = (
+        <ScrollView style={{width:'100%', maxHeight:300, paddingVertical:6, borderWidth:1, borderColor:'#ccc', borderBottomLeftRadius:4, borderBottomRightRadius:4}}>
+            <View style={{display:'flex', flexDirection:'row', alignItems:'center', marginBottom:6, borderBottomWidth:1, borderBottomColor:'#ccc'}}>
+                <Checkbox
+                    status={classes.length === selectedClasses.length ? 'checked' : 'unchecked'}
+                    onPress={() => classes.length === selectedClasses.length ? setSelectedClasses([]) : setSelectedClasses(classes)}
+                />
+                <Text style={{fontWeight:'600'}}>Select All</Text>
+            </View>
+
+
+            {/* Students */}
+            {classes.length == 0 ? (
+                <Text>
+                    No classes
+                </Text>
+            ) : (
+                <>
+                    {classes?.map(c => (
+                        <View style={{display:'flex', flexDirection:'row', alignItems:'center', gap:6, paddingVertical:4, borderBottomWidth:classes.indexOf(c) === classes.length - 1 ? 0 : 1, borderBottomColor:'#ccc'}}>
+                            <Checkbox
+                                status={selectedClasses.includes(c) ? 'checked' : 'unchecked'}
+                                onPress={() => selectedClasses.includes(c)
+                                    ? setSelectedClasses(selectedClasses.filter(sc => sc.class_name !== c.class_name))
+                                    : setSelectedClasses([...selectedClasses, c])}
+                            />
+                            <Text style={{fontWeight:'600'}}>{c.class_name}</Text>
+                        </View>
+                    ))}
+                </>
+            )}
+        </ScrollView>
+    );
+
+
     // Receptients dropdown
     const receptientsDropdown = (
-        <ScrollView style={{position:'absolute', width:'100%', maxHeight:300, top:85, paddingVertical:6, zIndex:10, backgroundColor:'#fff', borderWidth:1, borderTopWidth:0, borderColor:'#ccc', borderBottomLeftRadius:4, borderBottomRightRadius:4}}>
-            {receptients?.map(r => (
-                <View style={{display:'flex', flexDirection:'row', alignItems:'center', gap:6, paddingVertical:4, borderBottomWidth:receptients.indexOf(r) === receptients.length - 1 ? 0 : 1, borderBottomColor:'#ccc'}}>
-                    <RadioButton
-                        status={selectedReceptient.adm_no === r.adm_no ? 'checked' : 'unchecked'}
-                        onPress={() => setSelectedReceptient(r)}
-                    />
-                    {r?.image ? (
-                        <Image
-                            source={{uri:r?.image}}
-                            style={{width:40, height:40, alignItems:'center', justifyContent:'center', borderWidth:1, borderColor:'#ccc', borderRadius:30}}
+        <ScrollView style={{width:'100%', paddingVertical:6}}>
+            <View style={{display:'flex', flexDirection:'row', alignItems:'center', marginBottom:6, borderBottomWidth:1, borderBottomColor:'#ccc'}}>
+                <Checkbox
+                    status={receptients.length === selectedReceptients.length ? 'checked' : 'unchecked'}
+                    onPress={() => selectedReceptients.length === receptients.length ? setSelectedReceptients([]) : setSelectedReceptients(receptients)}
+                />
+                <Text style={{fontWeight:'600'}}>Select All</Text>
+            </View>
+
+
+            {/* Students */}
+            {receptients?.length > 0 && (
+                <>
+                    <View style={{display:'flex', flexDirection:'row', alignItems:'center', marginBottom:6, borderBottomWidth:1, borderBottomColor:'#ccc'}}>
+                        <Checkbox
+                            status={receptients.length === selectedReceptients.length ? 'checked' : 'unchecked'}
+                            onPress={() => receptients?.length === selectedReceptients?.length ? setSelectedReceptients(selectedReceptients) : setSelectedReceptients(receptients)}
                         />
-                    ) : (
-                        <View style={{width:40, height:40, alignItems:'center', justifyContent:'center', borderWidth:1, borderColor:'#ccc', borderRadius:30}}>
-                            <Text style={{fontSize:8, color:'gray'}}>No Photo</Text>
-                        </View>
-                    )}
-                    <View style={{display:'flex', flexDirection:'column'}}>
-                        <Text style={{fontWeight:'600'}}>{r.name}</Text>
-                        <Text style={{fontSize:11, color:'gray'}}>{r.role}</Text>
+                        <Text style={{fontWeight:'600'}}>Students</Text>
                     </View>
-                </View>
-            ))}
+                    {receptients?.map(r => (
+                        <View style={{display:'flex', flexDirection:'row', alignItems:'center', gap:6, marginLeft:20, paddingVertical:4, borderLeftColor:'#0094DA', borderLeftWidth:1, borderBottomWidth:receptients.indexOf(r) === receptients.length - 1 ? 0 : 1, borderBottomColor:'#ccc'}}>
+                            <Checkbox
+                                status={selectedReceptients.map(sr => sr.adm_no).includes(r.adm_no) ? 'checked' : 'unchecked'}
+                                onPress={() => selectedReceptients.map(sr => sr.adm_no).includes(r.adm_no)
+                                    ? setSelectedReceptients(selectedReceptients)
+                                    : setSelectedReceptients([...selectedReceptients, r])}
+                            />
+                            {r?.image ? (
+                                <Image
+                                    source={{uri:r?.image}}
+                                    style={{width:40, height:40, alignItems:'center', justifyContent:'center', borderWidth:1, borderColor:'#ccc', borderRadius:30}}
+                                />
+                            ) : (
+                                <View style={{width:40, height:40, alignItems:'center', justifyContent:'center', borderWidth:1, borderColor:'#ccc', borderRadius:30}}>
+                                    <Text style={{fontSize:8, color:'gray'}}>No Photo</Text>
+                                </View>
+                            )}
+                            <View style={{display:'flex', flexDirection:'column'}}>
+                                <Text style={{fontWeight:'600'}}>{r.name}</Text>
+                                <Text style={{fontSize:11, color:'gray'}}>{r.role}</Text>
+                            </View>
+                        </View>
+                    ))}
+                </>
+            )}
         </ScrollView>
     );
 
@@ -87,25 +151,48 @@ export default function App() {
         try {
 
             // Empty validations
-            if(!selectedReceptient?.name || !title || !message){
+            if((selectedReceptients.length === 0 && selectedClasses.length === 0) || !title || !message){
                 setStates({...states, errors:{
-                    receptient:!selectedReceptient?.name ? '*Please select a receptient' : '',
+                    receptient:(selectedReceptients.length === 0 && selectedClasses.length === 0) ? '*Please select at least one recipient' : '',
+                    classes:(selectedReceptients.length === 0 && selectedClasses.length === 0) ? '*Please select at least one class' : '',
                     title:!title ? '*Please enter a title' : '',
                     message:!message ? '*Please enter a message' : '',
                 }});
                 return;
             };
-            
-            // Sending e diary
-            const params = {
-                title,
-                body:message,
-                topic:selectedReceptient.adm_no.replace(/\//g, '_'),
-                type:'ediary',
-                created_by:user.adm_no.replace(/\//g, '_'),
+
+
+            // Sending e-diary to classes
+            if(selectedClasses.length > 0){
+                selectedClasses?.map(async c => {
+                    const params = {
+                        title,
+                        body:message,
+                        topic:c.class_name,
+                        type:'ediary',
+                        created_by:user.adm_no.replace(/\//g, '_'),
+                    };
+                    const notificationLink = `${process.env.EXPO_PUBLIC_API_URL}/notifications/send-ediary`;
+                    await axios.post(notificationLink, params);
+                });
             };
-            const notificationLink = `${process.env.EXPO_PUBLIC_API_URL}/notifications/send-ediary`;
-            await axios.post(notificationLink, params);
+
+
+            // Sending e-diary to students with filtering the selected classes students
+            if(selectedReceptients.filter(s => !selectedClasses.map(c => c.class_name).includes(s.class_name)).length > 0){
+                selectedReceptients.filter(s => !selectedClasses.map(c => c.class_name).includes(s.class_name)).map(async s => {
+                    const params = {
+                        title,
+                        body:message,
+                        topic:s.adm_no.replace(/\//g, '_'),
+                        type:'ediary',
+                        created_by:user.adm_no.replace(/\//g, '_'),
+                    };
+                    const notificationLink = `${process.env.EXPO_PUBLIC_API_URL}/notifications/send-ediary`;
+                    await axios.post(notificationLink, params);
+                });
+            };
+
 
             // Reseting
             setTitle('');
@@ -123,6 +210,11 @@ export default function App() {
     useEffect(() => {
         setStates({...states, loadingData:true});
         const fetcher = async () => {
+
+            // Classes response
+            const classesLink = `${process.env.EXPO_PUBLIC_API_URL}/classes/names`;
+            const classesRes = await axios.get(classesLink);
+            setClasses(classesRes.data);
 
             // Students response
             const studentsLink = `${process.env.EXPO_PUBLIC_API_URL}/students/adm-nos`;
@@ -155,31 +247,50 @@ export default function App() {
                     <ActivityIndicator />
                 </View>
             ) : (
-                <View style={{width:'80%', flex:1, display:'flex', flexDirection:'column', justifyContent:'space-between', paddingVertical:50}}>
+                <View style={{width:'100%', display:'flex', flexDirection:'column', paddingVertical:50, paddingHorizontal:30, justifyContent:'space-between'}}>
 
 
                     <View style={{gap:10}}>
 
+                        {/* Classes */}
+                        <View>
+                            <Text>Classes</Text>
+                            <TouchableOpacity
+                                onPress={() => openedField === 'classes' ? setOpenedField('') : setOpenedField('classes')}
+                                style={{display:'flex', flexDirection:'row', alignItems:'center', justifyContent:'space-between', marginTop:6, backgroundColor:'#F5F5F8', height:60, paddingHorizontal:10, borderTopLeftRadius:5, borderTopRightRadius:5, borderBottomWidth:1, borderBottomColor:openedField === 'classes' ? '#0094DA' : 'gray'}}
+                            >
+                                <Text style={{marginLeft:10}}>{selectedClasses.length == 0 ? 'Select Classes' : selectedClasses.length === 1 ? '1 Class Selected' : `${selectedClasses.length} Classes Selected`}</Text>
+                                {openedField === 'classes' ? (
+                                    <Icon source='chevron-up' size={30} color='gray'/>
+                                ) : (
+                                    <Icon source='chevron-down' size={30} color='gray'/>
+                                )}
+                            </TouchableOpacity>
+                            {openedField === 'classes' && classesDropdown}
+                            {states.errors.classes !== '' && <Text style={{color:'red'}}>{states.errors.classes}</Text>}
+                        </View>
+
+
                         {/* Receptient */}
                         <View style={{gap:6, position:'relative'}}>
-                            <Text>Receptient</Text>
+                            <Text>Recipient</Text>
                             <TouchableOpacity
                                 onPress={() => {
                                     if(openedField === 'receptient'){
                                         setOpenedField('');
-                                        selectedReceptient && setStates({...states, errors:{...states.errors, receptient:''}})
+                                        (selectedReceptients.length > 0 || selectedClasses.length > 0) && setStates({...states, errors:{...states.errors, receptient:''}})
                                     }else{
                                         setOpenedField('receptient');
                                     }
                                 }}
-                                style={{display:'flex', flexDirection:'row', alignItems:'center', backgroundColor:'#F5F5F8', height:60, paddingHorizontal:20, borderTopLeftRadius:5, borderTopRightRadius:5, borderBottomWidth:1, borderBottomColor:openedField === 'receptients' ? '#0094DA' : 'gray'}}
+                                style={{display:'flex', flexDirection:'row', alignItems:'center', justifyContent:'space-between', backgroundColor:'#F5F5F8', height:60, paddingHorizontal:10, borderTopLeftRadius:5, borderTopRightRadius:5, borderBottomWidth:1, borderBottomColor:openedField === 'receptients' ? '#0094DA' : 'gray'}}
                             >
+                                <Text style={{marginLeft:10}}>{selectedReceptients.length == 0 ? 'Select Recipients' : selectedReceptients.length === 1 ? '1 Recipient Selected' : `${selectedReceptients.length} Recipient Selected`}</Text>
                                 {openedField === 'receptient' ? (
                                     <Icon source='chevron-up' size={30} color='gray'/>
                                 ) : (
                                     <Icon source='chevron-down' size={30} color='gray'/>
                                 )}
-                                <Text style={{marginLeft:10}}>{!selectedReceptient?.name ? 'Select Receptient' : selectedReceptient?.name}</Text>
                             </TouchableOpacity>
                             {openedField === 'receptient' && receptientsDropdown}
                             {states.errors.receptient !== '' && <Text style={{color:'red'}}>{states.errors.receptient}</Text>}
@@ -248,7 +359,7 @@ export default function App() {
                     onPress:() => setVisible(false)
                 }}
             >
-                Notice Sent Successfully!
+                Message Sent Successfully!
             </Snackbar>
 
         </View>

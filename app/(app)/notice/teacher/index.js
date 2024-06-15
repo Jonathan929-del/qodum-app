@@ -111,7 +111,6 @@ export default function App() {
         if(isSubmitted){
             setVisible(true);
             setSnackbarMessage('Message Sent Successfully!');
-
         };
         if(isEdited){
             setVisible(true);

@@ -163,7 +163,7 @@ export default function App() {
                     notice_id:randomNumber
                 };
                 const notificationLink = `${process.env.EXPO_PUBLIC_API_URL}/notifications/send-notice`;
-                const res = await axios.post(notificationLink, params);
+                await axios.post(notificationLink, params);
             })
 
             // Reseting

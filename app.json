@@ -36,14 +36,14 @@
       "policy": "appVersion"
     },
     "updates": {
-      "enabled":true,
+      "enabled": true,
       "url": "https://u.expo.dev/25bf2422-587e-4fe6-ae96-9ce827ef1858"
     },
-    "plugins":[
+    "plugins": [
       [
         "expo-updates",
         {
-          "username":"jonathanadel"
+          "username": "jonathanadel"
         }
       ],
       [
@@ -76,7 +76,8 @@
           }
         }
       ],
-      "@react-native-firebase/messaging"
+      "@react-native-firebase/messaging",
+      "expo-router"
     ]
   }
 }

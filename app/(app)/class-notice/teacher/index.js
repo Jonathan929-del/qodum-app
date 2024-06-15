@@ -27,7 +27,11 @@ export default function App() {
 
 
     // Local params
-    const {isEdited} = useLocalSearchParams();
+    const {isEdited, isSubmitted} = useLocalSearchParams();
+
+
+    // Classes
+    const [classes, setClasses] = useState([]);
 
 
     // Fade animation
@@ -61,6 +65,7 @@ export default function App() {
         const fetchNoticesLink = `${process.env.EXPO_PUBLIC_API_URL}/notifications/user-class-notices`;
         const fetchNoticesRes = await axios.post(fetchNoticesLink, {topic:[user.adm_no.replace(/\//g, '_'), user.class_name]});
         setClassNotices(fetchNoticesRes.data);
+        console.log(fetchNoticesRes.data);
 
         // Viewing class notices
         const viewNoticesLink = `${process.env.EXPO_PUBLIC_API_URL}/notifications/view-class-notices`;
@@ -95,7 +100,7 @@ export default function App() {
         try {
             setIsLoading(true);
             const link = `${process.env.EXPO_PUBLIC_API_URL}/notifications/delete-class-notice`;
-            await axios.post(link, {id});
+            await axios.post(link, {class_notice_id:Number(id)});
             setSnackbarMessage('Message Deleted Successfully!');
             setVisible(true);
             fetcher();
@@ -112,7 +117,13 @@ export default function App() {
             setVisible(true);
             setSnackbarMessage('Message Edited Successfully!');
         };
-        fetcher();
+        if(isSubmitted){
+            setVisible(true);
+            setSnackbarMessage('Message Submitted Successfully!');
+        };
+        setTimeout(() => {
+            fetcher();
+        }, 1000);
     }, []);
     useEffect(() => {
         if (isComposeOpened) {
@@ -158,25 +169,27 @@ export default function App() {
                                     <View style={{display:'flex', flexDirection:'column', gap:4, paddingVertical:10, paddingHorizontal:20}}>
                                         <View style={{display:'flex', flexDirection:'row', alignItems:'center', justifyContent:'space-between'}}>
                                             <View style={{display:'flex', flexDirection:'column'}}>
-                                                <Text style={{fontSize:16, fontWeight:'600'}}>{n.title}</Text>
+                                                <View style={{width:'100%', display:'flex', flexDirection:'row', alignItems:'center', justifyContent:'space-between'}}>
+                                                    <Text style={{fontSize:16, fontWeight:'600'}}>{n.title}</Text>
+                                                    {n.created_by === user.adm_no && (
+                                                        <Menu
+                                                            visible={openedField === n.id}
+                                                            onDismiss={() => setOpenedField('')}
+                                                            anchor={
+                                                                <IconButton
+                                                                    size={20}
+                                                                    icon='dots-vertical'
+                                                                    onPress={() => setOpenedField(n.id)}
+                                                                />
+                                                            }
+                                                        >
+                                                            <Menu.Item onPress={() => router.push({pathname:'/class-notice/teacher/edit', params:n})} title='Edit' />
+                                                            <Menu.Item onPress={() => showDeleteAlert(n.class_notice_id)} title='Delete' />
+                                                        </Menu>
+                                                    )}
+                                                </View>
                                                 <Text style={{fontSize:14}}>{n.body}</Text>
                                             </View>
-                                            {n.created_by === user.adm_no && (
-                                                <Menu
-                                                    visible={openedField === n.id}
-                                                    onDismiss={() => setOpenedField('')}
-                                                    anchor={
-                                                        <IconButton
-                                                            size={20}
-                                                            icon='dots-vertical'
-                                                            onPress={() => setOpenedField(n.id)}
-                                                        />
-                                                    }
-                                                >
-                                                    <Menu.Item onPress={() => router.push({pathname:'/class-notice/teacher/edit', params:n})} title='Edit' />
-                                                    <Menu.Item onPress={() => showDeleteAlert(n.id)} title='Delete' />
-                                                </Menu>
-                                            )}
                                         </View>
                                         <View style={{display:'flex', flexDirection:'row', alignItems:'center', justifyContent:'space-between'}}>
                                             <View style={{display:'flex', flexDirection:'row', alignItems:'center', marginTop:10}}>
@@ -217,25 +230,27 @@ export default function App() {
                                     <View style={{display:'flex', flexDirection:'column', gap:4, paddingVertical:10, paddingHorizontal:20}}>
                                         <View style={{display:'flex', flexDirection:'row', alignItems:'center', justifyContent:'space-between'}}>
                                             <View style={{display:'flex', flexDirection:'column'}}>
-                                                <Text style={{fontSize:16, fontWeight:'600'}}>{n.title}</Text>
+                                                <View style={{width:'100%', display:'flex', flexDirection:'row', alignItems:'center', justifyContent:'space-between'}}> 
+                                                    <Text style={{fontSize:16, fontWeight:'600'}}>{n.title}</Text>
+                                                    {n.created_by === user.adm_no && (
+                                                        <Menu
+                                                            visible={openedField === n.id}
+                                                            onDismiss={() => setOpenedField('')}
+                                                            anchor={
+                                                                <IconButton
+                                                                    size={20}
+                                                                    icon='dots-vertical'
+                                                                    onPress={() => setOpenedField(n.id)}
+                                                                />
+                                                            }
+                                                        >
+                                                            <Menu.Item onPress={() => router.push({pathname:'/class-notice/teacher/edit', params:n})} title='Edit' />
+                                                            <Menu.Item onPress={() => showDeleteAlert(n.class_notice_id)} title='Delete' />
+                                                        </Menu>
+                                                    )}
+                                                </View>
                                                 <Text style={{fontSize:14}}>{n.body}</Text>
                                             </View>
-                                            {n.created_by === user.adm_no && (
-                                                <Menu
-                                                    visible={openedField === n.id}
-                                                    onDismiss={() => setOpenedField('')}
-                                                    anchor={
-                                                        <IconButton
-                                                            size={20}
-                                                            icon='dots-vertical'
-                                                            onPress={() => setOpenedField(n.id)}
-                                                        />
-                                                    }
-                                                >
-                                                    <Menu.Item onPress={() => router.push({pathname:'/class-notice/teacher/edit', params:n})} title='Edit' />
-                                                    <Menu.Item onPress={() => showDeleteAlert(n.id)} title='Delete' />
-                                                </Menu>
-                                            )}
                                         </View>
                                         <View style={{display:'flex', flexDirection:'row', alignItems:'center', justifyContent:'space-between'}}>
                                             <View style={{display:'flex', flexDirection:'row', alignItems:'center', marginTop:10}}>

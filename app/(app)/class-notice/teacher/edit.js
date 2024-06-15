@@ -19,11 +19,16 @@ export default function App() {
     // States
     const [states, setStates] = useState({
         errors:{
+            title:'',
             message:''
         },
         loading:false,
         loadingData:false
     });
+
+
+    // Title
+    const [title, setTitle] = useState(classNotice.title);
 
 
     // Message
@@ -36,8 +41,9 @@ export default function App() {
         try {
 
             // Empty validations
-            if(!message){
+            if(!message || !title){
                 setStates({...states, errors:{
+                    title:!title ? '*Please enter a title' : '',
                     message:!message ? '*Please enter a message' : ''
                 }});
                 return;
@@ -45,7 +51,8 @@ export default function App() {
             
             // Sending notification
             const params = {
-                id:classNotice.id,
+                class_notice_id:Number(classNotice.class_notice_id),
+                title,
                 body:message
             };
             const notificationLink = `${process.env.EXPO_PUBLIC_API_URL}/notifications/edit-class-notice`;
@@ -84,6 +91,21 @@ export default function App() {
 
                     <View style={{gap:10}}>
 
+                        {/* Title */}
+                        <View style={{gap:6}}>
+                            <Text>Title</Text>
+                                <PaperTextInput
+                                    placeholder='Enter Title'
+                                    onBlur={v => setStates({states, errors:{...states.errors, title:v === ''  ? '*Please enter a title' : ''}})}
+                                    placeholderTextColor='gray'
+                                    style={{backgroundColor:'#F5F5F8'}}
+                                    left={<PaperTextInput.Icon icon='pencil-outline' size={30} color='gray'/>}
+                                    value={title}
+                                    onChangeText={v => setTitle(v)}
+                                />
+                            {states.errors.title !== '' && <Text style={{color:'red', marginTop:-6}}>{states.errors.title}</Text>}
+                        </View>
+
                         {/* Message */}
                         <View style={{gap:6}}>
                             <Text>Message</Text>
@@ -100,6 +122,7 @@ export default function App() {
                                 />
                             {states.errors.message !== '' && <Text style={{color:'red', marginTop:-6}}>{states.errors.message}</Text>}
                         </View>
+
                     </View>
 
 
