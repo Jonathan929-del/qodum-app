@@ -1,7 +1,7 @@
 // Imports
 import axios from 'axios';
 import moment from 'moment';
-import {Text, View} from 'react-native';
+import {Text, View, ActivityIndicator} from 'react-native';
 import {AuthContext} from '../../../context/Auth';
 import {useContext, useEffect, useState} from 'react';
 
