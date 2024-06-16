@@ -6,8 +6,8 @@ import {AuthContext} from '../../../../context/Auth';
 import {useContext, useEffect, useState} from 'react';
 import {router, useLocalSearchParams} from 'expo-router';
 // import {useNotification} from '../../../../context/NotificationProvider';
-import {ActivityIndicator, Card, Icon, Menu, IconButton, Snackbar} from 'react-native-paper';
-import {ScrollView, Text, TouchableOpacity, View, Animated, Dimensions, TouchableWithoutFeedback, Alert} from 'react-native';
+import {ActivityIndicator, Card, Icon, Menu, IconButton, Snackbar, Button} from 'react-native-paper';
+import {ScrollView, Text, TouchableOpacity, View, Animated, Dimensions, TouchableWithoutFeedback, Alert, LayoutAnimation, UIManager, Platform} from 'react-native';
 
 
 
@@ -28,10 +28,6 @@ export default function App() {
 
     // Local params
     const {isEdited, isSubmitted} = useLocalSearchParams();
-
-
-    // Classes
-    const [classes, setClasses] = useState([]);
 
 
     // Fade animation
@@ -65,7 +61,6 @@ export default function App() {
         const fetchNoticesLink = `${process.env.EXPO_PUBLIC_API_URL}/notifications/user-class-notices`;
         const fetchNoticesRes = await axios.post(fetchNoticesLink, {topic:[user.adm_no.replace(/\//g, '_'), user.class_name]});
         setClassNotices(fetchNoticesRes.data);
-        console.log(fetchNoticesRes.data);
 
         // Viewing class notices
         const viewNoticesLink = `${process.env.EXPO_PUBLIC_API_URL}/notifications/view-class-notices`;
@@ -107,6 +102,21 @@ export default function App() {
         }catch(err){
             console.log(err);
         }
+    };
+
+
+    // Class notice body
+    if(Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental){
+        UIManager.setLayoutAnimationEnabledExperimental(true);
+    };
+    const [expandedCards, setExpandedCards] = useState({});
+    const toggleExpanded = id => {
+        LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+        setExpandedCards((prev) => ({ ...prev, [id]: !prev[id] }));
+    };
+    const renderContent = (content, id) => {
+        if(expandedCards[id]) return content;
+        return content.length > 100 ? content.substring(0, 100) + '...' : content;
     };
 
 
@@ -188,7 +198,11 @@ export default function App() {
                                                         </Menu>
                                                     )}
                                                 </View>
-                                                <Text style={{fontSize:14}}>{n.body}</Text>
+                                                {n.body.length > 100 && (
+                                                    <Button onPress={() => toggleExpanded(n.id)}>
+                                                    {expandedCards[n.id] ? 'View less' : 'View more'}
+                                                    </Button>
+                                                )}
                                             </View>
                                         </View>
                                         <View style={{display:'flex', flexDirection:'row', alignItems:'center', justifyContent:'space-between'}}>
@@ -249,7 +263,12 @@ export default function App() {
                                                         </Menu>
                                                     )}
                                                 </View>
-                                                <Text style={{fontSize:14}}>{n.body}</Text>
+                                                <Text>{renderContent(n.body, n.id)}</Text>
+                                                {n.body.length > 100 && (
+                                                    <Button onPress={() => toggleExpanded(n.id)}>
+                                                    {expandedCards[n.id] ? 'View less' : 'View more'}
+                                                    </Button>
+                                                )}
                                             </View>
                                         </View>
                                         <View style={{display:'flex', flexDirection:'row', alignItems:'center', justifyContent:'space-between'}}>

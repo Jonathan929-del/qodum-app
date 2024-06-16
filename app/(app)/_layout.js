@@ -18,7 +18,7 @@ export default function HomeLayout() {
 
     return (
         <>
-            <StatusBar style='auto' />
+            <StatusBar style='auto' backgroundColor='#0094DA'/>
             <Slot />
             <Tabs />
         </>

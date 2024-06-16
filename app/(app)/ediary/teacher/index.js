@@ -1,10 +1,13 @@
 // Imports
 import axios from 'axios';
-import {router} from 'expo-router';
+import moment from 'moment';
+import {LinearGradient} from 'expo-linear-gradient';
 import {AuthContext} from '../../../../context/Auth';
 import {useContext, useEffect, useState} from 'react';
-import {Image, ScrollView, Text, TouchableOpacity, View} from 'react-native';
-import {TextInput as PaperTextInput, ActivityIndicator, Icon, Button, Snackbar, Checkbox, RadioButton} from 'react-native-paper';
+import {router, useLocalSearchParams} from 'expo-router';
+// import {useNotification} from '../../../../context/NotificationProvider';
+import {ActivityIndicator, Card, Icon, Menu, IconButton, Snackbar, Button} from 'react-native-paper';
+import {ScrollView, Text, TouchableOpacity, View, Animated, Dimensions, TouchableWithoutFeedback, Alert, LayoutAnimation, UIManager, Platform} from 'react-native';
 
 
 
@@ -16,338 +19,335 @@ export default function App() {
     // Snack bar actions
     const [visible, setVisible] = useState(false);
     const onDismissSnackBar = () => setVisible(false);
-
-
-    // Opened dropdown
-    const [openedField, setOpenedField] = useState('');
+    const [snackbarMessage, setSnackbarMessage] = useState('');
 
 
     // User
     const {user} = useContext(AuthContext);
 
 
-    // States
-    const [states, setStates] = useState({
-        errors:{
-            classes:'',
-            receptient:'',
-            title:'',
-            message:''
-        },
-        loading:false,
-        loadingData:false
-    });
+    // Local params
+    const {isEdited, isSubmitted} = useLocalSearchParams();
 
 
-    // Receptients
-    const [classes, setClasses] = useState([]);
-    const [selectedClasses, setSelectedClasses] = useState([]);
+    // Fade animation
+    const [fadeAnim] = useState(new Animated.Value(0));
 
 
-    // Receptients
-    const [receptients, setReceptients] = useState([]);
-    const [selectedReceptients, setSelectedReceptients] = useState([]);
+    // Opened field
+    const [openedField, setOpenedField] = useState('');
 
 
-    // Message
-    const [message, setMessage] = useState('');
+    // // Notices count
+    // const {setNoticesCount} = useNotification();
 
 
-    // Title
-    const [title, setTitle] = useState('');
+    // Is loading
+    const [isLoading, setIsLoading] = useState(false);
 
 
-    // Classes dropdown
-    const classesDropdown = (
-        <ScrollView style={{width:'100%', maxHeight:300, paddingVertical:6, borderWidth:1, borderColor:'#ccc', borderBottomLeftRadius:4, borderBottomRightRadius:4}}>
-            <View style={{display:'flex', flexDirection:'row', alignItems:'center', marginBottom:6, borderBottomWidth:1, borderBottomColor:'#ccc'}}>
-                <Checkbox
-                    status={classes.length === selectedClasses.length ? 'checked' : 'unchecked'}
-                    onPress={() => classes.length === selectedClasses.length ? setSelectedClasses([]) : setSelectedClasses(classes)}
-                />
-                <Text style={{fontWeight:'600'}}>Select All</Text>
-            </View>
+    // Is compose opened
+    const [isComposeOpened, setIsComposeOpened] = useState(false);
 
 
-            {/* Students */}
-            {classes.length == 0 ? (
-                <Text>
-                    No classes
-                </Text>
-            ) : (
-                <>
-                    {classes?.map(c => (
-                        <View style={{display:'flex', flexDirection:'row', alignItems:'center', gap:6, paddingVertical:4, borderBottomWidth:classes.indexOf(c) === classes.length - 1 ? 0 : 1, borderBottomColor:'#ccc'}}>
-                            <Checkbox
-                                status={selectedClasses.includes(c) ? 'checked' : 'unchecked'}
-                                onPress={() => selectedClasses.includes(c)
-                                    ? setSelectedClasses(selectedClasses.filter(sc => sc.class_name !== c.class_name))
-                                    : setSelectedClasses([...selectedClasses, c])}
-                            />
-                            <Text style={{fontWeight:'600'}}>{c.class_name}</Text>
-                        </View>
-                    ))}
-                </>
-            )}
-        </ScrollView>
+    // ediaries
+    const [ediaries, setEdiaries] = useState({});
+
+
+    // Fethcer
+    const fetcher = async () => {
+
+        // Fetching e-diaries
+        const fetchEdiariesLink = `${process.env.EXPO_PUBLIC_API_URL}/notifications/user-ediaries`;
+        const fetchEdiariesRes = await axios.post(fetchEdiariesLink, {topic:[user.adm_no.replace(/\//g, '_')]});
+        setEdiaries(fetchEdiariesRes.data);
+
+        // Viewing e-diaries
+        const viewEdiariesLink = `${process.env.EXPO_PUBLIC_API_URL}/notifications/view-ediaries`;
+        await axios.post(viewEdiariesLink, {ediaries_ids:fetchEdiariesRes.data.unviewed_notifications.map(d => d.id)});
+        // setNoticesCount(0);
+        setIsLoading(false);
+
+    };
+
+
+    // Show delete alert
+    const showDeleteAlert = id =>
+        Alert.alert(
+            'Are you sure?',
+            'Are you sure you want to delete this record?',
+            [
+                {
+                    text: 'No',
+                    style:'destructive',
+                },
+                {
+                    text: 'Yes',
+                    onPress: () => deleteEdiary(id),
+                    style:'default',
+                },
+            ]
     );
 
 
-    // Receptients dropdown
-    const receptientsDropdown = (
-        <ScrollView style={{width:'100%', paddingVertical:6}}>
-            <View style={{display:'flex', flexDirection:'row', alignItems:'center', marginBottom:6, borderBottomWidth:1, borderBottomColor:'#ccc'}}>
-                <Checkbox
-                    status={receptients.length === selectedReceptients.length ? 'checked' : 'unchecked'}
-                    onPress={() => selectedReceptients.length === receptients.length ? setSelectedReceptients([]) : setSelectedReceptients(receptients)}
-                />
-                <Text style={{fontWeight:'600'}}>Select All</Text>
-            </View>
-
-
-            {/* Students */}
-            {receptients?.length > 0 && (
-                <>
-                    <View style={{display:'flex', flexDirection:'row', alignItems:'center', marginBottom:6, borderBottomWidth:1, borderBottomColor:'#ccc'}}>
-                        <Checkbox
-                            status={receptients.length === selectedReceptients.length ? 'checked' : 'unchecked'}
-                            onPress={() => receptients?.length === selectedReceptients?.length ? setSelectedReceptients(selectedReceptients) : setSelectedReceptients(receptients)}
-                        />
-                        <Text style={{fontWeight:'600'}}>Students</Text>
-                    </View>
-                    {receptients?.map(r => (
-                        <View style={{display:'flex', flexDirection:'row', alignItems:'center', gap:6, marginLeft:20, paddingVertical:4, borderLeftColor:'#0094DA', borderLeftWidth:1, borderBottomWidth:receptients.indexOf(r) === receptients.length - 1 ? 0 : 1, borderBottomColor:'#ccc'}}>
-                            <Checkbox
-                                status={selectedReceptients.map(sr => sr.adm_no).includes(r.adm_no) ? 'checked' : 'unchecked'}
-                                onPress={() => selectedReceptients.map(sr => sr.adm_no).includes(r.adm_no)
-                                    ? setSelectedReceptients(selectedReceptients)
-                                    : setSelectedReceptients([...selectedReceptients, r])}
-                            />
-                            {r?.image ? (
-                                <Image
-                                    source={{uri:r?.image}}
-                                    style={{width:40, height:40, alignItems:'center', justifyContent:'center', borderWidth:1, borderColor:'#ccc', borderRadius:30}}
-                                />
-                            ) : (
-                                <View style={{width:40, height:40, alignItems:'center', justifyContent:'center', borderWidth:1, borderColor:'#ccc', borderRadius:30}}>
-                                    <Text style={{fontSize:8, color:'gray'}}>No Photo</Text>
-                                </View>
-                            )}
-                            <View style={{display:'flex', flexDirection:'column'}}>
-                                <Text style={{fontWeight:'600'}}>{r.name}</Text>
-                                <Text style={{fontSize:11, color:'gray'}}>{r.role}</Text>
-                            </View>
-                        </View>
-                    ))}
-                </>
-            )}
-        </ScrollView>
-    );
-
-
-    // Submit handler
-    const submitHandler = async () => {
-        setStates({...states, loading:true});
+    // Delete assignment
+    const deleteEdiary = async id => {
         try {
-
-            // Empty validations
-            if((selectedReceptients.length === 0 && selectedClasses.length === 0) || !title || !message){
-                setStates({...states, errors:{
-                    receptient:(selectedReceptients.length === 0 && selectedClasses.length === 0) ? '*Please select at least one recipient' : '',
-                    classes:(selectedReceptients.length === 0 && selectedClasses.length === 0) ? '*Please select at least one class' : '',
-                    title:!title ? '*Please enter a title' : '',
-                    message:!message ? '*Please enter a message' : '',
-                }});
-                return;
-            };
-
-
-            // Sending e-diary to classes
-            if(selectedClasses.length > 0){
-                selectedClasses?.map(async c => {
-                    const params = {
-                        title,
-                        body:message,
-                        topic:c.class_name,
-                        type:'ediary',
-                        created_by:user.adm_no.replace(/\//g, '_'),
-                    };
-                    const notificationLink = `${process.env.EXPO_PUBLIC_API_URL}/notifications/send-ediary`;
-                    await axios.post(notificationLink, params);
-                });
-            };
-
-
-            // Sending e-diary to students with filtering the selected classes students
-            if(selectedReceptients.filter(s => !selectedClasses.map(c => c.class_name).includes(s.class_name)).length > 0){
-                selectedReceptients.filter(s => !selectedClasses.map(c => c.class_name).includes(s.class_name)).map(async s => {
-                    const params = {
-                        title,
-                        body:message,
-                        topic:s.adm_no.replace(/\//g, '_'),
-                        type:'ediary',
-                        created_by:user.adm_no.replace(/\//g, '_'),
-                    };
-                    const notificationLink = `${process.env.EXPO_PUBLIC_API_URL}/notifications/send-ediary`;
-                    await axios.post(notificationLink, params);
-                });
-            };
-
-
-            // Reseting
-            setTitle('');
-            setMessage('');
-            setStates({...states, loading:false});
+            setIsLoading(true);
+            const link = `${process.env.EXPO_PUBLIC_API_URL}/notifications/delete-ediary`;
+            await axios.post(link, {notice_id:Number(id)});
+            setSnackbarMessage('Message Deleted Successfully!');
             setVisible(true);
-
+            fetcher();
         }catch(err){
             console.log(err);
         }
     };
 
 
-    // Use effect
+    // Ediary body
+    if(Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental){
+        UIManager.setLayoutAnimationEnabledExperimental(true);
+    };
+    const [expandedCards, setExpandedCards] = useState({});
+    const toggleExpanded = id => {
+      LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+      setExpandedCards((prev) => ({ ...prev, [id]: !prev[id] }));
+    };
+    const renderContent = (content, id) => {
+      if(expandedCards[id]) return content;
+      return content.length > 100 ? content.substring(0, 100) + '...' : content;
+    };
+
+
+    // Use effects
     useEffect(() => {
-        setStates({...states, loadingData:true});
-        const fetcher = async () => {
-
-            // Classes response
-            const classesLink = `${process.env.EXPO_PUBLIC_API_URL}/classes/names`;
-            const classesRes = await axios.get(classesLink);
-            setClasses(classesRes.data);
-
-            // Students response
-            const studentsLink = `${process.env.EXPO_PUBLIC_API_URL}/students/adm-nos`;
-            const studentsRes = await axios.get(studentsLink);
-            setReceptients(studentsRes.data);
-
-
-            setStates({...states, loadingData:false});
-
+        setIsLoading(true);
+        if(isSubmitted){
+            setVisible(true);
+            setSnackbarMessage('Message Sent Successfully!');
         };
-        fetcher()
+        if(isEdited){
+            setVisible(true);
+            setSnackbarMessage('Message Edited Successfully!');
+        };
+        setTimeout(() => {
+            fetcher();
+        }, 2000);
     }, []);
+    useEffect(() => {
+        if (isComposeOpened) {
+        Animated.timing(fadeAnim, {
+            toValue:1,
+            duration:200,
+            useNativeDriver:true
+        }).start();
+        }else{
+        Animated.timing(fadeAnim, {
+            toValue:0,
+            duration:200,
+            useNativeDriver:true
+        }).start();
+        }
+    }, [isComposeOpened]);
+
 
     return (
-        <View style={{height:'100%', alignItems:'center'}}>
-            <View style={{width:'100%', height:120, display:'flex', flexDirection:'row', alignItems:'flex-end', justifyContent:'space-between', paddingHorizontal:10, paddingBottom:30, backgroundColor:'#0094DA', borderBottomRightRadius:40, borderBottomLeftRadius:40}}>
-                <View style={{display:'flex', flexDirection:'row', alignItems:'center', gap:20}}>
-                    <TouchableOpacity
-                        onPress={() => router.push('/')}
-                    >
-                        <Icon source='chevron-left' size={40} color='#fff'/>
-                    </TouchableOpacity>
-                    <Text style={{textAlign:'center', fontSize:18, color:'#fff', fontWeight:'900'}}>E-diary</Text>
-                </View>
-            </View>
-
-            {/* Send notice */}
-            {states.loadingData ? (
-                <View style={{paddingTop:50}}>
-                    <ActivityIndicator />
-                </View>
-            ) : (
-                <View style={{width:'100%', display:'flex', flexDirection:'column', paddingVertical:50, paddingHorizontal:30, justifyContent:'space-between'}}>
-
-
-                    <View style={{gap:10}}>
-
-                        {/* Classes */}
-                        <View>
-                            <Text>Classes</Text>
-                            <TouchableOpacity
-                                onPress={() => openedField === 'classes' ? setOpenedField('') : setOpenedField('classes')}
-                                style={{display:'flex', flexDirection:'row', alignItems:'center', justifyContent:'space-between', marginTop:6, backgroundColor:'#F5F5F8', height:60, paddingHorizontal:10, borderTopLeftRadius:5, borderTopRightRadius:5, borderBottomWidth:1, borderBottomColor:openedField === 'classes' ? '#0094DA' : 'gray'}}
-                            >
-                                <Text style={{marginLeft:10}}>{selectedClasses.length == 0 ? 'Select Classes' : selectedClasses.length === 1 ? '1 Class Selected' : `${selectedClasses.length} Classes Selected`}</Text>
-                                {openedField === 'classes' ? (
-                                    <Icon source='chevron-up' size={30} color='gray'/>
-                                ) : (
-                                    <Icon source='chevron-down' size={30} color='gray'/>
-                                )}
-                            </TouchableOpacity>
-                            {openedField === 'classes' && classesDropdown}
-                            {states.errors.classes !== '' && <Text style={{color:'red'}}>{states.errors.classes}</Text>}
-                        </View>
-
-
-                        {/* Receptient */}
-                        <View style={{gap:6, position:'relative'}}>
-                            <Text>Recipient</Text>
-                            <TouchableOpacity
-                                onPress={() => {
-                                    if(openedField === 'receptient'){
-                                        setOpenedField('');
-                                        (selectedReceptients.length > 0 || selectedClasses.length > 0) && setStates({...states, errors:{...states.errors, receptient:''}})
-                                    }else{
-                                        setOpenedField('receptient');
-                                    }
-                                }}
-                                style={{display:'flex', flexDirection:'row', alignItems:'center', justifyContent:'space-between', backgroundColor:'#F5F5F8', height:60, paddingHorizontal:10, borderTopLeftRadius:5, borderTopRightRadius:5, borderBottomWidth:1, borderBottomColor:openedField === 'receptients' ? '#0094DA' : 'gray'}}
-                            >
-                                <Text style={{marginLeft:10}}>{selectedReceptients.length == 0 ? 'Select Recipients' : selectedReceptients.length === 1 ? '1 Recipient Selected' : `${selectedReceptients.length} Recipient Selected`}</Text>
-                                {openedField === 'receptient' ? (
-                                    <Icon source='chevron-up' size={30} color='gray'/>
-                                ) : (
-                                    <Icon source='chevron-down' size={30} color='gray'/>
-                                )}
-                            </TouchableOpacity>
-                            {openedField === 'receptient' && receptientsDropdown}
-                            {states.errors.receptient !== '' && <Text style={{color:'red'}}>{states.errors.receptient}</Text>}
-                        </View>
-
-
-                        {/* Title */}
-                        <View style={{gap:6}}>
-                            <Text>Title</Text>
-                                <PaperTextInput
-                                    placeholder='Enter Title'
-                                    onBlur={v => setStates({states, errors:{...states.errors, title:v === ''  ? '*Please enter a title' : ''}})}
-                                    placeholderTextColor='gray'
-                                    style={{backgroundColor:'#F5F5F8'}}
-                                    left={<PaperTextInput.Icon icon='pencil-outline' size={30} color='gray'/>}
-                                    value={title}
-                                    onChangeText={v => setTitle(v)}
-                                />
-                            {states.errors.title !== '' && <Text style={{color:'red', marginTop:-6}}>{states.errors.title}</Text>}
-                        </View>
-
-
-                        {/* Message */}
-                        <View style={{gap:6}}>
-                            <Text>Message</Text>
-                                <PaperTextInput
-                                    placeholder='Enter Message'
-                                    onBlur={v => setStates({states, errors:{...states.errors, message:v === ''  ? '*Please enter a message' : ''}})}
-                                    placeholderTextColor='gray'
-                                    style={{backgroundColor:'#F5F5F8'}}
-                                    left={<PaperTextInput.Icon icon='pencil-outline' size={30} color='gray'/>}
-                                    value={message}
-                                    multiline
-                                    numberOfLines={4}
-                                    onChangeText={v => setMessage(v)}
-                                />
-                            {states.errors.message !== '' && <Text style={{color:'red', marginTop:-6}}>{states.errors.message}</Text>}
-                        </View>
-
-                    </View>
-
-
-                    {/* Button */}
-                    {states.loading ? (
-                        <ActivityIndicator />
-                    ) : (
-                        <Button
-                            onPress={submitHandler}
-                            textColor='#fff'
-                            style={{backgroundColor:'#0094DA', borderRadius:4}}
+        <View style={{height:'100%'}}>
+            <ScrollView contentContainerStyle={{alignItems:'center', gap:30, paddingBottom:50}}>
+                <View style={{width:'100%', height:120, display:'flex', flexDirection:'row', alignItems:'flex-end', justifyContent:'space-between', paddingHorizontal:10, paddingBottom:30, backgroundColor:'#0094DA', borderBottomRightRadius:40, borderBottomLeftRadius:40}}>
+                    <View style={{display:'flex', flexDirection:'row', alignItems:'center', gap:20}}>
+                        <TouchableOpacity
+                            onPress={() => router.push('/')}
                         >
-                            Submit
-                        </Button>
-                    )}
-
+                            <Icon source='chevron-left' size={40} color='#fff'/>
+                        </TouchableOpacity>
+                        <Text style={{textAlign:'center', fontSize:18, color:'#fff', fontWeight:'900'}}>E-diary</Text>
+                    </View>
                 </View>
+
+                {/* E-diaries */}
+                <View style={{width:'90%', display:'flex', flexDirection:'column', alignItems:'center', gap:10, paddingBottom:10}}>
+                    {isLoading ? (
+                        <ActivityIndicator />
+                    ) : (ediaries?.unviewed_notifications?.length + ediaries?.viewed_notifications?.length) < 1 ? (
+                        <Text>No messages</Text>
+                    ) : (
+                        <View style={{width:'100%', gap:20}}>
+
+                            {ediaries.unviewed_notifications?.map(n => (
+                                <Card style={{width:'100%'}} key={n.id}>
+                                    <View style={{display:'flex', flexDirection:'column', gap:4, paddingVertical:10, paddingHorizontal:20}}>
+                                        <View style={{display:'flex', flexDirection:'row', alignItems:'center', justifyContent:'space-between'}}>
+                                            <View style={{display:'flex', flexDirection:'column'}}>
+                                                <View style={{width:'100%', display:'flex', flexDirection:'row', alignItems:'center', justifyContent:'space-between'}}>
+                                                    <Text style={{fontSize:16, fontWeight:'600'}}>{n.title}</Text>
+                                                    {n.created_by === user.adm_no && (
+                                                        <Menu
+                                                            visible={openedField === n.id}
+                                                            onDismiss={() => setOpenedField('')}
+                                                            anchor={
+                                                                <IconButton
+                                                                    size={20}
+                                                                    icon='dots-vertical'
+                                                                    onPress={() => setOpenedField(n.id)}
+                                                                />
+                                                            }
+                                                        >
+                                                            <Menu.Item onPress={() => router.push({pathname:'/notice/teacher/edit', params:n})} title='Edit' />
+                                                            <Menu.Item onPress={() => showDeleteAlert(n.notice_id)} title='Delete' />
+                                                        </Menu>
+                                                    )}
+                                                </View>
+                                                <Text>{renderContent(n.body, n.id)}</Text>
+                                                {n.body.length > 100 && (
+                                                    <Button onPress={() => toggleExpanded(n.id)}>
+                                                    {expandedCards[n.id] ? 'View less' : 'View more'}
+                                                    </Button>
+                                                )}
+                                            </View>
+                                        </View>
+                                        <View style={{display:'flex', flexDirection:'row', alignItems:'center', justifyContent:'space-between'}}>
+                                            <View style={{display:'flex', flexDirection:'row', alignItems:'center', marginTop:10}}>
+                                                <Icon source='calendar' color='#0094DA' size={20}/>
+                                                <Text style={{fontSize:14, color:'#0094DA', marginLeft:2}}>Date:</Text>
+                                                <Text style={{fontSize:14, color:'gray'}}>{moment(new Date(n.created_at._seconds * 1000 + n.created_at._nanoseconds / 1000000)).format('DD-MM-YYYY')}</Text>
+                                            </View>
+                                            <View style={{display:'flex', flexDirection:'row', alignItems:'center', marginTop:10}}>
+                                                <Icon source='clock' color='#0094DA' size={20}/>
+                                                <Text style={{fontSize:14, color:'#0094DA', marginLeft:2}}>Time:</Text>
+                                                <Text style={{fontSize:14, color:'gray'}}>{moment(new Date(n.created_at._seconds * 1000 + Math.floor(n.created_at._nanoseconds / 1000000))).format('HH:mm')}</Text>
+                                            </View>
+                                        </View>
+                                    </View>
+                                </Card>
+                            ))}
+
+                            {ediaries?.unviewed_notifications?.length > 0 && ediaries?.viewed_notifications?.length > 0 && (
+                                <View style={{display:'flex', flexDirection:'row', gap:10, alignItems:'center'}}>
+                                    <LinearGradient
+                                        colors={['#fff', '#0094DA']}
+                                        start={{x:0, y:0}}
+                                        end={{x:1, y:0}}
+                                        style={{flex:1, opacity:0.7, height:1}}
+                                    />
+                                    <Text style={{color:'#0094DA'}}>Last read</Text>
+                                    <LinearGradient
+                                        colors={['#0094DA', '#fff']}
+                                        start={{x:0, y:0}}
+                                        end={{x:1, y:0}}
+                                        style={{flex:1, opacity:0.7, height:1}}
+                                    />
+                                </View>
+                            )}
+
+                            {ediaries.viewed_notifications?.map(n => (
+                                <Card style={{width:'100%'}} key={n.id}>
+                                    <View style={{display:'flex', flexDirection:'column', gap:4, paddingVertical:10, paddingHorizontal:20}}>
+                                        <View style={{display:'flex', flexDirection:'row', alignItems:'center', justifyContent:'space-between'}}>
+                                            <View style={{display:'flex', flexDirection:'column'}}>
+                                                <View style={{width:'100%', display:'flex', flexDirection:'row', alignItems:'center', justifyContent:'space-between'}}>
+                                                    <Text style={{fontSize:16, fontWeight:'600'}}>{n.title}</Text>
+                                                    {n.created_by === user.adm_no && (
+                                                        <Menu
+                                                            visible={openedField === n.id}
+                                                            onDismiss={() => setOpenedField('')}
+                                                            anchor={
+                                                                <IconButton
+                                                                    size={20}
+                                                                    icon='dots-vertical'
+                                                                    onPress={() => setOpenedField(n.id)}
+                                                                />
+                                                            }
+                                                        >
+                                                            <Menu.Item onPress={() => router.push({pathname:'/ediary/teacher/edit', params:n})} title='Edit' />
+                                                            <Menu.Item onPress={() => showDeleteAlert(n.notice_id)} title='Delete' />
+                                                        </Menu>
+                                                    )}
+                                                </View>
+                                                <Text>{renderContent(n.body, n.id)}</Text>
+                                                {n.body.length > 100 && (
+                                                    <Button onPress={() => toggleExpanded(n.id)}>
+                                                    {expandedCards[n.id] ? 'View less' : 'View more'}
+                                                    </Button>
+                                                )}
+                                            </View>
+                                        </View>
+                                        <View style={{display:'flex', flexDirection:'row', alignItems:'center', justifyContent:'space-between'}}>
+                                            <View style={{display:'flex', flexDirection:'row', alignItems:'center', marginTop:10}}>
+                                                <Icon source='calendar' color='#0094DA' size={20}/>
+                                                <Text style={{fontSize:14, color:'#0094DA', marginLeft:2}}>Date:</Text>
+                                                <Text style={{fontSize:14, color:'gray'}}>{moment(new Date(n.created_at._seconds * 1000 + n.created_at._nanoseconds / 1000000)).format('DD-MM-YYYY')}</Text>
+                                            </View>
+                                            <View style={{display:'flex', flexDirection:'row', alignItems:'center', marginTop:10}}>
+                                                <Icon source='clock' color='#0094DA' size={20}/>
+                                                <Text style={{fontSize:14, color:'#0094DA', marginLeft:2}}>Time:</Text>
+                                                <Text style={{fontSize:14, color:'gray'}}>{moment(new Date(n.created_at._seconds * 1000 + Math.floor(n.created_at._nanoseconds / 1000000))).format('HH:mm')}</Text>
+                                            </View>
+                                        </View>
+                                    </View>
+                                </Card>
+                            ))}
+
+                        </View>
+                    )}
+                </View>
+
+            </ScrollView>
+
+            {!isComposeOpened && (
+                <TouchableOpacity
+                    onPress={() => setIsComposeOpened(true)}
+                    style={{position:'absolute', bottom:30, right:20, width:40, height:40, alignItems:'center', justifyContent:'center', borderRadius:40, backgroundColor:'#0094DA'}}
+                >
+                    <Icon source='square-edit-outline' size={25} color='#fff'/>
+                </TouchableOpacity>
             )}
+
+            {/* Compose page */}
+            {isComposeOpened && (
+                <Animated.View
+                    style={{position:'absolute', width:'100%', height:Dimensions.get('screen').height, zIndex:10, backgroundColor:'rgba(0, 0, 0, 0.5)', opacity:fadeAnim}}
+                >
+                    <TouchableWithoutFeedback
+                        onPress={() => setIsComposeOpened(false)}
+                    >
+                        <View style={{height:'100%', width:'100%', alignItems:'flex-end', justifyContent:'flex-end'}}>
+                            <Text>-</Text>
+                            <TouchableWithoutFeedback onPress={() => setIsComposeOpened(isComposeOpened)}>
+                                <View
+                                    style={{display:'flex', justifyContent:'flex-end', alignItems:'flex-end', width:300, height:200, borderRadius:10, marginBottom:50, paddingBottom:30, paddingRight:20}}
+                                >
+
+                                    <View style={{display:'flex', flexDirection:'row', alignItems:'center', justifyContent:'center', marginBottom:10}}>
+                                        <TouchableOpacity
+                                            onPress={() => router.push('/ediary/teacher/create')}
+                                            style={{marginRight:10, paddingVertical:2, paddingHorizontal:10, borderRadius:4, backgroundColor:'#fff'}}
+                                        >
+                                            <Text>Send a message</Text>
+                                        </TouchableOpacity>
+                                        <TouchableOpacity
+                                            onPress={() => router.push('/ediary/teacher/create')}
+                                            style={{width:40, height:40, alignItems:'center', justifyContent:'center', borderRadius:40, backgroundColor:'#0094DA'}}
+                                        >
+                                            <Icon source='chat-processing' size={25} color='#fff'/>
+                                        </TouchableOpacity>
+                                    </View>
+
+                                    <TouchableOpacity
+                                        onPress={() => setIsComposeOpened(false)}
+                                        style={{width:40, height:40, alignItems:'center', justifyContent:'center', borderRadius:40, backgroundColor:'#0094DA'}}
+                                    >
+                                        <Icon source='square-edit-outline' size={25} color='#fff'/>
+                                    </TouchableOpacity>
+
+                                </View>
+                            </TouchableWithoutFeedback>
+                        </View>
+                    </TouchableWithoutFeedback>
+                </Animated.View>
+            )}
+
 
             {/* Snackbar */}
             <Snackbar
@@ -359,7 +359,7 @@ export default function App() {
                     onPress:() => setVisible(false)
                 }}
             >
-                Message Sent Successfully!
+                {snackbarMessage}
             </Snackbar>
 
         </View>

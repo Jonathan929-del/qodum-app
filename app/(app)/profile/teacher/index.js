@@ -35,11 +35,6 @@ const TeacherProfile = () => {
           />
         )}
 
-
-        {/* Status bar */}
-        <StatusBar style='light' />
-
-
         <View style={{position:'relative', flex:1, display:'flex', flexDirection:'column', alignItems:'center'}}>
           <View style={{height:300, width:'100%', position:'relative', display:'flex', alignItems:'center', justifyContent:'center', backgroundColor:'#ccc'}}>
 

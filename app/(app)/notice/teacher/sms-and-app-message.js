@@ -3,6 +3,7 @@ import axios from 'axios';
 import {router} from 'expo-router';
 import {AuthContext} from '../../../../context/Auth';
 import {useContext, useEffect, useState} from 'react';
+import {Dropdown} from 'react-native-element-dropdown';
 import {Image, ScrollView, Text, TouchableOpacity, View, Modal} from 'react-native';
 import {TextInput as PaperTextInput, ActivityIndicator, Icon, Button, Checkbox} from 'react-native-paper';
 
@@ -33,9 +34,18 @@ export default function App() {
     });
 
 
+    // Opened field
+    const [openedField, setOpenedField] = useState('');
+
+
     // Receptients
     const [receptients, setReceptients] = useState([]);
     const [selectedReceptients, setSelectedReceptients] = useState([]);
+
+
+    // SMS templates
+    const [smsTemplates, setSmsTemplates] = useState([]);
+    const [selectedSmsTemplate, setSelectedSmsTemplate] = useState({label:'', value:''});
 
 
     // Message
@@ -192,6 +202,21 @@ export default function App() {
             const teachersLink = `${process.env.EXPO_PUBLIC_API_URL}/teachers/adm-nos`;
             const teachersRes = await axios.get(teachersLink);
             setReceptients([...studentsRes.data, ...teachersRes.data.filter(t => t.adm_no !== user.adm_no)]);
+
+
+            // Sms templates response
+            const smsTemplatesLink = `${process.env.EXPO_PUBLIC_API_URL}/sms-templates/types`;
+            const smsTemplateRes = await axios.get(smsTemplatesLink);
+            const smsTemplatesDropdownDate = smsTemplateRes.data.map(s => {
+                return{
+                    label:s.sms_type,
+                    value:s.sms_type.toLowerCase()
+                };
+            });
+            setSmsTemplates(smsTemplatesDropdownDate);
+
+
+            // Setting is loading to false
             setStates({...states, loadingData:false});
 
         };
@@ -251,6 +276,33 @@ export default function App() {
 
 
                     <View style={{gap:10}}>
+
+                        {/* SMS Template */}
+                        <View style={{gap:6}}>
+                            <Text>SMS Template</Text>
+                            <Dropdown
+                                placeholderStyle={{color:'gray', paddingLeft:10}}
+                                selectedTextStyle={{paddingLeft:10}}
+                                data={smsTemplates}
+                                search
+                                activeColor='#ccc'
+                                labelField='label'
+                                valueField='value'
+                                placeholder='Select Template'
+                                searchPlaceholder='Search...'
+                                value={selectedSmsTemplate}
+                                onFocus={() => setOpenedField('sms-templates')}
+                                onBlur={() => setOpenedField('')}
+                                onChange={item => setSelectedSmsTemplate(item)}
+                                style={{backgroundColor:'#F5F5F8', height:60, paddingHorizontal:20, borderTopLeftRadius:5, borderTopRightRadius:5, borderBottomWidth:openedField === 'sms-templates' ? 2 : 1, borderBottomColor:openedField === 'sms-templates' ? '#0094DA' : 'gray'}}
+                                renderLeftIcon={() => (
+                                    <Icon source='book-edit' color='gray' size={25}/>
+                                )}
+                            />
+                            {states.errors.class_name !== '' && <Text style={{color:'red', marginTop:-6}}>{states.errors.class_name}</Text>}
+                        </View>
+
+
                         {/* Title */}
                         <View style={{gap:6}}>
                             <Text>Title</Text>

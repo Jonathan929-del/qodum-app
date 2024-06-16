@@ -6,8 +6,8 @@ import {AuthContext} from '../../../../context/Auth';
 import {useContext, useEffect, useState} from 'react';
 import {router, useLocalSearchParams} from 'expo-router';
 import {useNotification} from '../../../../context/NotificationProvider';
-import {ActivityIndicator, Card, Icon, Menu, IconButton, Snackbar} from 'react-native-paper';
-import {ScrollView, Text, TouchableOpacity, View, Animated, Dimensions, TouchableWithoutFeedback, Alert} from 'react-native';
+import {ActivityIndicator, Card, Icon, Menu, IconButton, Snackbar, Button} from 'react-native-paper';
+import {ScrollView, Text, TouchableOpacity, View, Animated, Dimensions, TouchableWithoutFeedback, Alert, LayoutAnimation, UIManager, Platform} from 'react-native';
 
 
 
@@ -105,6 +105,21 @@ export default function App() {
     };
 
 
+    // Notice body
+    if(Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental){
+        UIManager.setLayoutAnimationEnabledExperimental(true);
+    };
+    const [expandedCards, setExpandedCards] = useState({});
+    const toggleExpanded = id => {
+      LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+      setExpandedCards((prev) => ({ ...prev, [id]: !prev[id] }));
+    };
+    const renderContent = (content, id) => {
+      if(expandedCards[id]) return content;
+      return content.length > 100 ? content.substring(0, 100) + '...' : content;
+    };
+
+
     // Use effects
     useEffect(() => {
         setIsLoading(true);
@@ -136,6 +151,7 @@ export default function App() {
         }
     }, [isComposeOpened]);
 
+
     return (
         <View style={{height:'100%'}}>
             <ScrollView contentContainerStyle={{alignItems:'center', gap:30, paddingBottom:50}}>
@@ -164,25 +180,32 @@ export default function App() {
                                     <View style={{display:'flex', flexDirection:'column', gap:4, paddingVertical:10, paddingHorizontal:20}}>
                                         <View style={{display:'flex', flexDirection:'row', alignItems:'center', justifyContent:'space-between'}}>
                                             <View style={{display:'flex', flexDirection:'column'}}>
-                                                <Text style={{fontSize:16, fontWeight:'600'}}>{n.title}</Text>
-                                                <Text style={{fontSize:14}}>{n.body}</Text>
+                                                <View style={{width:'100%', display:'flex', flexDirection:'row', alignItems:'center', justifyContent:'space-between'}}>
+                                                    <Text style={{fontSize:16, fontWeight:'600'}}>{n.title}</Text>
+                                                    {n.created_by === user.adm_no && (
+                                                        <Menu
+                                                            visible={openedField === n.id}
+                                                            onDismiss={() => setOpenedField('')}
+                                                            anchor={
+                                                                <IconButton
+                                                                    size={20}
+                                                                    icon='dots-vertical'
+                                                                    onPress={() => setOpenedField(n.id)}
+                                                                />
+                                                            }
+                                                        >
+                                                            <Menu.Item onPress={() => router.push({pathname:'/notice/teacher/edit-app-message', params:n})} title='Edit' />
+                                                            <Menu.Item onPress={() => showDeleteAlert(n.notice_id)} title='Delete' />
+                                                        </Menu>
+                                                    )}
+                                                </View>
+                                                <Text>{renderContent(n.body, n.id)}</Text>
+                                                {n.body.length > 100 && (
+                                                    <Button onPress={() => toggleExpanded(n.id)}>
+                                                    {expandedCards[n.id] ? 'View less' : 'View more'}
+                                                    </Button>
+                                                )}
                                             </View>
-                                            {n.created_by === user.adm_no && (
-                                                <Menu
-                                                    visible={openedField === n.id}
-                                                    onDismiss={() => setOpenedField('')}
-                                                    anchor={
-                                                        <IconButton
-                                                            size={20}
-                                                            icon='dots-vertical'
-                                                            onPress={() => setOpenedField(n.id)}
-                                                        />
-                                                    }
-                                                >
-                                                    <Menu.Item onPress={() => router.push({pathname:'/notice/teacher/edit-app-message', params:n})} title='Edit' />
-                                                    <Menu.Item onPress={() => showDeleteAlert(n.notice_id)} title='Delete' />
-                                                </Menu>
-                                            )}
                                         </View>
                                         <View style={{display:'flex', flexDirection:'row', alignItems:'center', justifyContent:'space-between'}}>
                                             <View style={{display:'flex', flexDirection:'row', alignItems:'center', marginTop:10}}>
@@ -223,25 +246,32 @@ export default function App() {
                                     <View style={{display:'flex', flexDirection:'column', gap:4, paddingVertical:10, paddingHorizontal:20}}>
                                         <View style={{display:'flex', flexDirection:'row', alignItems:'center', justifyContent:'space-between'}}>
                                             <View style={{display:'flex', flexDirection:'column'}}>
-                                                <Text style={{fontSize:16, fontWeight:'600'}}>{n.title}</Text>
-                                                <Text style={{fontSize:14}}>{n.body}</Text>
+                                                <View style={{width:'100%', display:'flex', flexDirection:'row', alignItems:'center', justifyContent:'space-between'}}>
+                                                    <Text style={{fontSize:16, fontWeight:'600'}}>{n.title}</Text>
+                                                    {n.created_by === user.adm_no && (
+                                                        <Menu
+                                                            visible={openedField === n.id}
+                                                            onDismiss={() => setOpenedField('')}
+                                                            anchor={
+                                                                <IconButton
+                                                                    size={20}
+                                                                    icon='dots-vertical'
+                                                                    onPress={() => setOpenedField(n.id)}
+                                                                />
+                                                            }
+                                                        >
+                                                            <Menu.Item onPress={() => router.push({pathname:'/notice/teacher/edit-app-message', params:n})} title='Edit' />
+                                                            <Menu.Item onPress={() => showDeleteAlert(n.notice_id)} title='Delete' />
+                                                        </Menu>
+                                                    )}
+                                                </View>
+                                                <Text>{renderContent(n.body, n.id)}</Text>
+                                                {n.body.length > 100 && (
+                                                    <Button onPress={() => toggleExpanded(n.id)}>
+                                                    {expandedCards[n.id] ? 'View less' : 'View more'}
+                                                    </Button>
+                                                )}
                                             </View>
-                                            {n.created_by === user.adm_no && (
-                                                <Menu
-                                                    visible={openedField === n.id}
-                                                    onDismiss={() => setOpenedField('')}
-                                                    anchor={
-                                                        <IconButton
-                                                            size={20}
-                                                            icon='dots-vertical'
-                                                            onPress={() => setOpenedField(n.id)}
-                                                        />
-                                                    }
-                                                >
-                                                    <Menu.Item onPress={() => router.push({pathname:'/notice/teacher/edit-app-message', params:n})} title='Edit' />
-                                                    <Menu.Item onPress={() => showDeleteAlert(n.notice_id)} title='Delete' />
-                                                </Menu>
-                                            )}
                                         </View>
                                         <View style={{display:'flex', flexDirection:'row', alignItems:'center', justifyContent:'space-between'}}>
                                             <View style={{display:'flex', flexDirection:'row', alignItems:'center', marginTop:10}}>
@@ -288,6 +318,21 @@ export default function App() {
                                 <View
                                     style={{display:'flex', justifyContent:'flex-end', alignItems:'flex-end', width:300, height:200, borderRadius:10, marginBottom:50, paddingBottom:30, paddingRight:20}}
                                 >
+
+                                    <View style={{display:'flex', flexDirection:'row', alignItems:'center', justifyContent:'center', marginBottom:10}}>
+                                        <TouchableOpacity
+                                            onPress={() => router.push('/notice/teacher/flash-message')}
+                                            style={{marginRight:10, paddingVertical:2, paddingHorizontal:10, borderRadius:4, backgroundColor:'#fff'}}
+                                        >
+                                            <Text>Flash Message</Text>
+                                        </TouchableOpacity>
+                                        <TouchableOpacity
+                                            onPress={() => router.push('/notice/teacher/flash-message')}
+                                            style={{width:40, height:40, alignItems:'center', justifyContent:'center', borderRadius:40, backgroundColor:'#0094DA'}}
+                                        >
+                                            <Icon source='flash' size={25} color='#fff'/>
+                                        </TouchableOpacity>
+                                    </View>
 
                                     <View style={{display:'flex', flexDirection:'row', alignItems:'center', justifyContent:'center', marginBottom:10}}>
                                         <TouchableOpacity

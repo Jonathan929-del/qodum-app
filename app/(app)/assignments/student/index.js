@@ -177,10 +177,7 @@ const App = () => {
                     <Text style={{paddingVertical:10, fontWeight:'800', textAlign:'center', borderRadius:100, color:selectedTab === 'subjects' ? '#fff' : 'gray', backgroundColor:selectedTab === 'subjects' ? '#3C5EAB' : '#F5F5F8'}}>Subjects</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
-                    onPress={() => {
-                        setSelectedTab('date');
-                        // setFilteredAssignments(allAssignments.sort((a, b) => new Date(a.assignment_date) - new Date(b.assignment_date)));
-                    }}
+                    onPress={() => setSelectedTab('date')}
                     style={{flex:1}}
                 >
                     <Text style={{paddingVertical:10, fontWeight:'800', textAlign:'center', borderRadius:100, color:selectedTab === 'date' ? '#fff' : 'gray', backgroundColor:selectedTab === 'date' ? '#3C5EAB' : '#F5F5F8'}}>Date</Text>

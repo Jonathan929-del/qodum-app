@@ -6,8 +6,8 @@ import {LinearGradient} from 'expo-linear-gradient';
 import {AuthContext} from '../../../../context/Auth';
 import {useContext, useEffect, useState} from 'react';
 import {ActivityIndicator, Card, Icon} from 'react-native-paper';
-import {ScrollView, Text, TouchableOpacity, View} from 'react-native';
 import {useNotification} from '../../../../context/NotificationProvider';
+import {ScrollView, Text, TouchableOpacity, View, LayoutAnimation, UIManager, Platform} from 'react-native';
 
 
 
@@ -30,6 +30,21 @@ export default function App() {
 
     // CLass notices
     const [classNotices, setClassNotices] = useState({});
+
+
+    // Class notice body
+    if(Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental){
+        UIManager.setLayoutAnimationEnabledExperimental(true);
+    };
+    const [expandedCards, setExpandedCards] = useState({});
+    const toggleExpanded = id => {
+        LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+        setExpandedCards((prev) => ({ ...prev, [id]: !prev[id] }));
+    };
+    const renderContent = (content, id) => {
+        if(expandedCards[id]) return content;
+        return content.length > 100 ? content.substring(0, 100) + '...' : content;
+    };
 
 
     // Use effect
@@ -79,7 +94,11 @@ export default function App() {
                                 <Card style={{width:'100%'}} key={n.id}>
                                     <View style={{display:'flex', flexDirection:'column', gap:4, paddingVertical:10, paddingHorizontal:20}}>
                                         <Text style={{fontSize:16, fontWeight:'600'}}>{n.title}</Text>
-                                        <Text style={{fontSize:14}}>{n.body}</Text>
+                                        {n.body.length > 100 && (
+                                            <Button onPress={() => toggleExpanded(n.id)}>
+                                            {expandedCards[n.id] ? 'View less' : 'View more'}
+                                            </Button>
+                                        )}
                                         <View style={{display:'flex', flexDirection:'row', alignItems:'center', justifyContent:'space-between'}}>
                                             <View style={{display:'flex', flexDirection:'row', alignItems:'center', marginTop:10}}>
                                                 <Icon source='calendar' color='#0094DA' size={20}/>
@@ -118,7 +137,11 @@ export default function App() {
                                 <Card style={{width:'100%'}} key={n.id}>
                                     <View style={{display:'flex', flexDirection:'column', gap:4, paddingVertical:10, paddingHorizontal:20}}>
                                         <Text style={{fontSize:16, fontWeight:'600'}}>{n.title}</Text>
-                                        <Text style={{fontSize:14}}>{n.body}</Text>
+                                        {n.body.length > 100 && (
+                                            <Button onPress={() => toggleExpanded(n.id)}>
+                                            {expandedCards[n.id] ? 'View less' : 'View more'}
+                                            </Button>
+                                        )}
                                         <View style={{display:'flex', flexDirection:'row', alignItems:'center', justifyContent:'space-between'}}>
                                             <View style={{display:'flex', flexDirection:'row', alignItems:'center', marginTop:10}}>
                                                 <Icon source='calendar' color='#0094DA' size={20}/>
