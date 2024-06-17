@@ -95,6 +95,7 @@ export default function App() {
                                 <Card style={{width:'100%'}} key={n.id}>
                                     <View style={{display:'flex', flexDirection:'column', gap:4, paddingVertical:10, paddingHorizontal:20}}>
                                         <Text style={{fontSize:16, fontWeight:'600'}}>{n.title}</Text>
+                                        <Text>{renderContent(n.body, n.id)}</Text>
                                         {n.body.length > 100 && (
                                             <Button onPress={() => toggleExpanded(n.id)}>
                                             {expandedCards[n.id] ? 'View less' : 'View more'}
@@ -138,6 +139,7 @@ export default function App() {
                                 <Card style={{width:'100%'}} key={n.id}>
                                     <View style={{display:'flex', flexDirection:'column', gap:4, paddingVertical:10, paddingHorizontal:20}}>
                                         <Text style={{fontSize:16, fontWeight:'600'}}>{n.title}</Text>
+                                        <Text>{renderContent(n.body, n.id)}</Text>
                                         {n.body.length > 100 && (
                                             <Button onPress={() => toggleExpanded(n.id)}>
                                             {expandedCards[n.id] ? 'View less' : 'View more'}
