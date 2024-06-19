@@ -1,8 +1,9 @@
 // Imports
 import axios from 'axios';
 import moment from 'moment';
-import {Text, View, ActivityIndicator} from 'react-native';
+import {Text, View,} from 'react-native';
 import {AuthContext} from '../../../context/Auth';
+import {ActivityIndicator} from 'react-native-paper';
 import {useContext, useEffect, useState} from 'react';
 
 
@@ -56,7 +57,7 @@ const Message = () => {
     }, []);
 
     return (
-        <View style={{gap:10}}>
+        <View style={{width:'100%', alignItems:'center', paddingHorizontal:20, gap:10}}>
             {moment(new Date()).format('D-M-YYYY') === moment(new Date(user.student.dob)).format('D-M-YYYY') && (
                 <View>
                     <Text style={{textAlign:'center', fontSize:16, color:'green'}}>Happy Birthday {user.student.name}!</Text>
@@ -71,7 +72,7 @@ const Message = () => {
                     {flashMessages.map(m => (
                         <View
                             key={m.id}
-                            style={{width:'80%', display:'flex', alignItems:'center', justifyContent:'center', padding:10, borderRadius:4, borderColor:'#000', borderWidth:1}}
+                            style={{width:'100%', display:'flex', alignItems:'center', justifyContent:'center', padding:10, borderRadius:4, borderColor:'#000', borderWidth:1}}
                         >
                             <Text style={{textAlign:'center'}}>{m.message}</Text>
                         </View>
@@ -80,7 +81,7 @@ const Message = () => {
                     {/* Overdue installments */}
                     {overdueInstallments.map(i => (
                         <View
-                            style={{borderWidth:1, borderColor:'red', padding:8, borderRadius:6}}
+                            style={{width:'100%', borderWidth:1, borderColor:'red', padding:8, borderRadius:6}}
                             key={i._id}
                         >
                             <Text style={{fontSize:14, color:'red'}}>Warning! You are late on {i.name} payment.</Text>

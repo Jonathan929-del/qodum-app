@@ -2,7 +2,7 @@
 import axios from 'axios';
 import {useEffect, useState} from 'react';
 import {router, useLocalSearchParams} from 'expo-router';
-import {Text, TouchableOpacity, View} from 'react-native';
+import {Image, Text, TouchableOpacity, View} from 'react-native';
 import {Icon, Button, ActivityIndicator} from 'react-native-paper';
 
 
@@ -64,15 +64,19 @@ const CreateAssignment = () => {
                 <View style={{width:'90%', flex:1, display:'flex', flexDirection:'column', alignItems:'center', paddingTop:30, gap:30}}>
                     <View style={{width:'90%', display:'flex', flexDirection:'column', gap:8}}>
                         <Text style={{fontSize:18, fontWeight:'700'}}>Answer:</Text>
-                        <Text style={{fontSize:16, color:'gray', borderWidth:1, borderColor:'#ccc', borderRadius:4, paddingVertical:10, paddingHorizontal:20}}>{theAnswer?.answer}</Text>
+                        <Text style={{fontSize:16, color:'gray'}}>{theAnswer?.answer}</Text>
                     </View>
                     <View style={{width:'90%', display:'flex', flexDirection:'column', gap:4}}>
                         <Text style={{fontSize:18, fontWeight:'700'}}>Attachment:</Text>
 
                         <TouchableOpacity
-                            style={{borderWidth:1, borderColor:'#ccc', borderRadius:4, paddingVertical:10, paddingHorizontal:20}}
+                            style={{}}
                             onPress={() => router.push({pathname:'/assignments/teacher/pdf-preview', params:{pdfUri:theAnswer?.attachment, assignment:JSON.stringify(assignment), answer:JSON.stringify(theAnswer)}})}
                         >
+                            <Image
+                                style={{width:50, height:50}}
+                                source={require('../../../../assets/Assignments/PdfIcon.png')}
+                            />
                             <Text style={{fontSize:16, color:'#0094DA'}}>{theAnswer?.attachment?.split('/')[4]}</Text>
                         </TouchableOpacity>
                     </View>

@@ -12,10 +12,8 @@ import {ActivityIndicator, Icon} from 'react-native-paper';
 // Main function
 const PdfPreview = () => {
 
-
     // Pdf uri
-    const {page, pdfUri, a} = useLocalSearchParams();
-
+    const {page, pdfUri, a, submitted_assignment} = useLocalSearchParams();
 
     return (
         <View style={{height:'100%'}}>
@@ -24,7 +22,10 @@ const PdfPreview = () => {
                     <TouchableOpacity
                         onPress={() => page === 'index'
                             ? router.push({pathname:'/assignments/student', params:{edited:false}})
-                            : router.push({pathname:'/assignments/student/view', params:JSON.parse(a)})
+                            :
+                                page === 'answer'
+                                    ? router.push({pathname:'/assignments/student/answer', params:{assignment:a, submitted_assignment:submitted_assignment}})
+                                    : router.push({pathname:'/assignments/student/view', params:JSON.parse(a)})
                         }
                     >
                         <Icon source='chevron-left' size={40} color='#fff'/>

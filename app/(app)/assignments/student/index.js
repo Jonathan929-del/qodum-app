@@ -110,7 +110,7 @@ const App = () => {
     };
 
 
-    // Use effect
+    // Use effects
     useEffect(() => {
         if(submitted){
             setIsSubmissionConfirmed(true);
@@ -138,6 +138,11 @@ const App = () => {
         };
         fetcher();
     }, []);
+    useEffect(() => {
+        setIsLoading(true);
+        setFilteredAssignments(allAssignments.filter(a => moment(a.assignment_date).format('D-M-YYYY') === moment(selectedDate).format('D-M-YYYY')));
+        setIsLoading(false);
+    }, [selectedDate]);
 
 
   return (
@@ -210,14 +215,14 @@ const App = () => {
 
             {/* Date filter */}
             {selectedTab === 'date' && (
-                <View style={{gap:6}}>
-                    <Text>Select Date</Text>
+                <View style={{gap:6, width:'80%', marginTop:10}}>
+                    <Text>Selected Date</Text>
                     <TouchableOpacity
                         onPress={() => setOpenedField('selected_date')}
                         style={{display:'flex', flexDirection:'row', alignItems:'center', backgroundColor:'#F5F5F8', height:60, paddingHorizontal:20, borderTopLeftRadius:5, borderTopRightRadius:5, borderBottomWidth:openedField === 'selected_date' ? 2 : 1, borderBottomColor:openedField === 'selected_date' ? '#0094DA' : 'gray'}}
                     >
                         <Icon source='calendar' size={30} color='gray'/>
-                        <Text style={{marginLeft:10}}>{moment(assignmentDate).format('D-M-YYYY')}</Text>
+                        <Text style={{marginLeft:10}}>{moment(selectedDate).format('D-M-YYYY')}</Text>
                     </TouchableOpacity>
                     {openedField === 'selected_date' && (
                         <DateTimePicker

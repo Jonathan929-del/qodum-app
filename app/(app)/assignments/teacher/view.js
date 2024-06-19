@@ -109,10 +109,6 @@ const App = () => {
         fetcher();
     }, []);
 
-
-    // return (<Text>SOME TEXT</Text>)
-
-
     return (
         <View style={{height:'100%'}}>
             <View style={{width:'100%', height:120, display:'flex', flexDirection:'row', alignItems:'flex-end', justifyContent:'space-between', paddingHorizontal:10, paddingBottom:30, backgroundColor:'#0094DA', borderBottomRightRadius:40, borderBottomLeftRadius:40}}>

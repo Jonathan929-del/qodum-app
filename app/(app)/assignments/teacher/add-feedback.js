@@ -32,34 +32,34 @@ const App = () => {
     // Grades
     const grades = [
         {
-            label:'A+',
-            value:'A+'
+            grade:'A+',
+            label:'90% - 100%'
         },
         {
-            label:'A',
-            value:'A'
+            grade:'A',
+            label:'80% - 90%'
         },
         {
-            label:'B+',
-            value:'B+'
+            grade:'B+',
+            label:'70% - 80%'
         },
         {
-            label:'B',
-            value:'B'
+            grade:'B',
+            label:'60% - 70%'
         },
         {
-            label:'C',
-            value:'C'
+            grade:'C+',
+            label:'50% - 60%'
         },
         {
-            label:'D',
-            value:'D'
+            grade:'C',
+            label:'0% - 50%'
         },
     ];
 
 
     // Selected grade
-    const [selectedGrade, setSelectedGrade] = useState('');
+    const [selectedGrade, setSelectedGrade] = useState({grade:'', label:''});
 
 
     // States
@@ -77,16 +77,37 @@ const App = () => {
     const {control, handleSubmit, reset} = useForm();
 
 
+    // Grades dropdown
+    const gradesDropdown = (
+        <ScrollView style={{width:'100%', maxHeight:300, paddingVertical:6, borderWidth:1, borderColor:'#ccc', borderBottomLeftRadius:4, borderBottomRightRadius:4}}>
+            {grades?.map(g => (
+                <TouchableOpacity
+                    onPress={() => {setSelectedGrade(g);setOpenedField('')}}
+                    style={{position:'relative', display:'flex', flexDirection:'row', alignItems:'center', justifyContent:'space-between', paddingVertical:4,  marginHorizontal:20, borderBottomWidth:grades.indexOf(g) === grades.length - 1 ? 0 : 1, borderBottomColor:'#ccc'}}
+                >
+                    <View style={{position:'absolute', height:'150%', left:-10, backgroundColor:selectedGrade.grade === g.grade ? '#3C5EAB' : '#ccc', borderRadius:4}}>
+                        <Text style={{color:selectedGrade.grade === g.grade ? '#3C5EAB' : '#ccc'}}>-</Text>
+                    </View>
+                    <Text style={{color:'#3C5EAB', fontWeight:'600'}}>{g.grade}</Text>
+                    <Text style={{color:'gray', fontSize:12}}>{g.label}</Text>
+                </TouchableOpacity>
+            ))}
+
+
+        </ScrollView>
+    );
+
+
     // On submit
     const onSubmit = async data => {
         setStates({...states, loading:true});
         try {
 
             // Empty validations
-            if(!data.feedback || selectedGrade === ''){
+            if(!data.feedback || selectedGrade.grade === ''){
                 setStates({...states, errors:{
                     feedback:!data.feedback ? '*Please enter feedback' : '',
-                    grade:!selectedGrade ? '*Please select a grade' : '',
+                    grade:!selectedGrade.grade ? '*Please select a grade' : '',
                 }});
                 return;
             };
@@ -98,7 +119,7 @@ const App = () => {
                 assignment_id:JSON.parse(assignment)._id,
                 submitted_report_id:JSON.parse(answer)._id,
                 feedback:data.feedback,
-                grade:selectedGrade.label
+                grade:selectedGrade.grade
             };
             const res = await axios.put(link, params);
 
@@ -182,35 +203,21 @@ const App = () => {
 
 
                             {/* Grade */}
-                            <View style={{gap:6}}>
+                            <View style={{gap:0}}>
                                 <Text>Grade</Text>
-                                <Controller
-                                    control={control}
-                                    render={({field:{onChange, onBlur, value}}) => (
-                                        <Dropdown
-                                            placeholderStyle={{color:'gray', paddingLeft:10}}
-                                            selectedTextStyle={{paddingLeft:10}}
-                                            data={grades}
-                                            search
-                                            activeColor='#ccc'
-                                            itemContainerStyle={{}}
-                                            labelField='label'
-                                            valueField='value'
-                                            placeholder='Select Grade'
-                                            searchPlaceholder='Search...'
-                                            value={selectedGrade}
-                                            onFocus={() => setOpenedField('grades')}
-                                            onBlur={() => setOpenedField('')}
-                                            onChange={item => {setSelectedGrade(item);setStates({states, errors:{...states.errors, grade:!item.label  ? '*Please select a grade' : ''}})}}
-                                            style={{backgroundColor:'#F5F5F8', height:60, paddingHorizontal:20, borderTopLeftRadius:5, borderTopRightRadius:5, borderBottomWidth:openedField === 'grades' ? 2 : 1, borderBottomColor:openedField === 'grades' ? '#0094DA' : 'gray'}}
-                                            renderLeftIcon={() => (
-                                                <Icon source='book-edit' color='gray' size={25}/>
-                                            )}
-                                        />
+                                <TouchableOpacity
+                                    onPress={() => openedField === 'grade' ? setOpenedField('') : setOpenedField('grade')}
+                                    style={{display:'flex', flexDirection:'row', alignItems:'center', justifyContent:'space-between', marginTop:6, backgroundColor:'#F5F5F8', height:60, paddingHorizontal:10, borderTopLeftRadius:5, borderTopRightRadius:5, borderBottomWidth:1, borderBottomColor:openedField === 'grade' ? '#0094DA' : 'gray'}}
+                                >
+                                    <Text style={{marginLeft:10}}>{selectedGrade.grade === '' ? 'Select Grade' : selectedGrade.grade}</Text>
+                                    {openedField === 'grade' ? (
+                                        <Icon source='chevron-up' size={30} color='gray'/>
+                                    ) : (
+                                        <Icon source='chevron-down' size={30} color='gray'/>
                                     )}
-                                    name='grade'
-                                />
-                                {states.errors.grade !== '' && <Text style={{color:'red', marginTop:-6}}>{states.errors.grade}</Text>}
+                                </TouchableOpacity>
+                                {openedField === 'grade' && gradesDropdown}
+                                {states.errors.grade !== '' && <Text style={{color:'red'}}>{states.errors.grade}</Text>}
                             </View>
             
             

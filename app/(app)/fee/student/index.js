@@ -1,13 +1,14 @@
 // Imports
 import axios from 'axios';
+import moment from 'moment';
 import {router} from 'expo-router';
 import 'react-native-get-random-values';
+import { WebView } from 'react-native-webview';
 import {AuthContext} from '../../../../context/Auth';
 import {useState, useEffect, useContext} from 'react';
 import {Dropdown} from 'react-native-element-dropdown';
-import {Text, TouchableOpacity, View, ScrollView, Button, Image, Linking} from 'react-native';
-import {ActivityIndicator, Snackbar, Icon, Button as PaperButton, Card, Switch} from 'react-native-paper';
-import moment from 'moment';
+import {ActivityIndicator, Snackbar, Icon, Card, Switch} from 'react-native-paper';
+import {Text, TouchableOpacity, View, ScrollView, Button, Image, Modal, Dimensions} from 'react-native';
 
 
 
@@ -19,6 +20,7 @@ const index = () => {
     // Snack bar actions
     const [visible, setVisible] = useState(false);
     const onDismissSnackBar = () => setVisible(false);
+    const [snackbarMessage, setSnackbarMessage] = useState('');
 
 
     // User
@@ -64,6 +66,10 @@ const index = () => {
     const [feeDetails, setFeeDetails] = useState();
 
 
+    // Payment URL
+    const [paymentUrl, setPaymentUrl] = useState('');
+
+
     // Fee amounts
     const [totalFee, setTotalFee] = useState(0);
     const [receivedFee, setReceivedFee] = useState(0);
@@ -72,10 +78,27 @@ const index = () => {
 
 
     // Values
-    const [installments, setInstallments] = useState([]);
     const [selectedInstallment, setSelectedInstallment] = useState({label:'', value:''});
     const [feeTypes, setFeeTypes] = useState([]);
     const [selectedFeeType, setSelectedFeeType] = useState({label:'', value:''});
+
+
+    // Handle webview navigation
+    const handleNavigationChange = navState => {
+        console.log(navState);
+        if(navState.url.split('/')[4] === 'furl'){
+            setPaymentUrl('');
+            setSnackbarMessage('Payment Failed, Please Try Again.');
+            setVisible(true);
+        }else if(navState.url.split('/')[4] === 'surl'){
+            submitHandler();
+            setPaymentUrl('');
+            setSnackbarMessage('Paid Successfully!');
+            setVisible(true);
+        }else if(navState.url.includes('otp-page-url')) {
+            setWebViewUrl(navState.url);
+          }
+    };
 
 
     // Fetch data
@@ -116,7 +139,6 @@ const index = () => {
             return;
         }else{
 
-            setInstallments(installmentsWithValues);
             const selectedFilteredInstallment = installmentsWithValues[0];
             setSelectedInstallment(selectedFilteredInstallment);
             setInstallmentDueOnDate(`${selectedFilteredInstallment.due_on_date.day} ${selectedFilteredInstallment.due_on_date.month}`);
@@ -152,10 +174,13 @@ const index = () => {
     };
 
 
-    // Submit handler
-    const submitHandler = async () => {
-        // setStates({...states, loading:true});
+    // Button click
+    const buttonClick = async () => {
         try {
+
+            // Setting is loading to true
+            setStates({...states, loading:true});
+
 
             // Easy collect api
             const easyCollectLink = `${process.env.EXPO_PUBLIC_API_URL}/payments/payment/easy-collect`;
@@ -168,88 +193,102 @@ const index = () => {
                 message:`${selectedInstallment.label} Payment`
             };
             const easyCollectRes = await axios.post(easyCollectLink, easyCollectParams);
-            Linking.openURL(easyCollectRes.data);
+            setPaymentUrl(easyCollectRes.data);
 
 
-            // // Creating new fee heads
-            // const unChangedHeads = feeDetails?.heads?.filter(h => !previewHeads.map(ph => ph.head_name).includes(h.head_name));
-            // const changedHeads = feeDetails?.heads?.filter(h => previewHeads.map(ph => ph.head_name).includes(h.head_name)).map(h => {
-            //     return{
-            //         ...h,
-            //         amounts:h.amounts.filter(a => selectedInstallment.label === a.name).map(a => {
-            //             return{
-            //                 name:a.name,
-            //                 value:Number(a.value),
-            //                 conc_amount:Number(a.conc_amount || 0),
-            //                 paid_amount:0,
-            //                 payable_amount:0,
-            //                 last_rec_amount:Number(a.value) - Number(a.conc_amount || 0)
-            //             }
-            //         }).concat(h.amounts.filter(a => selectedInstallment.label !== a.name))
-            //     }
-            // });
-            // const newHeads = [...unChangedHeads, ...changedHeads];
-            // const orderedNewHeads = newHeads.sort((a, b) => feeDetails?.heads?.findIndex(o => o.head_name === a.head_name) - feeDetails?.heads?.findIndex(o => o.head_name === b.head_name));
+            // Setting is loading to false
+            setStates({...states, loading:false});
 
-            // // Updating student fee heads
-            // const headsLink = `${process.env.EXPO_PUBLIC_API_URL}/students/student/fee/pay`;
-            // await axios.post(headsLink, {adm_no:user.adm_no, new_heads:orderedNewHeads});
+        }catch(err){
+            console.log(err);
+        };
+    };
 
 
-            // // Creating payment
-            // const paymentHeads = feeDetails?.heads?.filter(h => previewHeads.map(ph => ph.head_name).includes(h.head_name)).map(h => {
-            //     return{
-            //         ...h,
-            //         amounts:h.amounts.filter(a => selectedInstallment.label === a.name).map(a => {
-            //             return{
-            //                 name:a.name,
-            //                 value:Number(a.value),
-            //                 conc_amount:Number(a.conc_amount || 0),
-            //                 paid_amount:Number(a.value) - (Number(a.last_rec_amount || 0) + Number(a.conc_amount || 0)),
-            //                 payable_amount:Number(a.value) - (Number(a.last_rec_amount || 0) + Number(a.conc_amount || 0)),
-            //                 last_rec_amount:Number(a.last_rec_amount || 0)
-            //             }
-            //         })
-            //     }
-            // });
-            // const paymentLink = `${process.env.EXPO_PUBLIC_API_URL}/payments/payment/create`;
-            // const params = {
-            //     // School data
-            //     school_name:school?.school_name || '',
-            //     receipt_no:Math.floor(100000 + Math.random() * 900000),
-            //     school_address:school?.school_address || '',
-            //     website:school?.website || '',
-            //     school_no:school?.school_no || '',
-            //     affiliation_no:school?.affiliation_no || '',
-            //     logo:school?.logo || '',
+    // Submit handler
+    const submitHandler = async () => {
+        setStates({...states, loading:true});
+        try {
+
+            // Creating new fee heads
+            const unChangedHeads = feeDetails?.heads?.filter(h => !previewHeads.map(ph => ph.head_name).includes(h.head_name));
+            const changedHeads = feeDetails?.heads?.filter(h => previewHeads.map(ph => ph.head_name).includes(h.head_name)).map(h => {
+                return{
+                    ...h,
+                    amounts:h.amounts.filter(a => selectedInstallment.label === a.name).map(a => {
+                        return{
+                            name:a.name,
+                            value:Number(a.value),
+                            conc_amount:Number(a.conc_amount || 0),
+                            paid_amount:0,
+                            payable_amount:0,
+                            last_rec_amount:Number(a.value) - Number(a.conc_amount || 0)
+                        }
+                    }).concat(h.amounts.filter(a => selectedInstallment.label !== a.name))
+                }
+            });
+            const newHeads = [...unChangedHeads, ...changedHeads];
+            const orderedNewHeads = newHeads.sort((a, b) => feeDetails?.heads?.findIndex(o => o.head_name === a.head_name) - feeDetails?.heads?.findIndex(o => o.head_name === b.head_name));
+
+            // Updating student fee heads
+            const headsLink = `${process.env.EXPO_PUBLIC_API_URL}/students/student/fee/pay`;
+            await axios.post(headsLink, {adm_no:user.adm_no, new_heads:orderedNewHeads});
+
+
+            // Creating payment
+            const paymentHeads = feeDetails?.heads?.filter(h => previewHeads.map(ph => ph.head_name).includes(h.head_name)).map(h => {
+                return{
+                    ...h,
+                    amounts:h.amounts.filter(a => selectedInstallment.label === a.name).map(a => {
+                        return{
+                            name:a.name,
+                            value:Number(a.value),
+                            conc_amount:Number(a.conc_amount || 0),
+                            paid_amount:Number(a.value) - (Number(a.last_rec_amount || 0) + Number(a.conc_amount || 0)),
+                            payable_amount:Number(a.value) - (Number(a.last_rec_amount || 0) + Number(a.conc_amount || 0)),
+                            last_rec_amount:Number(a.last_rec_amount || 0)
+                        }
+                    })
+                }
+            });
+            const paymentLink = `${process.env.EXPO_PUBLIC_API_URL}/payments/payment/create`;
+            const params = {
+                // School data
+                school_name:school?.school_name || '',
+                receipt_no:Math.floor(100000 + Math.random() * 900000),
+                school_address:school?.school_address || '',
+                website:school?.website || '',
+                school_no:school?.school_no || '',
+                affiliation_no:school?.affiliation_no || '',
+                logo:school?.logo || '',
     
-            //     // Student data
-            //     student:user?.student?.name,
-            //     class_name:user?.student?.class_name || '',
-            //     adm_no:user?.adm_no || '',
-            //     father_name:user?.parents?.father?.father_name || '',
-            //     is_new:user?.student?.is_new || false,
-            //     is_active:user?.student?.is_active || false,
-            //     student_status:user?.student?.student_status || '',
+                // Student data
+                student:user?.student?.name,
+                class_name:user?.student?.class_name || '',
+                adm_no:user?.adm_no || '',
+                father_name:user?.parents?.father?.father_name || '',
+                is_new:user?.student?.is_new || false,
+                is_active:user?.student?.is_active || false,
+                student_status:user?.student?.student_status || '',
     
-            //     // Payment data
-            //     installments:selectedInstallment.label,
-            //     received_date:new Date(),
-            //     fee_type:'All fee types',
-            //     bank_name:'',
-            //     fee_group:feeDetails.group_name,
-            //     actual_amount:totalFee,
-            //     paid_amount:dueFee,
-            //     paid_heads:paymentHeads
+                // Payment data
+                installments:selectedInstallment.label,
+                received_date:new Date(),
+                fee_type:'All fee types',
+                bank_name:'',
+                fee_group:feeDetails.group_name,
+                actual_amount:totalFee,
+                paid_amount:dueFee,
+                paid_heads:paymentHeads
 
-            // };
-            // await axios.post(paymentLink, params);
+            };
+            await axios.post(paymentLink, params);
 
 
-            // // Reseting
-            // setVisible(true);
-            // setStates({...states, loading:false});
-            // fetchData();
+            // Reseting
+            setVisible(true);
+            setStates({...states, loading:false});
+            fetchData();
     
         }catch(err){
             console.log(err);
@@ -274,6 +313,31 @@ const index = () => {
                     <Text style={{textAlign:'center', fontSize:18, color:'#fff', fontWeight:'900'}}>Fee</Text>
                 </View>
             </View>
+
+
+            {/* Payment modal */}
+            <Modal visible={paymentUrl !== ''}>
+                <View style={{width:'100%', height:Dimensions.get('screen').height/7.5, display:'flex', flexDirection:'row', alignItems:'flex-end', justifyContent:'space-between', paddingHorizontal:10, paddingBottom:30, backgroundColor:'#0094DA', borderBottomRightRadius:40, borderBottomLeftRadius:40}}>
+                    <View style={{display:'flex', flexDirection:'row', alignItems:'center', gap:20}}>
+                        <TouchableOpacity
+                            onPress={() => setPaymentUrl('')}
+                        >
+                            <Icon source='chevron-left' size={40} color='#fff'/>
+                        </TouchableOpacity>
+                        <Text style={{textAlign:'center', fontSize:18, color:'#fff', fontWeight:'900'}}>Pay Fee</Text>
+                    </View>
+                </View>
+
+                <View style={{flex:1, alignItems:'center', marginVertical:10}}>
+                    <View style={{flex:1, width:'90%'}}>
+                        <WebView
+                            source={{uri:paymentUrl}}
+                            onNavigationStateChange={handleNavigationChange}
+                            style={{height:Dimensions.get('screen').height/9.5, width:'100%'}}
+                        />
+                    </View>
+                </View>
+            </Modal>
 
 
             {/* Tabs */}
@@ -391,7 +455,7 @@ const index = () => {
                                 <ActivityIndicator />
                             ) : (
                                 <Button
-                                    onPress={submitHandler}
+                                    onPress={buttonClick}
                                     title='Pay Now'
                                 />
                             )}
@@ -483,7 +547,7 @@ const index = () => {
 
             {/* Snackbar */}
             <Snackbar
-                style={{backgroundColor:'green'}}
+                style={{backgroundColor:snackbarMessage === 'Paid Successfully' ? 'green' : 'red'}}
                 visible={visible}
                 onDismiss={onDismissSnackBar}
                 action={{
@@ -491,7 +555,7 @@ const index = () => {
                     onPress:() => setVisible(false)
                 }}
             >
-                Paid Successfully!
+                {snackbarMessage}
             </Snackbar>
 
         </View>

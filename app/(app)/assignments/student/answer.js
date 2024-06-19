@@ -1,7 +1,7 @@
 // Imports
-import {Icon, Button} from 'react-native-paper';
+import {Icon} from 'react-native-paper';
 import {router, useLocalSearchParams} from 'expo-router';
-import {Linking, Text, TouchableOpacity, View} from 'react-native';
+import {Image, Text, TouchableOpacity, View} from 'react-native';
 
 
 
@@ -28,18 +28,26 @@ const App = () => {
 
             {/* View attachment */}
             <View style={{flex:1, display:'flex', flexDirection:'column', alignItems:'center', paddingTop:30, gap:30}}>
+
                 <View style={{width:'90%', display:'flex', flexDirection:'column', gap:4}}>
                     <Text style={{fontSize:18, fontWeight:'700'}}>Your Answer:</Text>
                     <Text style={{fontSize:16}}>{JSON.parse(submitted_assignment).answer}</Text>
                 </View>
 
-                <Button
-                    mode='contained'
-                    onPress={() => Linking.openURL(JSON.parse(submitted_assignment).attachment)}
-                    style={{borderRadius:4, width:'90%'}}
-                >
-                    View Attachment
-                </Button>
+
+                <View style={{width:'90%', display:'flex', flexDirection:'column', gap:4}}>
+                    <Text style={{fontSize:18, fontWeight:'700'}}>Attachment:</Text>
+                    <TouchableOpacity
+                        onPress={() => router.push({pathname:'/assignments/student/pdf-preview', params:{pdfUri:JSON.parse(submitted_assignment).attachment, a:assignment, submitted_assignment, page:'answer'}})}
+                    >
+                        <Image
+                            source={require('../../../../assets/Assignments/PdfIcon.png')}
+                            style={{width:50, height:50}}
+                        />
+                        <Text style={{color:'#0094DA'}}>{JSON.parse(submitted_assignment).attachment.split('/')[4]}</Text>
+                    </TouchableOpacity>
+                </View>
+        
             </View>
 
         </View>

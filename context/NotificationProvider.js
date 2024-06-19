@@ -25,7 +25,7 @@ export const useNotification = () => useContext(NotificationContext);
 
 
 // Notification provider
-export const NotificationProvider = ({ children }) => {
+export const NotificationProvider = ({children}) => {
 
   // User
   const {user} = useContext(AuthContext);

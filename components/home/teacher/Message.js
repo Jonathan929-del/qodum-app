@@ -58,7 +58,7 @@ const Message = () => {
             ) : flashMessages.map(m => (
                 <View
                     key={m.id}
-                    style={{width:'80%', display:'flex', alignItems:'center', justifyContent:'center', padding:10, borderRadius:4, borderColor:'#000', borderWidth:1}}
+                    style={{width:'90%', display:'flex', alignItems:'center', justifyContent:'center', padding:10, borderRadius:4, borderColor:'#000', borderWidth:1}}
                 >
                     <Text style={{textAlign:'center'}}>{m.message}</Text>
                 </View>

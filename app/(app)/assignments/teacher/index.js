@@ -4,6 +4,7 @@ import moment from 'moment';
 import {AuthContext} from '../../../../context/Auth';
 import {useState, useEffect, useContext} from 'react';
 import {router, useLocalSearchParams} from 'expo-router';
+import DateTimePicker from '@react-native-community/datetimepicker';
 import {ActivityIndicator, Card, Icon, Snackbar} from 'react-native-paper';
 import {Text, TouchableOpacity, View, ScrollView, Image, Alert} from 'react-native';
 
@@ -56,6 +57,14 @@ const App = () => {
     const [classStudentsCount, setClassStudentsCount] = useState();
 
 
+    // Selected date
+    const [selectedDate, setSelectedDate] = useState(new Date());
+
+
+    // Opened field
+    const [openedField, setOpenedField] = useState('');
+
+
     // Show delete alert
     const showDeleteAlert = id =>
         Alert.alert(
@@ -92,7 +101,7 @@ const App = () => {
     };
 
 
-    // Use effect
+    // Use effects
     useEffect(() => {
         if(edited) {
             setSnackbarMessage('Assignment Edited Successfully!');
@@ -129,6 +138,9 @@ const App = () => {
         };
         fetcher();
     }, []);
+    useEffect(() => {
+        setFilteredAssignments(allAssignments.filter(a => moment(a.assignment_date).format('D-M-YYYY') === moment(selectedDate).format('D-M-YYYY')));
+    }, [selectedDate]);
 
 
   return (
@@ -190,6 +202,27 @@ const App = () => {
 
                     {/* Assignments */}
                     <ScrollView contentContainerStyle={{display:'flex', flexDirection:'column', alignItems:'center', gap:20, paddingVertical:20, paddingTop:50}} style={{width:'100%'}}>
+                        <View style={{width:'80%', gap:6}}>
+                            <Text>Assignment Date</Text>
+                            <TouchableOpacity
+                                onPress={() => setOpenedField('selected_date')}
+                                style={{display:'flex', flexDirection:'row', alignItems:'center', backgroundColor:'#F5F5F8', height:60, paddingHorizontal:20, borderTopLeftRadius:5, borderTopRightRadius:5, borderBottomWidth:openedField === 'selected_date' ? 2 : 1, borderBottomColor:openedField === 'selected_date' ? '#0094DA' : 'gray'}}
+                            >
+                                <Icon source='calendar' size={30} color='gray'/>
+                                <Text style={{marginLeft:10}}>{moment(selectedDate).format('D-M-YYYY')}</Text>
+                            </TouchableOpacity>
+                            {openedField === 'selected_date' && (
+                                <DateTimePicker
+                                    mode='date'
+                                    display='spinner'
+                                    value={selectedDate}
+                                    onChange={(v, date) => {
+                                        setOpenedField('');
+                                        setSelectedDate(date);
+                                    }}
+                                />
+                            )}
+                        </View>
                         {filteredAssignments.length > 0 ? filteredAssignments?.map(a => (
                             <Card style={{width:'80%', height:250, borderRadius:10, backgroundColor:'#fff'}} key={a._id}>
                                 <View style={{height:'100%', display:'flex', flexDirection:'column', justifyContent:'space-between'}}>
