@@ -3,12 +3,12 @@ import axios from 'axios';
 import moment from 'moment';
 import {router} from 'expo-router';
 import 'react-native-get-random-values';
-import { WebView } from 'react-native-webview';
+import {WebView} from 'react-native-webview';
 import {AuthContext} from '../../../../context/Auth';
 import {useState, useEffect, useContext} from 'react';
 import {Dropdown} from 'react-native-element-dropdown';
 import {ActivityIndicator, Snackbar, Icon, Card, Switch} from 'react-native-paper';
-import {Text, TouchableOpacity, View, ScrollView, Button, Image, Modal, Dimensions} from 'react-native';
+import {Text, TouchableOpacity, View, ScrollView, Button, Image, Modal, Dimensions, SafeAreaView} from 'react-native';
 
 
 
@@ -85,7 +85,12 @@ const index = () => {
 
     // Handle webview navigation
     const handleNavigationChange = navState => {
-        console.log(navState);
+        const {url} = navState;
+        // Handle navigation changes such as pop-ups or redirects here
+        if (url.includes('otp-confirmation')) {
+          // Example of handling OTP confirmation
+          Alert.alert('OTP Confirmation', 'Handling OTP confirmation here.');
+        }
         if(navState.url.split('/')[4] === 'furl'){
             setPaymentUrl('');
             setSnackbarMessage('Payment Failed, Please Try Again.');
@@ -95,9 +100,9 @@ const index = () => {
             setPaymentUrl('');
             setSnackbarMessage('Paid Successfully!');
             setVisible(true);
-        }else if(navState.url.includes('otp-page-url')) {
+        }else if(navState.url.includes('otp-page-url')){
             setWebViewUrl(navState.url);
-          }
+        }
     };
 
 
@@ -329,13 +334,13 @@ const index = () => {
                 </View>
 
                 <View style={{flex:1, alignItems:'center', marginVertical:10}}>
-                    <View style={{flex:1, width:'90%'}}>
+                    <SafeAreaView style={{flex:1, width:'90%'}}>
                         <WebView
                             source={{uri:paymentUrl}}
                             onNavigationStateChange={handleNavigationChange}
                             style={{height:Dimensions.get('screen').height/9.5, width:'100%'}}
                         />
-                    </View>
+                    </SafeAreaView>
                 </View>
             </Modal>
 

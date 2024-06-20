@@ -213,32 +213,6 @@ const App = () => {
             )}
 
 
-            {/* Date filter */}
-            {selectedTab === 'date' && (
-                <View style={{gap:6, width:'80%', marginTop:10}}>
-                    <Text>Selected Date</Text>
-                    <TouchableOpacity
-                        onPress={() => setOpenedField('selected_date')}
-                        style={{display:'flex', flexDirection:'row', alignItems:'center', backgroundColor:'#F5F5F8', height:60, paddingHorizontal:20, borderTopLeftRadius:5, borderTopRightRadius:5, borderBottomWidth:openedField === 'selected_date' ? 2 : 1, borderBottomColor:openedField === 'selected_date' ? '#0094DA' : 'gray'}}
-                    >
-                        <Icon source='calendar' size={30} color='gray'/>
-                        <Text style={{marginLeft:10}}>{moment(selectedDate).format('D-M-YYYY')}</Text>
-                    </TouchableOpacity>
-                    {openedField === 'selected_date' && (
-                        <DateTimePicker
-                            mode='date'
-                            display='spinner'
-                            value={selectedDate}
-                            onChange={(v, date) => {
-                                setOpenedField('');
-                                setSelectedDate(date);
-                            }}
-                        />
-                    )}
-                </View>
-            )}
-
-
             {isLoading ? (
                 <View style={{height:'100%', width:'100%', alignItems:'center', justifyContent:'center'}}>
                     <ActivityIndicator size={30} color='#0094DA'/>
@@ -250,6 +224,33 @@ const App = () => {
 
                     {/* Assignments */}
                     <ScrollView contentContainerStyle={{display:'flex', flexDirection:'column', alignItems:'center', gap:20, paddingVertical:20, paddingTop:50}} style={{width:'100%'}}>
+
+                        {/* Date filter */}
+                        {selectedTab === 'date' && (
+                            <View style={{gap:6, width:'80%'}}>
+                                <Text>Selected Date</Text>
+                                <TouchableOpacity
+                                    onPress={() => setOpenedField('selected_date')}
+                                    style={{display:'flex', flexDirection:'row', alignItems:'center', backgroundColor:'#F5F5F8', height:60, paddingHorizontal:20, borderTopLeftRadius:5, borderTopRightRadius:5, borderBottomWidth:openedField === 'selected_date' ? 2 : 1, borderBottomColor:openedField === 'selected_date' ? '#0094DA' : 'gray'}}
+                                >
+                                    <Icon source='calendar' size={30} color='gray'/>
+                                    <Text style={{marginLeft:10}}>{moment(selectedDate).format('D-M-YYYY')}</Text>
+                                </TouchableOpacity>
+                                {openedField === 'selected_date' && (
+                                    <DateTimePicker
+                                        mode='date'
+                                        display='spinner'
+                                        value={selectedDate}
+                                        onChange={(v, date) => {
+                                            setOpenedField('');
+                                            setSelectedDate(date);
+                                        }}
+                                    />
+                                )}
+                            </View>
+                        )}
+
+
                         {filteredAssignments.length > 0 ? filteredAssignments?.map(a => (
                             <Card style={{width:'80%', height:250, borderRadius:10, backgroundColor:'#fff'}} key={a._id}>
                                 <View style={{width:'100%', height:'100%', display:'flex', flexDirection:'column', justifyContent:'space-between'}}>
