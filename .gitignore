@@ -36,6 +36,6 @@ yarn-error.*
 
 # Firebase credentials
 qodum-9c179-firebase-adminsdk-zylgw-7f13531e2b.json
-GoogleService-Info.plist
-google-services.json
+# GoogleService-Info.plist
+# google-services.json
 firebase.js

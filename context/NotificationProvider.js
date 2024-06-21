@@ -3,7 +3,7 @@ import axios from 'axios';
 import {AuthContext} from './Auth';
 import {Snackbar, Icon} from 'react-native-paper';
 // Change
-// import messaging from '@react-native-firebase/messaging';
+import messaging from '@react-native-firebase/messaging';
 import {createContext, useContext, useState, useEffect} from 'react';
 
 
@@ -56,16 +56,16 @@ export const NotificationProvider = ({children}) => {
 
   // Change
   // Request push notification
-  // const requestPushMessagesPermission = async () => {
-  //   const authStatus = await messaging().requestPermission();
-  //   const enabled =
-  //   authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
-  //   authStatus === messaging.AuthorizationStatus.PROVISIONAL;
+  const requestPushMessagesPermission = async () => {
+    const authStatus = await messaging().requestPermission();
+    const enabled =
+    authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
+    authStatus === messaging.AuthorizationStatus.PROVISIONAL;
 
-  //   if (enabled) {
-  //     console.log('Authorization status: ', authStatus);
-  //   }
-  // };
+    if (enabled) {
+      console.log('Authorization status: ', authStatus);
+    }
+  };
 
 
   // Use effect
@@ -99,13 +99,13 @@ export const NotificationProvider = ({children}) => {
 
     // Change
     // Messaging request
-    // if(requestPushMessagesPermission()){
-    //   messaging().getToken();
-    // }else{
-    //   setMessageStyle('alert');
-    //   setSnackbarMessage('Permission not granted');
-    //   setVisible(true);
-    // };
+    if(requestPushMessagesPermission()){
+      messaging().getToken();
+    }else{
+      setMessageStyle('alert');
+      setSnackbarMessage('Permission not granted');
+      setVisible(true);
+    };
 
     // On notification opened app
     // messaging().onNotificationOpenedApp(remoteMessage => {
@@ -120,16 +120,16 @@ export const NotificationProvider = ({children}) => {
 
     // Change
     // Unsubscribe
-    // const unsubscribe = messaging().onMessage(async remoteMessage => {
-    //   setMessageStyle('green');
-    //   setSnackbarMessage(remoteMessage.notification.body);
-    //   setVisible(true);
-    // });
+    const unsubscribe = messaging().onMessage(async remoteMessage => {
+      setMessageStyle('green');
+      setSnackbarMessage(remoteMessage.notification.body);
+      setVisible(true);
+    });
 
 
     // Change
     // Return
-    // return unsubscribe;
+    return unsubscribe;
 
 }, []);
 

@@ -5,10 +5,10 @@ import {router} from 'expo-router';
 import 'react-native-get-random-values';
 import {WebView} from 'react-native-webview';
 import {AuthContext} from '../../../../context/Auth';
-import {useState, useEffect, useContext} from 'react';
+import {useState, useEffect, useContext, useRef} from 'react';
 import {Dropdown} from 'react-native-element-dropdown';
 import {ActivityIndicator, Snackbar, Icon, Card, Switch} from 'react-native-paper';
-import {Text, TouchableOpacity, View, ScrollView, Button, Image, Modal, Dimensions, SafeAreaView} from 'react-native';
+import {Text, TouchableOpacity, View, ScrollView, Button, Image, Modal, Dimensions, SafeAreaView, Linking, Alert} from 'react-native';
 
 
 
@@ -67,7 +67,7 @@ const index = () => {
 
 
     // Payment URL
-    const [paymentUrl, setPaymentUrl] = useState('');
+    const [paymentUrl, setPaymentUrl] = useState('https://vercel.com/jonathan929dels-projects');
 
 
     // Fee amounts
@@ -81,29 +81,6 @@ const index = () => {
     const [selectedInstallment, setSelectedInstallment] = useState({label:'', value:''});
     const [feeTypes, setFeeTypes] = useState([]);
     const [selectedFeeType, setSelectedFeeType] = useState({label:'', value:''});
-
-
-    // Handle webview navigation
-    const handleNavigationChange = navState => {
-        const {url} = navState;
-        // Handle navigation changes such as pop-ups or redirects here
-        if (url.includes('otp-confirmation')) {
-          // Example of handling OTP confirmation
-          Alert.alert('OTP Confirmation', 'Handling OTP confirmation here.');
-        }
-        if(navState.url.split('/')[4] === 'furl'){
-            setPaymentUrl('');
-            setSnackbarMessage('Payment Failed, Please Try Again.');
-            setVisible(true);
-        }else if(navState.url.split('/')[4] === 'surl'){
-            submitHandler();
-            setPaymentUrl('');
-            setSnackbarMessage('Paid Successfully!');
-            setVisible(true);
-        }else if(navState.url.includes('otp-page-url')){
-            setWebViewUrl(navState.url);
-        }
-    };
 
 
     // Fetch data
@@ -306,6 +283,7 @@ const index = () => {
         fetchData();
     }, []);
 
+
     return (
         <View style={{height:'100%', alignItems:'center', gap:30}}>
             <View style={{width:'100%', height:120, display:'flex', flexDirection:'row', alignItems:'flex-end', justifyContent:'space-between', paddingHorizontal:10, paddingBottom:30, backgroundColor:'#0094DA', borderBottomRightRadius:40, borderBottomLeftRadius:40}}>
@@ -321,7 +299,7 @@ const index = () => {
 
 
             {/* Payment modal */}
-            <Modal visible={paymentUrl !== ''}>
+            {/* <Modal visible={paymentUrl !== ''}>
                 <View style={{width:'100%', height:Dimensions.get('screen').height/7.5, display:'flex', flexDirection:'row', alignItems:'flex-end', justifyContent:'space-between', paddingHorizontal:10, paddingBottom:30, backgroundColor:'#0094DA', borderBottomRightRadius:40, borderBottomLeftRadius:40}}>
                     <View style={{display:'flex', flexDirection:'row', alignItems:'center', gap:20}}>
                         <TouchableOpacity
@@ -337,12 +315,12 @@ const index = () => {
                     <SafeAreaView style={{flex:1, width:'90%'}}>
                         <WebView
                             source={{uri:paymentUrl}}
-                            onNavigationStateChange={handleNavigationChange}
                             style={{height:Dimensions.get('screen').height/9.5, width:'100%'}}
+                            userAgent='Mozilla/5.0 (Linux; Android 11; Pixel 5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.114 Mobile Safari/537.36'
                         />
                     </SafeAreaView>
                 </View>
-            </Modal>
+            </Modal> */}
 
 
             {/* Tabs */}

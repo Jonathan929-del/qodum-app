@@ -14,7 +14,8 @@
     },
     "ios": {
       "supportsTablet": true,
-      "googleServicesFile": "./GoogleService-Info.plist"
+      "googleServicesFile": "./GoogleService-Info.plist",
+      "bundleIdentifier": "com.jonathanadel.qodum"
     },
     "android": {
       "adaptiveIcon": {
@@ -32,9 +33,7 @@
         "projectId": "25bf2422-587e-4fe6-ae96-9ce827ef1858"
       }
     },
-    "runtimeVersion": {
-      "policy": "appVersion"
-    },
+    "runtimeVersion":"1.0.0",
     "updates": {
       "enabled": true,
       "url": "https://u.expo.dev/25bf2422-587e-4fe6-ae96-9ce827ef1858"
