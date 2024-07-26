@@ -1,0 +1,21 @@
+{
+  "expo": {
+    "name": "Qodum",
+    "slug": "Qodum",
+    "version": "1.0.0",
+    "extra": {
+      "eas": {
+        "projectId": "6dcc169a-a524-491d-a253-ea9c9da0916b"
+      }
+    },
+    "owner": "jonathanadel",
+    "runtimeVersion": "1.0.0",
+    "android": {
+      "googleServicesFile": "./google-services.json"
+    },
+    "ios": {
+      "googleServicesFile": "./GoogleService-Info.plist"
+    }
+  },
+  "name": "Qodum"
+}

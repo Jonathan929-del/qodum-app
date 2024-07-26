@@ -1,0 +1,133 @@
+# Ignore Node.js dependencies
+node_modules/
+
+# Ignore build directories
+dist/
+build/
+out/
+
+# Ignore macOS system files
+.DS_Store
+
+# Ignore Windows system files
+Thumbs.db
+ehthumbs.db
+
+# Ignore log files
+*.log
+npm-debug.log*
+
+# Ignore environment variable files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Ignore IDE/editor configuration files
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Ignore yarn lock file
+yarn.lock
+
+# Ignore npm lock file
+package-lock.json
+
+# Ignore React Native specific files
+android/.gradle/
+ios/Pods/
+*.xcuserdatad/
+*.xcworkspace/
+*.xcodeproj/
+*.hmap
+*.ipa
+*.app
+*.pbxuser
+*.mode1v3
+*.mode2v3
+*.perspectivev3
+*.xccheckout
+*.xcscmblueprint
+
+# Ignore temporary files
+tmp/
+temp/
+*.tmp
+
+# Ignore build artifacts
+*.dll
+*.exe
+*.so
+*.dylib
+*.lib
+*.a
+*.la
+
+# Ignore compressed files
+*.zip
+*.tar.gz
+*.rar
+*.7z
+*.bz2
+
+# Ignore media files
+*.jpg
+*.png
+*.gif
+*.svg
+*.ico
+
+# Ignore documentation files
+*.md
+*.pdf
+
+# Ignore Gradle build files
+android/.gradle/
+android/.idea/
+android/build/
+android/app/build/
+android/local.properties
+
+# Ignore JetBrains project files
+.idea/
+*.iml
+*.iws
+
+# Ignore Python bytecode
+*.pyc
+__pycache__/
+
+# Ignore coverage reports
+coverage/
+*.lcov
+
+# Ignore compiled code
+*.class
+
+# Ignore JavaScript and TypeScript outputs
+*.map
+
+# Ignore IntelliJ project files
+*.ipr
+*.iws
+*.idea/
+
+# Ignore SASS cache
+.sass-cache/
+
+# Ignore other system files
+.Paper.*
+.Spotlight-V100
+.Trashes
+*.db
+*.db-journal
+*.sqlite
+*.sqlite3
+
+# Ignore other application-specific files
